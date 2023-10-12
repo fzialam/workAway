@@ -1,14 +1,15 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/fzialam/workAway/controller"
+	"github.com/julienschmidt/httprouter"
 )
 
-func NewRouter() *gin.Engine {
-	r := gin.Default()
+func NewRouter() *httprouter.Router {
+	r := httprouter.New()
 
 	// Define an endpoint to fetch all data
-	r.GET("/api/data", nil)
+	r.GET("/", controller.Index)
 
 	return r
 }
