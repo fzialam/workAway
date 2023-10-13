@@ -47,3 +47,5 @@ mobile
 view
 test
 *.json
+
+device.go
