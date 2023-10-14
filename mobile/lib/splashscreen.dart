@@ -40,15 +40,25 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration:
-            const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromRGBO(0, 74, 173, 0.66),
+              Color.fromRGBO(26, 172, 172, 0.6)
+            ],
+            begin: Alignment.topRight,
+            end: Alignment.bottomRight,
+            stops: [0.0, 1.0],
+            tileMode: TileMode.clamp,
+          ),
+        ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image(
-              image: AssetImage("assets/logo.png"),
-              height: 300,
-              width: 300,
+              image: AssetImage("assets/images/logo-circle.png"),
+              height: 150,
+              width: 150,
             ),
           ],
         ),

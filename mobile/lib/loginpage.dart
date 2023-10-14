@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,7 +8,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late Color myColor;
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -22,15 +20,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myColor = Theme.of(context).primaryColor;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            // color: Colors.red.withOpacity(0.1),
-            image: DecorationImage(
-                image: AssetImage("assets/bg.jpg"),
-                fit: BoxFit.cover,
-                opacity: 0.3)),
+          // color: Colors.red.withOpacity(0.1),
+          image: DecorationImage(
+            image: AssetImage("assets/images/bg2.jpg"),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black, BlendMode.dstATop),
+            opacity: 0.35,
+          ),
+        ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -41,20 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // logo here
                   Image.asset(
-                    'assets/WORKAWAY.png',
+                    'assets/images/WORKAWAY.png',
                     height: 250,
                     width: 250,
                   ),
-                  Text(
-                    'Log In Now',
-                    style: GoogleFonts.openSans(
-                      textStyle: const TextStyle(
-                        fontSize: 24, // Adjust the font size as needed.
-                        fontWeight: FontWeight
-                            .bold, // Adjust the font weight as needed.
-                        fontFamily:
-                            'YourCustomFont', // Replace 'YourCustomFont' with the font you want to use.
-                      ),
+                  const Text(
+                    'LOG-IN NOW',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "HeadlandOne",
                     ),
                   ),
 
@@ -62,12 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 30,
                   ),
                   Container(
-                    height: 200,
+                    height: 240,
                     // _formKey!.currentState!.validate() ? 200 : 600,
                     // height: isEmailCorrect ? 260 : 182,
                     width: MediaQuery.of(context).size.width / 1.1,
                     decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20)),
                     child: Column(
                       children: [
@@ -139,46 +136,54 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(80.0)),
-                              backgroundColor:
-                                  const Color.fromRGBO(0, 74, 173, 1.0),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width / 3.3,
-                                  vertical: 20)
-                              // padding: EdgeInsets.only(
-                              //     left: 120, right: 120, top: 20, bottom: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(80.0)),
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 74, 173, 1.0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width / 3.3,
+                                    vertical: 20)
+                                // padding: EdgeInsets.only(
+                                //     left: 120, right: 120, top: 20, bottom: 20),
+                                ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            },
+                            child: const Text(
+                              'Log In',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontFamily: "HeadlandOne",
+                                fontStyle: FontStyle.normal,
                               ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          },
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(fontSize: 17),
+                            ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),
 
-                  //this is button
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
-                  //
+                  // this is button
+                  const SizedBox(
+                    height: 30,
+                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'You have\'t any account?',
                         style: TextStyle(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.white.withOpacity(0.6),
                         ),
                       ),
                       TextButton(
@@ -186,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(
-                              color: Colors.purple,
+                              color: Color.fromRGBO(216, 42, 247, 0.9),
                               fontWeight: FontWeight.w500),
                         ),
                       )
