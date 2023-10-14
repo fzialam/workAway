@@ -30,7 +30,7 @@ mobile/.flutter-plugins-dependencies
 mobile/.packages
 mobile/.pub-cache/
 mobile/.pub/
-mobile//build/
+mobile/build/
 
 # Symbolication related
 mobile/app.*.symbols
@@ -43,7 +43,6 @@ mobile/android/app/debug
 mobile/android/app/profile
 mobile/android/app/release
 
-mobile
 view
 test
 *.json
