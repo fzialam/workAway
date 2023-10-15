@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mobile/take_photo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,15 +12,94 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void dispose() {
-    _textEditingController.clear();
+    email.clear();
+    password.clear();
     super.dispose();
   }
 
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> sendDataToServer(String email, password) async {
+    final url = Uri.parse('https://localhost:3000/login');
+
+    final Map<String, dynamic> data = {
+      'email': email,
+      'password': password,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type':
+            'application/json', // Set header Content-Type ke application/json
+      },
+      body: jsonEncode(data), // Mengonversi data ke JSON
+    );
+
+    if (response.statusCode == 200) {
+      debugPrint('Data berhasil dikirim ke server');
+      _navigatorKey.currentState!
+          .push(MaterialPageRoute(builder: (context) => const TakePhoto()));
+    } else {
+      debugPrint(
+          'Gagal mengirim data ke server. Status code: ${response.statusCode}');
+      showErrorDialog(401);
+    }
+  }
+
+  void showErrorDialog(int code) {
+    String message;
+    if (code == 401) {
+      message = 'Error $code: Email atau Password Salah';
+    } else if (code >= 500) {
+      message = 'Error $code: Terjadi kesalahan Internal Server';
+    } else {
+      message = 'Error $code: Terjadi kesalahan';
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'ERROR',
+            style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w900,
+                fontFamily: "HeadlandOne"),
+          ),
+          icon: const Icon(Icons.error_sharp),
+          content: Text(
+            message,
+            style: const TextStyle(
+                color: Color.fromARGB(255, 158, 158, 158),
+                fontWeight: FontWeight.bold,
+                fontFamily: "HeadlandOne"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Color.fromARGB(186, 244, 67, 54),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "HeadlandOne",
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Container(
                     height: 240,
-                    // _formKey!.currentState!.validate() ? 200 : 600,
-                    // height: isEmailCorrect ? 260 : 182,
                     width: MediaQuery.of(context).size.width / 1.1,
                     decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
@@ -72,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.only(
                               left: 20, right: 20, bottom: 20, top: 20),
                           child: TextFormField(
-                            controller: _textEditingController,
+                            controller: email,
                             decoration: const InputDecoration(
                               focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide.none,
@@ -103,6 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Form(
                             key: _formKey,
                             child: TextFormField(
+                              controller: password,
                               obscuringCharacter: '*',
                               obscureText: true,
                               decoration: const InputDecoration(
@@ -152,11 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 //     left: 120, right: 120, top: 20, bottom: 20),
                                 ),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()));
+                              sendDataToServer(email.text, password.text);
                             },
                             child: const Text(
                               'Log In',
