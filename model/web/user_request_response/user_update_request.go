@@ -5,5 +5,5 @@ type UserUpdateRequest struct {
 	NIP      string `validate:"required" json:"nip"`
 	Rank     int    `validate:"required" json:"rank"`
 	Email    string `validate:"required" json:"email"`
-	Password string `validate:"required, json:"password"`
+	Password string `validate:"required" json:"password"`
 }

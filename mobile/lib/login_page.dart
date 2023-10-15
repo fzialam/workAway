@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void dispose() {
@@ -26,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> sendDataToServer(String email, password) async {
-    final url = Uri.parse('https://localhost:3000/login');
+    final url = Uri.parse('http://127.0.0.1:3000/login');
 
     final Map<String, dynamic> data = {
       'email': email,
@@ -44,8 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       debugPrint('Data berhasil dikirim ke server');
-      _navigatorKey.currentState!
-          .push(MaterialPageRoute(builder: (context) => const TakePhoto()));
+      // ignore: use_build_context_synchronously
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const TakePhoto()),
+      );
     } else {
       debugPrint(
           'Gagal mengirim data ke server. Status code: ${response.statusCode}');

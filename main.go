@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/fzialam/workAway/app"
@@ -19,5 +20,9 @@ func main() {
 	userController := usercontroller.NewUserController(userService)
 	r := app.NewRouter(userController)
 
-	http.ListenAndServe(":3000", r)
+	log.Println("Server start ...")
+	if err := http.ListenAndServe(":3000", r); err != nil {
+		panic(err)
+	}
+	log.Println("Server running at port :3000")
 }
