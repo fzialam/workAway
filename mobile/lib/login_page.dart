@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> sendDataToServer(String email, password) async {
-    final url = Uri.parse('http://127.0.0.1:3000/login');
+    final url = Uri.parse('http://192.168.1.11:3000/login');
 
     final Map<String, dynamic> data = {
       'email': email,
@@ -51,18 +51,17 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       debugPrint(
           'Gagal mengirim data ke server. Status code: ${response.statusCode}');
-      showErrorDialog(401);
+      showErrorDialog(response.statusCode, response);
     }
   }
 
-  void showErrorDialog(int code) {
+  void showErrorDialog(int code, http.Response response) {
     String message;
-    if (code == 401) {
+    final responseData = json.decode(response.body);
+    if (code == 404) {
       message = 'Error $code: Email atau Password Salah';
-    } else if (code >= 500) {
-      message = 'Error $code: Terjadi kesalahan Internal Server';
     } else {
-      message = 'Error $code: Terjadi kesalahan';
+      message = "Error $code: Terjadi kesalahan ${responseData['message']}";
     }
     showDialog(
       context: context,

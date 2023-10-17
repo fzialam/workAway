@@ -41,7 +41,9 @@ func (us *UserServiceImpl) Login(ctx context.Context, request userrequestrespons
 	}
 
 	user, err = us.UserRepo.Login(ctx, tx, user)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.ToUserResponse(user)
 }
