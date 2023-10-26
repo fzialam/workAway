@@ -1,7 +1,7 @@
 package userrequestresponse
 
 type UserUpdateRequest struct {
-	Id       int    `json:"id"`
+	Id       int    `validate:"required" json:"id"`
 	NIP      string `validate:"required" json:"nip"`
 	Rank     int    `validate:"required" json:"rank"`
 	Email    string `validate:"required" json:"email"`

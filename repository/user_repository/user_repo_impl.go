@@ -29,7 +29,7 @@ func (ur *UserRepoImpl) Login(ctx context.Context, tx *sql.Tx, user entity.User)
 		helper.PanicIfError(err)
 		return newUser, nil
 	} else {
-		return newUser, errors.New("user is not found")
+		return newUser, errors.New("Email atau Password salah")
 	}
 }
 

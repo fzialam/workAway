@@ -1,7 +1,8 @@
-// import 'dart:convert';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
+import 'package:mobile/config.dart';
 import 'package:mobile/take_photo.dart';
 import 'package:mobile/user.dart';
 
@@ -26,87 +27,80 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> sendDataToServer(String email, password) async {
-    // final url = Uri.parse('http://192.168.1.11:3000/login');
+    final url = Uri.parse('$URL/login');
 
     final Map<String, dynamic> data = {
-      'statusCode': 200,
       'email': email,
       'password': password,
-      'data': {'id': 1, 'nip': '123456789', 'email': email}
     };
 
-    // final response = await http.post(
-    //   url,
-    //   headers: {
-    //     'Content-Type':
-    //         'application/json', // Set header Content-Type ke application/json
-    //   },
-    //   body: jsonEncode(data), // Mengonversi data ke JSON
-    // );
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type':
+            'application/json', // Set header Content-Type ke application/json
+      },
+      body: jsonEncode(data), // Mengonversi data ke JSON
+    );
 
-    if (data['statusCode'] == 200) {
+    if (response.statusCode == 200) {
       debugPrint('Data berhasil dikirim ke server');
-      // ignore: use_build_context_synchronously
-      final userData = data['data'];
+      final userData = json.decode(response.body)['data'];
       final user = User.fromJson(userData);
-      print(data['data']);
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => TakePhoto(user)),
       );
-      // } else {
-      //   debugPrint(
-      //   //     'Gagal mengirim data ke server. Status code: ${response.statusCode}');
-      //   // showErrorDialog(response.statusCode, response);
+    } else {
+      debugPrint(
+          'Gagal mengirim data ke server. Status code: ${response.statusCode}');
+      showErrorDialog(response);
     }
   }
 
-  // void showErrorDialog(int code, http.Response response) {
-  //   String message;
-  //   final responseData = json.decode(response.body);
-  //   if (code == 404) {
-  //     message = 'Error $code: Email atau Password Salah';
-  //   } else {
-  //     message = "Error $code: Terjadi kesalahan ${responseData['message']}";
-  //   }
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text(
-  //           'ERROR',
-  //           style: TextStyle(
-  //               color: Colors.red,
-  //               fontWeight: FontWeight.w900,
-  //               fontFamily: "HeadlandOne"),
-  //         ),
-  //         icon: const Icon(Icons.error_sharp),
-  //         content: Text(
-  //           message,
-  //           style: const TextStyle(
-  //               color: Color.fromARGB(255, 158, 158, 158),
-  //               fontWeight: FontWeight.bold,
-  //               fontFamily: "HeadlandOne"),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text(
-  //               'OK',
-  //               style: TextStyle(
-  //                 color: Color.fromARGB(186, 244, 67, 54),
-  //                 fontWeight: FontWeight.bold,
-  //                 fontFamily: "HeadlandOne",
-  //               ),
-  //             ),
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // Tutup dialog
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void showErrorDialog(http.Response response) {
+    final responseData = json.decode(response.body);
+    final String message =
+        "ERROR ${response.statusCode}: Terjadi kesalahan ${responseData['data']}";
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'ERROR',
+            style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w900,
+                fontFamily: "HeadlandOne"),
+          ),
+          icon: const Icon(Icons.error_sharp),
+          content: Text(
+            message,
+            style: const TextStyle(
+                color: Color.fromARGB(255, 158, 158, 158),
+                fontWeight: FontWeight.bold,
+                fontFamily: "HeadlandOne"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Color.fromARGB(186, 244, 67, 54),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "HeadlandOne",
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,10 +173,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: "Email",
                               hintText: 'your-email@domain.com',
                               labelStyle: TextStyle(color: Colors.purple),
-                              // suffixIcon: IconButton(
-                              //     onPressed: () {},
-                              //     icon: Icon(Icons.close,
-                              //         color: Colors.purple))
+                              suffixIcon: IconButton(
+                                onPressed: null,
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.purple,
+                                ),
+                              ),
                             ),
                           ),
                         ),
