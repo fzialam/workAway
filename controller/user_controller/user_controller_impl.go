@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/fzialam/workAway/helper"
-	"github.com/fzialam/workAway/model/web"
-	userreqes "github.com/fzialam/workAway/model/web/user_request_response"
+	"github.com/fzialam/workAway/model"
+	userreqes "github.com/fzialam/workAway/model/user_request_response"
 	userservice "github.com/fzialam/workAway/service/user_service"
 	"github.com/julienschmidt/httprouter"
 )
@@ -40,13 +40,13 @@ func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request, p ht
 	helper.ReadFromRequestBody(r, &userLoginRequest)
 
 	userResponse := uc.UserService.Login(r.Context(), userLoginRequest)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 }
 
 // Register implements UserController.
@@ -55,13 +55,13 @@ func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request, p
 	helper.ReadFromRequestBody(r, &userRegisterRequest)
 
 	userResponse := uc.UserService.Register(r.Context(), userRegisterRequest)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 }
 
 // Update implements UserController.
@@ -76,13 +76,13 @@ func (uc *UserControllerImpl) Update(w http.ResponseWriter, r *http.Request, p h
 	userUpdateRequest.Id = id
 
 	userResponse := uc.UserService.Update(r.Context(), userUpdateRequest)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 }
 
 // Delete implements UserController.
@@ -93,24 +93,24 @@ func (uc *UserControllerImpl) Delete(w http.ResponseWriter, r *http.Request, p h
 	helper.PanicIfError(err)
 
 	uc.UserService.Delete(r.Context(), id)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 }
 
 // FindAll implements UserController.
 func (uc *UserControllerImpl) FindAll(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	userResponse := uc.UserService.FindAll(r.Context())
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 }
 
 // FindByEmail implements UserController.
@@ -119,13 +119,13 @@ func (uc *UserControllerImpl) FindByEmail(w http.ResponseWriter, r *http.Request
 	var email string
 
 	userResponse := uc.UserService.FindByEmail(r.Context(), email)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 	panic("unimplemented")
 }
 
@@ -135,12 +135,12 @@ func (uc *UserControllerImpl) FindByNIP(w http.ResponseWriter, r *http.Request, 
 	var nip string
 
 	userResponse := uc.UserService.FindByNIP(r.Context(), nip)
-	webResponse := web.WebResponse{
+	response := model.Response{
 		Code:   200,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, webResponse)
+	helper.WriteToResponseBody(w, response)
 	panic("unimplemented")
 }

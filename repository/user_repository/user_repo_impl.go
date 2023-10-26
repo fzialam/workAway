@@ -35,8 +35,6 @@ func (ur *UserRepoImpl) Login(ctx context.Context, tx *sql.Tx, user entity.User)
 
 // Register implements UserRepo.
 func (ur *UserRepoImpl) Register(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
-	user, err := ur.CheckEmailNIP(ctx, tx, user)
-	helper.PanicIfError(err)
 	SQL := "INSERT INTO `user`(`nip`, `rank`, `email`, `password`) VALUES (?,?,?,?)"
 	result, err := tx.ExecContext(ctx, SQL, user.NIP, user.Rank, user.Email, user.Password)
 	if err != nil {
@@ -51,7 +49,7 @@ func (ur *UserRepoImpl) Register(ctx context.Context, tx *sql.Tx, user entity.Us
 }
 
 // CheckEmailNIP implements UserRepo.
-func (*UserRepoImpl) CheckEmailNIP(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
+func (ur *UserRepoImpl) CheckEmailNIP(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
 	var exists bool
 	SQL := "SELECT * FROM `user` WHERE email=?"
 	query := tx.QueryRowContext(ctx, SQL, user.Email)
@@ -93,7 +91,7 @@ func (ur *UserRepoImpl) Delete(ctx context.Context, tx *sql.Tx, user entity.User
 }
 
 // FindById implements UserRepo.
-func (*UserRepoImpl) FindById(ctx context.Context, tx *sql.Tx, userId int) (entity.User, error) {
+func (ur *UserRepoImpl) FindById(ctx context.Context, tx *sql.Tx, userId int) (entity.User, error) {
 	SQL := "select * from category where id = ?"
 	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)

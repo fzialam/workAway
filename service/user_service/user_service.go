@@ -3,7 +3,7 @@ package userservice
 import (
 	"context"
 
-	userreqres "github.com/fzialam/workAway/model/web/user_request_response"
+	userreqres "github.com/fzialam/workAway/model/user_request_response"
 )
 
 type UserService interface {

@@ -2,7 +2,8 @@ package helper
 
 import (
 	"github.com/fzialam/workAway/model/entity"
-	userreqres "github.com/fzialam/workAway/model/web/user_request_response"
+	presensireqres "github.com/fzialam/workAway/model/presensi_request_response"
+	userreqres "github.com/fzialam/workAway/model/user_request_response"
 )
 
 func ToUserResponse(user entity.User) userreqres.UserResponse {
@@ -19,4 +20,14 @@ func ToUserResponses(categories []entity.User) []userreqres.UserResponse {
 		userResponses = append(userResponses, ToUserResponse(user))
 	}
 	return userResponses
+}
+
+func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoResponse {
+	return presensireqres.PresensiFotoResponse{
+		Id:           presensi.Id,
+		UserId:       presensi.UserId,
+		SuratTugasId: presensi.SuratTugasId,
+		Gambar:       "Sukses Upload Gambar",
+		Lokasi:       presensi.Lokasi,
+	}
 }

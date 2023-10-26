@@ -7,7 +7,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
-	userrequestresponse "github.com/fzialam/workAway/model/web/user_request_response"
+	userrequestresponse "github.com/fzialam/workAway/model/user_request_response"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -64,6 +64,10 @@ func (us *UserServiceImpl) Register(ctx context.Context, request userrequestresp
 		Password: request.Password,
 	}
 
+	user, err = us.UserRepo.CheckEmailNIP(ctx, tx, user)
+	if err != nil {
+		panic(exception.NewDuplicatedError(err.Error()))
+	}
 	user, err = us.UserRepo.Register(ctx, tx, user)
 	helper.PanicIfError(err)
 
