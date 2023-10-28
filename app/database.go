@@ -10,7 +10,7 @@ import (
 )
 
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "rootsql@tcp(localhost:3306)/workaway")
+	db, err := sql.Open("mysql", "rootsql@tcp(localhost:3306)/workaway?parseTime=true&loc=Asia%2FJakarta")
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(5)

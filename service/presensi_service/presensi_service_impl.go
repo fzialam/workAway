@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	presensireqres "github.com/fzialam/workAway/model/presensi_request_response"
@@ -34,14 +35,16 @@ func (ps *PresensiServiceImpl) PresensiFoto(ctx context.Context, request presens
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	err = ps.PresensiRepo.CheckIzin(ctx, tx, request.SuratTugasId)
-	helper.PanicIfError(err)
-
 	presensi := entity.Presensi{
 		UserId:       request.UserId,
 		SuratTugasId: request.SuratTugasId,
 		Gambar:       request.Gambar,
 		Lokasi:       request.Lokasi,
+	}
+
+	err = ps.PresensiRepo.CheckIzin(ctx, tx, presensi)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
 	}
 
 	presensi, err = ps.PresensiRepo.PresensiFoto(ctx, tx, presensi)

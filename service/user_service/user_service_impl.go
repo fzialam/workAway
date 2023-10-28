@@ -59,7 +59,6 @@ func (us *UserServiceImpl) Register(ctx context.Context, request userrequestresp
 
 	user := entity.User{
 		NIP:      request.NIP,
-		Rank:     request.Rank,
 		Email:    request.Email,
 		Password: request.Password,
 	}
@@ -89,7 +88,6 @@ func (us *UserServiceImpl) Update(ctx context.Context, request userrequestrespon
 	}
 	user = entity.User{
 		NIP:      request.NIP,
-		Rank:     request.Rank,
 		Email:    request.Email,
 		Password: request.Password,
 	}

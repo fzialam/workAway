@@ -17,21 +17,15 @@ func NewPresensiRepo() PresensiRepo {
 }
 
 // CheckIzin implements PresensiRepo.
-func (pr *PresensiRepoImpl) CheckIzin(ctx context.Context, tx *sql.Tx, surat_id int) error {
-	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `rank_user`, `status`, `create_at` FROM izin_pengguna WHERE `status`='disetujui' AND `rank_user`=1 AND `surat_tugas_id`=?"
-
-	rows, err := tx.QueryContext(ctx, SQL, surat_id)
-	helper.PanicIfError(err)
-	defer rows.Close()
+func (pr *PresensiRepoImpl) CheckIzin(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) error {
+	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `status`, `create_at` FROM izin_pengguna WHERE status='disetujui' AND surat_tugas_id = ?"
 
 	newIzin := entity.Izin{}
-	if rows.Next() {
-		err := rows.Scan(&newIzin.Id, &newIzin.SuratTugasId, &newIzin.UserId, &newIzin.RankUser, &newIzin.Status, newIzin.Create_at)
-		helper.PanicIfError(err)
+	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&newIzin.Id, &newIzin.SuratTugasId, &newIzin.UserId, &newIzin.Status, &newIzin.Create_at)
+	if newIzin.Id != 0 {
 		return nil
 	} else {
 		return errors.New("Surat belum disetujui")
-
 	}
 }
 

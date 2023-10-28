@@ -1,6 +1,7 @@
 package presensicontroller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/fzialam/workAway/helper"
@@ -33,4 +34,9 @@ func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Reques
 	}
 
 	helper.WriteToResponseBody(w, response)
+}
+
+// GetSurat implements PresensiController.
+func (pc *PresensiControllerImpl) GetSurat(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	log.Println("Implement GetSurat")
 }

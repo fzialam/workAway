@@ -8,6 +8,6 @@ import (
 )
 
 type PresensiRepo interface {
-	CheckIzin(ctx context.Context, tx *sql.Tx, surat_id int) error
+	CheckIzin(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) error
 	PresensiFoto(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) (entity.Presensi, error)
 }
