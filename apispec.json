@@ -1,0 +1,354 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "WorkAway RESTful API",
+      "description": "API Spec for WorkAway RESTful API",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000/"
+      }
+    ],
+    "paths": {
+      "/login": {
+        "post": {
+          "security": [{
+            "AccAuth" : []
+          }],
+          "tags": ["User API"],
+          "description": "Login user",
+          "summary": "Login user",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                        "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success Login",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserResponseLoginOrRegister"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Failed Login",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref" : "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref" : "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/registrasi" : {
+        "post" : {
+          "security": [{
+            "AccAuth" : []
+          }],
+          "tags": ["User API"],
+          "description": "Registrasi user",
+          "summary": "Registrasi user",          
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                      "nip": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                          "type": "string"
+                      }
+                    }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success Registrasi User",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserResponseLoginOrRegister"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Email Or NIP already used",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref" : "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref" : "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/mobile":{
+        "get":{
+          "security": [{
+            "AccAuth" : []
+          }],
+          "tags": ["Mobile API"],
+          "description": "Get surat tugas",
+          "summary": "Get surat tugas",
+          "responses": {
+            "200": {
+              "description": "Success get surat tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "number"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id":{
+                            "type": "number"
+                          },
+                          "surat_judul":{
+                            "type": "string"
+                          },
+                          "tgl_awal":{
+                            "type": "string"
+                          },
+                          "tgl_akhir":{
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404":{
+              "description": "Failed get surat tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500":{
+              "description": "Failed get surat tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post":{
+          "security": [{
+            "AccAuth" : []
+          }],
+          "tags": ["Mobile API"],
+          "description": "Presensi tugas",
+          "summary": "Presensi tugas",
+          "requestBody" :{
+            "description": "Presensi tugas upload photo and location",
+            "content": {
+              "application/json":{
+                "schema":{
+                  "type": "object",
+                  "properties": {
+                    "user_id":{
+                      "type": "number"
+                    },
+                    "surat_tugas_id":{
+                      "type": "number"
+                    },
+                    "gambar":{
+                      "type": "string"
+                    },
+                    "lokasi":{
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success presensi tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "number"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id":{
+                            "type": "number"
+                          },
+                          "user_id":{
+                            "type": "number"
+                          },
+                          "surat_tugas_id":{
+                            "type": "number"
+                          },
+                          "gambar":{
+                            "type": "string"
+                          },
+                          "lokasi":{
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404":{
+              "description": "Failed presensi tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500":{
+              "description": "Internal Server Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "AccAuth" : {
+          "type": "apiKey",
+          "in" : "cookie",
+          "name": "token",
+          "description": "Authentication for WorkAway API"
+        }
+      },
+      "schemas": {
+        "UserResponseLoginOrRegister" : {
+          "type": "object",
+          "properties": {
+            "code" : {
+              "type": "number"
+            },
+            "status" : {
+              "type": "string"
+            },
+            "data" : {
+              "type": "object",
+              "properties": {
+                "id":{
+                    "type": "number"
+                },
+                "nip":{
+                    "type": "string"
+                },
+                "email" : {
+                    "type": "string"
+                }                        
+              }
+            }
+          }
+        },
+        "ErrorResponse" : {
+          "type": "object",
+          "properties": {
+            "code" : {
+              "type": "number"
+            },
+            "status" : {
+              "type": "string"
+            },
+            "data" : {
+              "type": "object",
+              "properties": {
+                "message" : {
+                    "type": "string"
+                }                        
+              }
+            }
+          }
+        }
+      }
+    }
+  }
