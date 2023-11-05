@@ -31,3 +31,20 @@ func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoRes
 		Lokasi:       presensi.Lokasi,
 	}
 }
+func ToGetSuratResponse(surat entity.SuratTugas) presensireqres.GetSuratForPresensiResponse {
+	return presensireqres.GetSuratForPresensiResponse{
+		Id:         surat.Id,
+		UserId:     surat.UserId,
+		JudulSurat: surat.JudulSurat,
+		TglAwal:    surat.TglAwal,
+		TglAkhir:   surat.TglAkhir,
+		Status:     surat.Status,
+	}
+}
+func ToGetSuratResponses(surats []entity.SuratTugas) []presensireqres.GetSuratForPresensiResponse {
+	var suratResponses []presensireqres.GetSuratForPresensiResponse
+	for _, surat := range surats {
+		suratResponses = append(suratResponses, ToGetSuratResponse(surat))
+	}
+	return suratResponses
+}

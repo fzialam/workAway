@@ -15,8 +15,8 @@ func NewRouter(user usercontroller.UserController, presensi presensicontroller.P
 	r.GET("/", controller.Index)
 	r.POST("/login", user.Login)
 	r.POST("/register", user.Register)
-	r.POST("/mobile", presensi.Presensi)
-	r.GET("/mobile", presensi.GetSurat)
+	r.POST("/mobile/:userId", presensi.Presensi)
+	r.GET("/mobile/:userId", presensi.GetSuratForPresensi)
 	r.GET("/all-user", user.FindAll)
 
 	r.PanicHandler = exception.ErrorHandler

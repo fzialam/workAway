@@ -1,8 +1,8 @@
 package presensicontroller
 
 import (
-	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model"
@@ -23,7 +23,11 @@ func NewPresensiController(presensiService presensiservice.PresensiService) Pres
 
 // Presensi implements PresensiController.
 func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	presensiRequest := presensirequestresponse.PresensiFotoRequest{}
+	userId, err := strconv.Atoi(p.ByName("userId"))
+	helper.PanicIfError(err)
+	presensiRequest := presensirequestresponse.PresensiFotoRequest{
+		UserId: userId,
+	}
 	helper.ReadFromRequestBody(r, &presensiRequest)
 
 	presensiResponse := pc.PresensiService.PresensiFoto(r.Context(), presensiRequest)
@@ -37,6 +41,18 @@ func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Reques
 }
 
 // GetSurat implements PresensiController.
-func (pc *PresensiControllerImpl) GetSurat(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	log.Println("Implement GetSurat")
+func (pc *PresensiControllerImpl) GetSuratForPresensi(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	userId, err := strconv.Atoi(p.ByName("userId"))
+	helper.PanicIfError(err)
+	getSuratRequest := presensirequestresponse.GetSuratForPresensiRequest{
+		UserId: userId,
+	}
+	getSuratResponse := pc.PresensiService.GetSurat(r.Context(), getSuratRequest)
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   getSuratResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
 }

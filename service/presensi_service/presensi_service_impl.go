@@ -52,3 +52,20 @@ func (ps *PresensiServiceImpl) PresensiFoto(ctx context.Context, request presens
 
 	return helper.ToPresensiResponse(presensi)
 }
+
+// GetSurat implements PresensiService.
+func (ps *PresensiServiceImpl) GetSurat(ctx context.Context, request presensireqres.GetSuratForPresensiRequest) []presensireqres.GetSuratForPresensiResponse {
+	err := ps.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat, err := ps.PresensiRepo.GetSurat(ctx, tx, request.UserId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToGetSuratResponses(surat)
+}

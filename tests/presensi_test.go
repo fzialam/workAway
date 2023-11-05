@@ -19,11 +19,18 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type ResponseData struct {
+	Code   int                      `json:"code"`
+	Status string                   `json:"status"`
+	Data   []map[string]interface{} `json:"data"`
+}
+
 func setupRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
 	presInit := app.InitializedPresensi(db, validate)
 	r := httprouter.New()
-	r.POST("/mobile", presInit.Presensi)
+	r.POST("/mobile/:userId", presInit.Presensi)
+	r.GET("/mobile/:userId", presInit.GetSuratForPresensi)
 
 	r.PanicHandler = exception.ErrorHandler
 	return r
@@ -70,11 +77,11 @@ func TestPresensiSucces(t *testing.T) {
 
 	reqBody := strings.NewReader(`{
 		"user_id" : 1,
-		"surat_tugas_id" : 1,
+		"surat_tugas_id" : 2,
 		"gambar" : "img",
 		"lokasi": "LOKASI"
 	}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile", reqBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile/1", reqBody)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()
@@ -86,8 +93,8 @@ func TestPresensiSucces(t *testing.T) {
 	bd, _ := io.ReadAll(response.Body)
 
 	fmt.Println(string(bd))
-
 }
+
 func TestPresensiFailed(t *testing.T) {
 	db := app.NewDB()
 	router := setupRouter(db)
@@ -99,9 +106,43 @@ func TestPresensiFailed(t *testing.T) {
 		"user_id" : 1,
 		"surat_tugas_id" : 2,
 		"gambar" : "img",
-		"lokasi": "LOKASI"
+		"lokasi": ""
 	}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile", reqBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile/1", reqBody)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	bd, _ := io.ReadAll(response.Body)
+
+	fmt.Println(string(bd))
+}
+
+func TestGetSuratSucces(t *testing.T) {
+	db := app.NewDB()
+	router := setupRouter(db)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/mobile/1", nil)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	bd, _ := io.ReadAll(response.Body)
+
+	fmt.Println(string(bd))
+}
+
+func TestGetSuratFailed(t *testing.T) {
+	db := app.NewDB()
+	router := setupRouter(db)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/mobile/1", nil)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()
