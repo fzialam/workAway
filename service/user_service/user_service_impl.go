@@ -7,7 +7,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
-	userrequestresponse "github.com/fzialam/workAway/model/user_request_response"
+	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -27,7 +27,7 @@ func NewUserService(userRepo userrepository.UserRepo, DB *sql.DB, validate *vali
 }
 
 // Login implements UserService.
-func (us *UserServiceImpl) Login(ctx context.Context, request userrequestresponse.UserLoginRequest) userrequestresponse.UserResponse {
+func (us *UserServiceImpl) Login(ctx context.Context, request userreqres.UserLoginRequest) userreqres.UserResponse {
 	err := us.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -49,7 +49,7 @@ func (us *UserServiceImpl) Login(ctx context.Context, request userrequestrespons
 }
 
 // Register implements UserService.
-func (us *UserServiceImpl) Register(ctx context.Context, request userrequestresponse.UserRegisterRequest) userrequestresponse.UserResponse {
+func (us *UserServiceImpl) Register(ctx context.Context, request userreqres.UserRegisterRequest) userreqres.UserResponse {
 	err := us.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -74,7 +74,7 @@ func (us *UserServiceImpl) Register(ctx context.Context, request userrequestresp
 }
 
 // Update implements UserService.
-func (us *UserServiceImpl) Update(ctx context.Context, request userrequestresponse.UserUpdateRequest) userrequestresponse.UserResponse {
+func (us *UserServiceImpl) Update(ctx context.Context, request userreqres.UserUpdateRequest) userreqres.UserResponse {
 	err := us.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -112,7 +112,7 @@ func (us *UserServiceImpl) Delete(ctx context.Context, userId int) {
 }
 
 // FindAll implements UserService.
-func (us *UserServiceImpl) FindAll(ctx context.Context) []userrequestresponse.UserResponse {
+func (us *UserServiceImpl) FindAll(ctx context.Context) []userreqres.UserResponse {
 	tx, err := us.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -122,7 +122,7 @@ func (us *UserServiceImpl) FindAll(ctx context.Context) []userrequestresponse.Us
 }
 
 // FindByEmail implements UserService.
-func (us *UserServiceImpl) FindByEmail(ctx context.Context, email string) userrequestresponse.UserResponse {
+func (us *UserServiceImpl) FindByEmail(ctx context.Context, email string) userreqres.UserResponse {
 	tx, err := us.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -136,7 +136,7 @@ func (us *UserServiceImpl) FindByEmail(ctx context.Context, email string) userre
 }
 
 // FindByNIP implements UserService.
-func (us *UserServiceImpl) FindByNIP(ctx context.Context, nip string) userrequestresponse.UserResponse {
+func (us *UserServiceImpl) FindByNIP(ctx context.Context, nip string) userreqres.UserResponse {
 	tx, err := us.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)

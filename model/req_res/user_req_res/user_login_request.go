@@ -1,4 +1,4 @@
-package userrequestresponse
+package userreqres
 
 type UserLoginRequest struct {
 	Email    string `validate:"required" json:"email"`

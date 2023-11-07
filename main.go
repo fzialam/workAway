@@ -12,13 +12,12 @@ import (
 func main() {
 	db := app.NewDB()
 	validate := validator.New()
-	userInit := app.InitializedUser(db, validate)
-	presensiinit := app.InitializedPresensi(db, validate)
-	r := app.NewRouter(userInit, presensiinit)
+	// userInit := app.InitializedUser(db, validate)
+	// presensiinit := app.InitializedPresensi(db, validate)
+	r := app.NewRouter(db, validate)
 
-	log.Println("Server start ...")
+	log.Println("Server running at port http://localhost:3000")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		panic(err)
 	}
-	log.Println("Server running at port :3000")
 }

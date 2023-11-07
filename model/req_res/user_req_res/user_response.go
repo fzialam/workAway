@@ -1,6 +1,6 @@
-package entity
+package userreqres
 
-type User struct {
+type UserResponse struct {
 	Id       int    `json:"id"`
 	NIP      string `json:"nip"`
 	NIK      string `json:"nik"`
@@ -13,5 +13,4 @@ type User struct {
 	Gender   string `json:"gender"`
 	Alamat   string `json:"alamat"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
 }

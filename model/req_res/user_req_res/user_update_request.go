@@ -1,4 +1,4 @@
-package userrequestresponse
+package userreqres
 
 type UserUpdateRequest struct {
 	Id       int    `validate:"required" json:"id"`

@@ -3,7 +3,7 @@ package presensiservice
 import (
 	"context"
 
-	presensireqres "github.com/fzialam/workAway/model/presensi_request_response"
+	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 )
 
 type PresensiService interface {

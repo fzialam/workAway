@@ -1,4 +1,4 @@
-package presensirequestresponse
+package presensireqres
 
 type PresensiFotoResponse struct {
 	Id           int    `json:"id"`

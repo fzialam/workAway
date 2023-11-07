@@ -1,4 +1,4 @@
-package presensirequestresponse
+package presensireqres
 
 type PresensiFotoRequest struct {
 	UserId       int    `validate:"required" json:"user_id"`

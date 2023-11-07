@@ -2,26 +2,38 @@ package helper
 
 import (
 	"github.com/fzialam/workAway/model/entity"
-	presensireqres "github.com/fzialam/workAway/model/presensi_request_response"
-	userreqres "github.com/fzialam/workAway/model/user_request_response"
+	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
+	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
+	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 )
 
+// User Section
 func ToUserResponse(user entity.User) userreqres.UserResponse {
 	return userreqres.UserResponse{
-		Id:    user.Id,
-		NIP:   user.NIP,
-		Email: user.Email,
+		Id:       user.Id,
+		NIP:      user.NIP,
+		NIK:      user.NIK,
+		NPWP:     user.NPWP,
+		Name:     user.Name,
+		Rank:     user.Rank,
+		NoTelp:   user.NoTelp,
+		TglLahir: user.TglLahir,
+		Status:   user.Status,
+		Gender:   user.Gender,
+		Alamat:   user.Alamat,
+		Email:    user.Email,
 	}
 }
 
-func ToUserResponses(categories []entity.User) []userreqres.UserResponse {
+func ToUserResponses(users []entity.User) []userreqres.UserResponse {
 	var userResponses []userreqres.UserResponse
-	for _, user := range categories {
+	for _, user := range users {
 		userResponses = append(userResponses, ToUserResponse(user))
 	}
 	return userResponses
 }
 
+// Presensi Section
 func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoResponse {
 	return presensireqres.PresensiFotoResponse{
 		Id:           presensi.Id,
@@ -31,20 +43,38 @@ func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoRes
 		Lokasi:       presensi.Lokasi,
 	}
 }
-func ToGetSuratResponse(surat entity.SuratTugas) presensireqres.GetSuratForPresensiResponse {
+func ToGetSuratResponse(surat entity.SuratTugasJOIN) presensireqres.GetSuratForPresensiResponse {
 	return presensireqres.GetSuratForPresensiResponse{
-		Id:         surat.Id,
-		UserId:     surat.UserId,
-		JudulSurat: surat.JudulSurat,
-		TglAwal:    surat.TglAwal,
-		TglAkhir:   surat.TglAkhir,
-		Status:     surat.Status,
+		Id:               surat.Id,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		Status:           surat.Status,
 	}
 }
-func ToGetSuratResponses(surats []entity.SuratTugas) []presensireqres.GetSuratForPresensiResponse {
+
+func ToGetSuratResponses(surats []entity.SuratTugasJOIN) []presensireqres.GetSuratForPresensiResponse {
 	var suratResponses []presensireqres.GetSuratForPresensiResponse
 	for _, surat := range surats {
 		suratResponses = append(suratResponses, ToGetSuratResponse(surat))
 	}
 	return suratResponses
+}
+
+// Permohonan Section
+func ToPermohonanResponse(surat entity.SuratTugas, pemohon entity.Pemohon, participan entity.Participan) permohonanreqres.PermohonanResponse {
+	return permohonanreqres.PermohonanResponse{
+		UserPemohonId:    pemohon.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokPendukungName: surat.DokumenName,
+		ParticipansId:    participan.UserId,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+	}
 }

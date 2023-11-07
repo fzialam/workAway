@@ -7,7 +7,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
-	presensireqres "github.com/fzialam/workAway/model/presensi_request_response"
+	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
 	"github.com/go-playground/validator/v10"
 )

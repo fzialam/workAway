@@ -6,7 +6,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model"
-	userreqes "github.com/fzialam/workAway/model/user_request_response"
+	userreqes "github.com/fzialam/workAway/model/req_res/user_req_res"
 	userservice "github.com/fzialam/workAway/service/user_service"
 	"github.com/julienschmidt/httprouter"
 )

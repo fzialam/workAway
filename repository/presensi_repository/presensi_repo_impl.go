@@ -20,9 +20,9 @@ func NewPresensiRepo() PresensiRepo {
 func (pr *PresensiRepoImpl) CheckIzin(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) error {
 	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `status`, `create_at` FROM approved WHERE status=1 AND surat_tugas_id = ?"
 
-	newIzin := entity.Izin{}
-	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&newIzin.Id, &newIzin.SuratTugasId, &newIzin.UserId, &newIzin.Status, &newIzin.Create_at)
-	if newIzin.Status == 1 {
+	izin := entity.Izin{}
+	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&izin.Id, &izin.SuratTugasId, &izin.UserId, &izin.Status, &izin.Create_at)
+	if izin.Status == 1 {
 		return nil
 	} else {
 		return errors.New("Surat belum disetujui")
@@ -45,29 +45,30 @@ func (pr *PresensiRepoImpl) PresensiFoto(ctx context.Context, tx *sql.Tx, presen
 }
 
 // GetSurat implements PresensiRepo.
-func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugas, error) {
+func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugasJOIN, error) {
 	SQL := "SELECT surat_tugas.*, approved.status FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.id WHERE `surat_tugas`.tgl_akhir > NOW() AND `surat_tugas`.user_id = ?;"
-	surats := []entity.SuratTugas{}
+	surats := []entity.SuratTugasJOIN{}
 	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)
 	for rows.Next() {
-		surat := entity.SuratTugas{}
+		surat := entity.SuratTugasJOIN{}
 		rows.Scan(
 			&surat.Id,
-			&surat.UserId,
-			&surat.JudulSurat,
+			&surat.LokasiTujuan,
+			&surat.JenisProgram,
+			&surat.DokumenName,
+			&surat.DokumenPDF,
+			&surat.DokPendukungName,
+			&surat.DokPendukungPdf,
 			&surat.TglAwal,
 			&surat.TglAkhir,
 			&surat.Create_at,
 			&surat.Status,
 		)
 		surats = append(surats, surat)
-
 	}
 	if err != nil {
 		return surats, errors.New("Tidak ada surat tugas")
 	}
-
 	return surats, nil
-
 }

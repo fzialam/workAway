@@ -1,4 +1,4 @@
-package userrequestresponse
+package userreqres
 
 type UserRegisterRequest struct {
 	NIP      string `validate:"required" json:"nip"`
