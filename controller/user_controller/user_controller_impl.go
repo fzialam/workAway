@@ -23,19 +23,6 @@ func NewUserController(userService userservice.UserService) UserController {
 
 // Login implements UserController.
 func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	/*userAgent := r.Header.Get("User-Agent")
-
-	// Melakukan identifikasi berdasarkan User-Agent
-	if helper.UserAgentContains(userAgent, "Android") ||
-		helper.UserAgentContains(userAgent, "Dart") {
-		fmt.Println("Perangkat Android mengakses aplikasi Anda.")
-	} else if helper.UserAgentContains(userAgent, "iPhone") {
-		fmt.Println("Perangkat iPhone mengakses aplikasi Anda.")
-	} else if helper.UserAgentContains(userAgent, "Chrome") {
-		fmt.Println("Perangkat tidak dikenali.", userAgent)
-	} else {
-		fmt.Println("Perangkat tidak dikenali.", userAgent)
-	}*/
 	userLoginRequest := userreqes.UserLoginRequest{}
 	helper.ReadFromRequestBody(r, &userLoginRequest)
 
