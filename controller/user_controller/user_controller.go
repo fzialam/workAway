@@ -2,16 +2,17 @@ package usercontroller
 
 import (
 	"net/http"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 type UserController interface {
-	Login(w http.ResponseWriter, r *http.Request, p httprouter.Params)
-	Register(w http.ResponseWriter, r *http.Request, p httprouter.Params)
-	Update(w http.ResponseWriter, r *http.Request, p httprouter.Params)
-	Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params)
-	FindByNIP(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
-	FindByEmail(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
-	FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	IndexL(w http.ResponseWriter, r *http.Request)
+	IndexR(w http.ResponseWriter, r *http.Request)
+	Login(w http.ResponseWriter, r *http.Request)
+	Register(w http.ResponseWriter, r *http.Request)
+	Logout(w http.ResponseWriter, r *http.Request)
+	Update(w http.ResponseWriter, r *http.Request)
+	Delete(w http.ResponseWriter, r *http.Request)
+	FindByNIP(writer http.ResponseWriter, request *http.Request)
+	FindByEmail(writer http.ResponseWriter, request *http.Request)
+	FindAll(writer http.ResponseWriter, request *http.Request)
 }

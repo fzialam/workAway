@@ -9,7 +9,7 @@ import (
 	"github.com/fzialam/workAway/model"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	permohonanservice "github.com/fzialam/workAway/service/permohonan_service"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 type PermohonanControllerImpl struct {
@@ -28,9 +28,12 @@ type Option struct {
 	Name string `json:"name"`
 }
 
-func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	userId, err := strconv.Atoi(p.ByName("userId"))
+func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
+
 	permohonanRequest := permohonanreqres.PermohonanRequest{
 		UserPemohonId: userId,
 	}
@@ -47,7 +50,7 @@ func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *h
 }
 
 // Index implements PermohonanController.
-func (pc *PermohonanControllerImpl) Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (pc *PermohonanControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
 
 	allUserResponse := pc.PermohonanService.GetAllUserId(r.Context())
 	response := model.Response{

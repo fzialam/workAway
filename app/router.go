@@ -5,25 +5,33 @@ import (
 
 	"github.com/fzialam/workAway/exception"
 	"github.com/go-playground/validator/v10"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
-func NewRouter(db *sql.DB, validate *validator.Validate) *httprouter.Router {
-	r := httprouter.New()
+func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
+	r := mux.NewRouter()
 	user := InitializedUser(db, validate)
 	presensi := InitializedPresensi(db, validate)
 	permohonan := InitializedPermohonan(db, validate)
 
 	// r.GET("/", controller.Index)
-	r.POST("/login", user.Login)
-	r.POST("/register", user.Register)
-	r.GET("/mobile/:userId", presensi.GetSuratForPresensi)
-	r.POST("/mobile/:userId", presensi.Presensi)
-	r.GET("/permohonan/:userId", permohonan.Index)
-	r.POST("/permohonan/:userId", permohonan.CreatePermohonan)
-	r.GET("/all-user", user.FindAll)
+	r.HandleFunc("/login", user.Login).Methods("POST")
+	r.HandleFunc("/login", user.IndexL).Methods("GET")
+	r.HandleFunc("/register", user.Register).Methods("POST")
+	r.HandleFunc("/register", user.IndexR).Methods("GET")
+	r.HandleFunc("/logout", user.Logout).Methods("GET")
 
-	r.PanicHandler = exception.ErrorHandler
+	s := r.PathPrefix("/w").Subrouter()
+	s.HandleFunc("/mobile/{userId}", presensi.GetSuratForPresensi).Methods("GET")
+	s.HandleFunc("/mobile/{userId}", presensi.Presensi).Methods("POST")
+	s.HandleFunc("/permohonan/{userId}", permohonan.Index).Methods("GET")
+	s.HandleFunc("/permohonan/{userId}", permohonan.CreatePermohonan).Methods("POST")
+	s.HandleFunc("/pengajuan/{userId}", permohonan.Index).Methods("GET")
+	s.HandleFunc("/pengajuan/{userId}", permohonan.CreatePermohonan).Methods("POST")
+	s.HandleFunc("/all-user", user.FindAll).Methods("GET")
 
-	return r
+	r.Use(exception.PanicHandler)
+	// s.Use()
+
+	return s
 }

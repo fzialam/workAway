@@ -8,7 +8,7 @@ import (
 	"github.com/fzialam/workAway/model"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	presensiservice "github.com/fzialam/workAway/service/presensi_service"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 type PresensiControllerImpl struct {
@@ -22,9 +22,12 @@ func NewPresensiController(presensiService presensiservice.PresensiService) Pres
 }
 
 // Presensi implements PresensiController.
-func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	userId, err := strconv.Atoi(p.ByName("userId"))
+func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
+
 	presensiRequest := presensireqres.PresensiFotoRequest{
 		UserId: userId,
 	}
@@ -41,9 +44,12 @@ func (pc *PresensiControllerImpl) Presensi(w http.ResponseWriter, r *http.Reques
 }
 
 // GetSurat implements PresensiController.
-func (pc *PresensiControllerImpl) GetSuratForPresensi(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	userId, err := strconv.Atoi(p.ByName("userId"))
+func (pc *PresensiControllerImpl) GetSuratForPresensi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
+
 	getSuratRequest := presensireqres.GetSuratForPresensiRequest{
 		UserId: userId,
 	}

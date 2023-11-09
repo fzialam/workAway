@@ -8,7 +8,7 @@ import (
 	"github.com/fzialam/workAway/model"
 	userreqes "github.com/fzialam/workAway/model/req_res/user_req_res"
 	userservice "github.com/fzialam/workAway/service/user_service"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 type UserControllerImpl struct {
@@ -22,7 +22,17 @@ func NewUserController(userService userservice.UserService) UserController {
 }
 
 // Login implements UserController.
-func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+// IndexL implements UserController.
+func (*UserControllerImpl) IndexL(w http.ResponseWriter, r *http.Request) {
+	panic("unimplemented")
+}
+
+// IndexR implements UserController.
+func (*UserControllerImpl) IndexR(w http.ResponseWriter, r *http.Request) {
+	panic("unimplemented")
+}
+
+func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	userLoginRequest := userreqes.UserLoginRequest{}
 	helper.ReadFromRequestBody(r, &userLoginRequest)
 
@@ -37,7 +47,7 @@ func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request, p ht
 }
 
 // Register implements UserController.
-func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request) {
 	userRegisterRequest := userreqes.UserRegisterRequest{}
 	helper.ReadFromRequestBody(r, &userRegisterRequest)
 
@@ -51,16 +61,22 @@ func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request, p
 	helper.WriteToResponseBody(w, response)
 }
 
+// Logout implements UserController.
+func (*UserControllerImpl) Logout(w http.ResponseWriter, r *http.Request) {
+	panic("unimplemented")
+}
+
 // Update implements UserController.
-func (uc *UserControllerImpl) Update(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc *UserControllerImpl) Update(w http.ResponseWriter, r *http.Request) {
 	userUpdateRequest := userreqes.UserUpdateRequest{}
 	helper.ReadFromRequestBody(r, &userUpdateRequest)
 
-	userId := p.ByName("userId")
-	id, err := strconv.Atoi(userId)
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
 
-	userUpdateRequest.Id = id
+	userUpdateRequest.Id = userId
 
 	userResponse := uc.UserService.Update(r.Context(), userUpdateRequest)
 	response := model.Response{
@@ -73,13 +89,13 @@ func (uc *UserControllerImpl) Update(w http.ResponseWriter, r *http.Request, p h
 }
 
 // Delete implements UserController.
-func (uc *UserControllerImpl) Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	// Kurang Logical Delete Account
-	userId := p.ByName("userId")
-	id, err := strconv.Atoi(userId)
+func (uc *UserControllerImpl) Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
 
-	uc.UserService.Delete(r.Context(), id)
+	uc.UserService.Delete(r.Context(), userId)
 	response := model.Response{
 		Code:   200,
 		Status: "OK",
@@ -89,7 +105,7 @@ func (uc *UserControllerImpl) Delete(w http.ResponseWriter, r *http.Request, p h
 }
 
 // FindAll implements UserController.
-func (uc *UserControllerImpl) FindAll(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc *UserControllerImpl) FindAll(w http.ResponseWriter, r *http.Request) {
 	userResponse := uc.UserService.FindAll(r.Context())
 	response := model.Response{
 		Code:   200,
@@ -101,7 +117,7 @@ func (uc *UserControllerImpl) FindAll(w http.ResponseWriter, r *http.Request, p 
 }
 
 // FindByEmail implements UserController.
-func (uc *UserControllerImpl) FindByEmail(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc *UserControllerImpl) FindByEmail(w http.ResponseWriter, r *http.Request) {
 	// logical find by email
 	var email string
 
@@ -117,7 +133,7 @@ func (uc *UserControllerImpl) FindByEmail(w http.ResponseWriter, r *http.Request
 }
 
 // FindByNIP implements UserController.
-func (uc *UserControllerImpl) FindByNIP(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc *UserControllerImpl) FindByNIP(w http.ResponseWriter, r *http.Request) {
 	// logical find by nip
 	var nip string
 

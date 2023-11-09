@@ -8,6 +8,20 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+func PanicHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				// Tangani panic dengan memanggil ErrorHandler
+				ErrorHandler(w, r, err)
+			}
+		}()
+
+		// Lanjutkan ke handler berikutnya
+		next.ServeHTTP(w, r)
+	})
+}
+
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
 
 	if notFoundError(writer, request, err) {

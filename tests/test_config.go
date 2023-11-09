@@ -11,7 +11,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/go-playground/validator/v10"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 type ResponseData struct {
@@ -24,13 +24,14 @@ func setupRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
 	presInit := app.InitializedPresensi(db, validate)
 	permInit := app.InitializedPermohonan(db, validate)
-	r := httprouter.New()
-	r.POST("/mobile/:userId", presInit.Presensi)
-	r.GET("/mobile/:userId", presInit.GetSuratForPresensi)
-	r.GET("/permohonan/:userId", permInit.Index)
-	r.POST("/permohonan/:userId", permInit.CreatePermohonan)
+	r := mux.NewRouter()
+	s := r.PathPrefix("/w").Subrouter()
+	s.HandleFunc("/mobile/{userId}", presInit.GetSuratForPresensi).Methods("GET")
+	s.HandleFunc("/mobile/{userId}", presInit.Presensi).Methods("POST")
+	s.HandleFunc("/permohonan/{userId}", permInit.CreatePermohonan).Methods("POST")
+	s.HandleFunc("/pengajuan/{userId}", permInit.Index).Methods("GET")
 
-	r.PanicHandler = exception.ErrorHandler
+	r.Use(exception.PanicHandler)
 	return r
 }
 
