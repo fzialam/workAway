@@ -45,5 +45,10 @@ mobile/android/app/release
 
 view
 test
+persetujuan_repository
+persetujuan_service
+persetujuan_controller
+persetujuan_req_res
+middleware
 
 TODO.md

@@ -8,6 +8,7 @@ import (
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
+	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -54,7 +55,7 @@ func (ps *PresensiServiceImpl) PresensiFoto(ctx context.Context, request presens
 }
 
 // GetSurat implements PresensiService.
-func (ps *PresensiServiceImpl) GetSurat(ctx context.Context, request presensireqres.GetSuratForPresensiRequest) []presensireqres.GetSuratForPresensiResponse {
+func (ps *PresensiServiceImpl) GetSurat(ctx context.Context, request presensireqres.GetSuratForPresensiRequest) []surattugasreqres.SuratTugasJOINApprovedResponse {
 	err := ps.Validate.Struct(request)
 	helper.PanicIfError(err)
 

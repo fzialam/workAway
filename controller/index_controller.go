@@ -3,10 +3,8 @@ package controller
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/julienschmidt/httprouter"
 )
 
-func Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!!")
 }

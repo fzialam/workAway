@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type SuratTugas struct {
+type SuratTugasJOINApprovedUser struct {
 	Id               int       `json:"id"`
 	UserId           int       `json:"user_id"`
 	LokasiTujuan     string    `json:"lokasi_tujuan"`
@@ -14,6 +14,12 @@ type SuratTugas struct {
 	TglAwal          string    `json:"tgl_awal"`
 	TglAkhir         string    `json:"tgl_akhir"`
 	Create_at        time.Time `json:"create_at"`
+	Status           int       `json:"status"`
+	SuratTugasId     int       `json:"surat_tugas_id"`
+	NIP              string    `json:"nip"`
+	Name             string    `json:"name"`
+	NoTelp           string    `json:"no_telp"`
+	Email            string    `json:"email"`
 }
 
 type SuratTugasJOINApproved struct {
@@ -29,4 +35,14 @@ type SuratTugasJOINApproved struct {
 	TglAkhir         string    `json:"tgl_akhir"`
 	Create_at        time.Time `json:"create_at"`
 	Status           int       `json:"status"`
+}
+
+type ParticipanJoinUser struct {
+	Id           int    `json:"id"`
+	UserId       int    `json:"user_id"`
+	SuratTugasId int    `json:"surat_tugas_id"`
+	NIP          string `json:"nip"`
+	Name         string `json:"name"`
+	NoTelp       string `json:"no_telp"`
+	Email        string `json:"email"`
 }

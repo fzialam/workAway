@@ -3,7 +3,6 @@ package permohonanservice
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/fzialam/workAway/helper"
@@ -38,6 +37,7 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 	defer helper.CommitOrRollback(tx)
 
 	surat := entity.SuratTugas{
+		UserId:           request.UserPemohonId,
 		LokasiTujuan:     request.LokasiTujuan,
 		JenisProgram:     request.JenisProgram,
 		DokPendukungName: request.DokPendukungName,
@@ -45,22 +45,7 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 		TglAwal:          request.TglAwal,
 		TglAkhir:         request.TglAkhir,
 	}
-	log.Println("After Validate Struct")
-	fmt.Println(surat.LokasiTujuan)
-	fmt.Println(surat.JenisProgram)
-	fmt.Println(surat.DokPendukungName)
-	fmt.Println(surat.TglAwal)
-	fmt.Println(surat.TglAkhir)
-
 	surat, err = ps.PermohonanRepo.CreateSurat(ctx, tx, surat)
-	helper.PanicIfError(err)
-
-	pemohon := entity.Pemohon{
-		SuratTugasId: surat.Id,
-		UserId:       request.UserPemohonId,
-	}
-
-	pemohon, err = ps.PermohonanRepo.AddPemohon(ctx, tx, pemohon)
 	helper.PanicIfError(err)
 
 	participan := entity.Participan{
@@ -72,7 +57,7 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 	participan, err = ps.PermohonanRepo.AddParticipans(ctx, tx, participan)
 	helper.PanicIfError(err)
 
-	return helper.ToPermohonanResponse(surat, pemohon, participan)
+	return helper.ToPermohonanResponse(surat, participan)
 }
 
 // GetAllUserId implements PermohonanService.

@@ -45,13 +45,13 @@ func (pr *PresensiRepoImpl) PresensiFoto(ctx context.Context, tx *sql.Tx, presen
 }
 
 // GetSurat implements PresensiRepo.
-func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugasJOIN, error) {
+func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugasJOINApproved, error) {
 	SQL := "SELECT surat_tugas.*, approved.status FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.id WHERE `surat_tugas`.tgl_akhir > NOW() AND `surat_tugas`.user_id = ?;"
-	surats := []entity.SuratTugasJOIN{}
+	surats := []entity.SuratTugasJOINApproved{}
 	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)
 	for rows.Next() {
-		surat := entity.SuratTugasJOIN{}
+		surat := entity.SuratTugasJOINApproved{}
 		rows.Scan(
 			&surat.Id,
 			&surat.LokasiTujuan,

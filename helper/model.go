@@ -4,6 +4,7 @@ import (
 	"github.com/fzialam/workAway/model/entity"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
+	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 )
 
@@ -43,8 +44,8 @@ func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoRes
 		Lokasi:       presensi.Lokasi,
 	}
 }
-func ToGetSuratResponse(surat entity.SuratTugasJOIN) presensireqres.GetSuratForPresensiResponse {
-	return presensireqres.GetSuratForPresensiResponse{
+func ToGetSuratResponse(surat entity.SuratTugasJOINApproved) surattugasreqres.SuratTugasJOINApprovedResponse {
+	return surattugasreqres.SuratTugasJOINApprovedResponse{
 		Id:               surat.Id,
 		LokasiTujuan:     surat.LokasiTujuan,
 		JenisProgram:     surat.JenisProgram,
@@ -58,8 +59,8 @@ func ToGetSuratResponse(surat entity.SuratTugasJOIN) presensireqres.GetSuratForP
 	}
 }
 
-func ToGetSuratResponses(surats []entity.SuratTugasJOIN) []presensireqres.GetSuratForPresensiResponse {
-	var suratResponses []presensireqres.GetSuratForPresensiResponse
+func ToGetSuratResponses(surats []entity.SuratTugasJOINApproved) []surattugasreqres.SuratTugasJOINApprovedResponse {
+	var suratResponses []surattugasreqres.SuratTugasJOINApprovedResponse
 	for _, surat := range surats {
 		suratResponses = append(suratResponses, ToGetSuratResponse(surat))
 	}
@@ -67,9 +68,9 @@ func ToGetSuratResponses(surats []entity.SuratTugasJOIN) []presensireqres.GetSur
 }
 
 // Permohonan Section
-func ToPermohonanResponse(surat entity.SuratTugas, pemohon entity.Pemohon, participan entity.Participan) permohonanreqres.PermohonanResponse {
+func ToPermohonanResponse(surat entity.SuratTugas, participan entity.Participan) permohonanreqres.PermohonanResponse {
 	return permohonanreqres.PermohonanResponse{
-		UserPemohonId:    pemohon.UserId,
+		UserPemohonId:    surat.UserId,
 		LokasiTujuan:     surat.LokasiTujuan,
 		JenisProgram:     surat.JenisProgram,
 		DokPendukungName: surat.DokumenName,
