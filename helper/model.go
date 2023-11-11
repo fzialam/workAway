@@ -103,7 +103,7 @@ func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUse
 		DokPendukungPdf:  surat.DokPendukungPdf,
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
-		Create_at:        surat.Create_at,
+		CreateAt:         surat.CreateAt,
 		Status:           surat.Status,
 		UserNIP:          surat.UserNIP,
 		UserName:         surat.UserName,

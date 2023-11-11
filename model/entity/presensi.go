@@ -8,5 +8,5 @@ type Presensi struct {
 	SuratTugasId int       `json:"surat_tugas_id"`
 	Gambar       string    `json:"gambar"`
 	Lokasi       string    `json:"lokasi"`
-	Create_at    time.Time `json:"create_at"`
+	CreateAt     time.Time `json:"CreateAt"`
 }

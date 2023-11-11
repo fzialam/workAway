@@ -16,18 +16,13 @@ type PermohonanControllerImpl struct {
 	PermohonanService permohonanservice.PermohonanService
 }
 
-// CreatePermohonan implements PermohonanController.
 func NewPermohonanController(permohonanService permohonanservice.PermohonanService) PermohonanController {
 	return &PermohonanControllerImpl{
 		PermohonanService: permohonanService,
 	}
 }
 
-type Option struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
+// CreatePermohonan implements PermohonanController.
 func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userIdS := vars["userId"]

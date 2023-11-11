@@ -106,7 +106,7 @@ func TestAddSurat(t *testing.T) {
 		&su.DokPendukungPdf,
 		&su.TglAwal,
 		&su.TglAkhir,
-		&su.Create_at)
+		&su.CreateAt)
 	helper.PanicIfError(err)
 	log.Println(su)
 

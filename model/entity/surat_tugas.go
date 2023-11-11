@@ -13,5 +13,5 @@ type SuratTugas struct {
 	DokPendukungPdf  string    `json:"dok_pendukung_pdf"`
 	TglAwal          string    `json:"tgl_awal"`
 	TglAkhir         string    `json:"tgl_akhir"`
-	Create_at        time.Time `json:"create_at"`
+	CreateAt         time.Time `json:"CreateAt"`
 }

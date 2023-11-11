@@ -18,7 +18,7 @@ func NewPresensiRepo() PresensiRepo {
 
 // CheckIzin implements PresensiRepo.
 func (pr *PresensiRepoImpl) CheckIzin(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) error {
-	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `status`, `create_at` FROM approved WHERE status=1 AND surat_tugas_id = ?"
+	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `status`, `CreateAt` FROM approved WHERE status=1 AND surat_tugas_id = ?"
 
 	izin := entity.Izin{}
 	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&izin.Id, &izin.SuratTugasId, &izin.UserId, &izin.Status, &izin.CreateAt)
@@ -62,7 +62,7 @@ func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int
 			&surat.DokPendukungPdf,
 			&surat.TglAwal,
 			&surat.TglAkhir,
-			&surat.Create_at,
+			&surat.CreateAt,
 			&surat.Status,
 		)
 		surats = append(surats, surat)

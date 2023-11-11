@@ -4,12 +4,15 @@ import (
 	"database/sql"
 
 	permohonancontroller "github.com/fzialam/workAway/controller/permohonan_controller"
+	persetujuancontroller "github.com/fzialam/workAway/controller/persetujuan_controller"
 	presensicontroller "github.com/fzialam/workAway/controller/presensi_controller"
 	usercontroller "github.com/fzialam/workAway/controller/user_controller"
 	permohonanrepository "github.com/fzialam/workAway/repository/permohonan_repository"
+	persetujuanrepository "github.com/fzialam/workAway/repository/persetujuan_repository"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
 	permohonanservice "github.com/fzialam/workAway/service/permohonan_service"
+	persetujuanservice "github.com/fzialam/workAway/service/persetujuan_service"
 	presensiservice "github.com/fzialam/workAway/service/presensi_service"
 	userservice "github.com/fzialam/workAway/service/user_service"
 	"github.com/go-playground/validator/v10"
@@ -36,4 +39,12 @@ func InitializedPermohonan(db *sql.DB, validate *validator.Validate) permohonanc
 	permohonanController := permohonancontroller.NewPermohonanController(permohonanService)
 
 	return permohonanController
+}
+
+func InitializedPersetujuan(db *sql.DB, validate *validator.Validate) persetujuancontroller.PersetujunanController {
+	pr := persetujuanrepository.NewPersetujuanRepo()
+	ps := persetujuanservice.NewPersetujuanService(pr, db, validate)
+	pc := persetujuancontroller.NewPersetujuanController(ps)
+
+	return pc
 }
