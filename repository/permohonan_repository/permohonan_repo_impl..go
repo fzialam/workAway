@@ -20,8 +20,8 @@ func NewPermohonanRepo() PermohonanRepo {
 
 // CreatePermohonan implements PermohonanRepo.
 func (pr *PermohonanRepoImpl) CreateSurat(ctx context.Context, tx *sql.Tx, surat entity.SuratTugas) (entity.SuratTugas, error) {
-	SQL := "INSERT INTO `surat_tugas`(`lokasi_tujuan`,`jenis_program`,`dokumen_name`, `dokumen_pdf`, `dok_pendukung_name`, `dok_pendukung_pdf`,`tgl_awal`, `tgl_akhir`) VALUES (?,?,?,?,?,?,?,?)"
-	result, err := tx.Exec(SQL, surat.LokasiTujuan, surat.JenisProgram, surat.DokumenName, surat.DokumenPDF, surat.DokPendukungName, surat.DokPendukungPdf, surat.TglAwal, surat.TglAkhir)
+	SQL := "INSERT INTO `surat_tugas`(`user_id`,`lokasi_tujuan`,`jenis_program`,`dokumen_name`, `dokumen_pdf`, `dok_pendukung_name`, `dok_pendukung_pdf`,`tgl_awal`, `tgl_akhir`) VALUES (?,?,?,?,?,?,?,?,?)"
+	result, err := tx.Exec(SQL, surat.LokasiTujuan, surat.LokasiTujuan, surat.JenisProgram, surat.DokumenName, surat.DokumenPDF, surat.DokPendukungName, surat.DokPendukungPdf, surat.TglAwal, surat.TglAkhir)
 	if err != nil {
 		return surat, errors.New("can't create new surat")
 	} else {

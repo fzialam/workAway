@@ -21,7 +21,7 @@ func (pr *PresensiRepoImpl) CheckIzin(ctx context.Context, tx *sql.Tx, presensi 
 	SQL := "SELECT `id`, `surat_tugas_id`, `user_id`, `status`, `create_at` FROM approved WHERE status=1 AND surat_tugas_id = ?"
 
 	izin := entity.Izin{}
-	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&izin.Id, &izin.SuratTugasId, &izin.UserId, &izin.Status, &izin.Create_at)
+	tx.QueryRowContext(ctx, SQL, presensi.SuratTugasId).Scan(&izin.Id, &izin.SuratTugasId, &izin.UserId, &izin.Status, &izin.CreateAt)
 	if izin.Status == 1 {
 		return nil
 	} else {
@@ -46,7 +46,7 @@ func (pr *PresensiRepoImpl) PresensiFoto(ctx context.Context, tx *sql.Tx, presen
 
 // GetSurat implements PresensiRepo.
 func (pr *PresensiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugasJOINApproved, error) {
-	SQL := "SELECT surat_tugas.*, approved.status FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.id WHERE `surat_tugas`.tgl_akhir > NOW() AND `surat_tugas`.user_id = ?;"
+	SQL := "SELECT surat_tugas.*, approved.status FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id WHERE `surat_tugas`.tgl_akhir > NOW() AND `surat_tugas`.user_id = ?;"
 	surats := []entity.SuratTugasJOINApproved{}
 	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)

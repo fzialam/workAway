@@ -3,6 +3,7 @@ package helper
 import (
 	"github.com/fzialam/workAway/model/entity"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
+	persetujuanreqres "github.com/fzialam/workAway/model/req_res/persetujuan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
@@ -44,9 +45,11 @@ func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoRes
 		Lokasi:       presensi.Lokasi,
 	}
 }
+
 func ToGetSuratResponse(surat entity.SuratTugasJOINApproved) surattugasreqres.SuratTugasJOINApprovedResponse {
 	return surattugasreqres.SuratTugasJOINApprovedResponse{
 		Id:               surat.Id,
+		UserId:           surat.UserId,
 		LokasiTujuan:     surat.LokasiTujuan,
 		JenisProgram:     surat.JenisProgram,
 		DokumenName:      surat.DokumenName,
@@ -78,4 +81,41 @@ func ToPermohonanResponse(surat entity.SuratTugas, participan entity.Participan)
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
 	}
+}
+
+// Persetujuan Section
+func ToPersetujuanResponses(izin entity.Izin) persetujuanreqres.PersetujuanResponse {
+	return persetujuanreqres.PersetujuanResponse{
+		Status:  izin.Status,
+		Message: "Success",
+	}
+
+}
+func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUser) persetujuanreqres.SuratTugasJOINApprovedUserResponse {
+	return persetujuanreqres.SuratTugasJOINApprovedUserResponse{
+		Id:               surat.Id,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		Create_at:        surat.Create_at,
+		Status:           surat.Status,
+		UserNIP:          surat.UserNIP,
+		UserName:         surat.UserName,
+		UserNoTelp:       surat.UserNoTelp,
+		UserEmail:        surat.UserEmail,
+	}
+}
+
+func ToSuratTugasJOINApprovedUserResponses(surats []entity.SuratTugasJOINApprovedUser) []persetujuanreqres.SuratTugasJOINApprovedUserResponse {
+	var suratTugasJOINApprovedUserResponses []persetujuanreqres.SuratTugasJOINApprovedUserResponse
+	for _, surat := range surats {
+		suratTugasJOINApprovedUserResponses = append(suratTugasJOINApprovedUserResponses, ToSuratTugasJOINApprovedUserResponse(surat))
+	}
+	return suratTugasJOINApprovedUserResponses
 }
