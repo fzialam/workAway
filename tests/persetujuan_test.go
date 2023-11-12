@@ -3,6 +3,9 @@ package tests
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -28,11 +31,20 @@ func TestGetParticippanWithJOINBySuratId(t *testing.T) {
 }
 
 func TestGetAllSuratTugasJOINApprovedUser(t *testing.T) {
-	ctx := context.Background()
-	sql, err := app.NewDB().Begin()
-	helper.PanicIfError(err)
-	r, err := persetujuanrepository.NewPersetujuanRepo().GetAllSuratTugasJOINApprovedUser(ctx, sql)
-	fmt.Println(r)
+	db := app.NewDB()
+	router := setupRouter(db)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:8080/w/persetujuan", nil)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	bd, _ := io.ReadAll(response.Body)
+
+	fmt.Println(string(bd))
 }
 
 func TestSetApproved(t *testing.T) {

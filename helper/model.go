@@ -119,3 +119,25 @@ func ToSuratTugasJOINApprovedUserResponses(surats []entity.SuratTugasJOINApprove
 	}
 	return suratTugasJOINApprovedUserResponses
 }
+
+func ToSuratTugasJOINApprovedUserParticipanResponse(req entity.SuratTugasJOINApprovedUserParticipan) persetujuanreqres.SuratTugasJOINApprovedUserParticipanResponse {
+	return persetujuanreqres.SuratTugasJOINApprovedUserParticipanResponse{
+		Id:               req.Id,
+		UserId:           req.UserId,
+		LokasiTujuan:     req.LokasiTujuan,
+		JenisProgram:     req.JenisProgram,
+		DokumenName:      req.DokumenName,
+		DokumenPDF:       req.DokumenPDF,
+		DokPendukungName: req.DokPendukungName,
+		DokPendukungPdf:  req.DokPendukungPdf,
+		TglAwal:          req.TglAwal,
+		TglAkhir:         req.TglAkhir,
+		CreateAt:         req.CreateAt,
+		Status:           req.Status,
+		UserNIP:          req.UserNIP,
+		UserName:         req.UserName,
+		UserNoTelp:       req.UserNoTelp,
+		UserEmail:        req.UserEmail,
+		Participans:      req.Participans,
+	}
+}

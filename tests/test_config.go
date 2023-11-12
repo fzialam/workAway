@@ -24,12 +24,14 @@ func setupRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
 	presInit := app.InitializedPresensi(db, validate)
 	permInit := app.InitializedPermohonan(db, validate)
+	persInit := app.InitializedPersetujuan(db, validate)
 	r := mux.NewRouter()
 	s := r.PathPrefix("/w").Subrouter()
 	s.HandleFunc("/mobile/{userId}", presInit.GetSuratForPresensi).Methods("GET")
 	s.HandleFunc("/mobile/{userId}", presInit.Presensi).Methods("POST")
 	s.HandleFunc("/permohonan/{userId}", permInit.CreatePermohonan).Methods("POST")
 	s.HandleFunc("/pengajuan/{userId}", permInit.Index).Methods("GET")
+	s.HandleFunc("/persetujuan", persInit.Index).Methods("GET")
 
 	r.Use(exception.PanicHandler)
 	return r

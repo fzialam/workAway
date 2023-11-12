@@ -41,6 +41,8 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 
 	// Persetujuan Section
 	s.HandleFunc("/persetujuan", persetujuan.Index).Methods("GET")
+	s.HandleFunc("/{suratId}/persetujuan", persetujuan.DetailSurat).Methods("GET")
+	s.HandleFunc("/{suratId}/persetujuan", persetujuan.SetApproved).Methods("POST")
 
 	s.HandleFunc("/all-user", user.FindAll).Methods("GET")
 
