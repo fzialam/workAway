@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -60,4 +61,8 @@ func TestSetApproved(t *testing.T) {
 	}
 	r := persetujuanrepository.NewPersetujuanRepo().SetApproved(ctx, sql, x)
 	fmt.Println(r)
+}
+
+func TestTime(t *testing.T) {
+	log.Println(helper.TimeNowToString())
 }

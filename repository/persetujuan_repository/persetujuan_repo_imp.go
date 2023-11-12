@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
@@ -19,7 +18,7 @@ func NewPersetujuanRepo() PersetujuanRepo {
 
 // SetApproved implements PersetujuanRepo.
 func (pr *PersetujuanRepoImpl) SetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
-	SQL := "UPDATE `approved` SET `status` = ?, `CreateAt` = ? WHERE `surat_tugas_id` = ?;"
+	SQL := "UPDATE `approved` SET `status` = ?, `Create_at` = ? WHERE `surat_tugas_id` = ?;"
 	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.CreateAt, izin.SuratTugasId)
 	helper.PanicIfError(err)
 	return izin
@@ -76,12 +75,8 @@ func (pr *PersetujuanRepoImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Cont
 			&surat.UserEmail,
 		)
 
-		layout := "2006-01-02"
-		inputLayout := "2006-01-02T15:04:05-07:00"
-		parsedTime, _ := time.Parse(inputLayout, surat.TglAwal)
-		surat.TglAwal = parsedTime.Format(layout)
-		parsedTime, _ = time.Parse(inputLayout, surat.TglAkhir)
-		surat.TglAkhir = parsedTime.Format(layout)
+		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
 		surats = append(surats, surat)
 	}
 	if err != nil {
@@ -114,12 +109,8 @@ func (pr *PersetujuanRepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx
 		&surat.UserNoTelp,
 		&surat.UserEmail,
 	)
-	layout := "2006-01-02"
-	inputLayout := "2006-01-02T15:04:05-07:00"
-	parsedTime, _ := time.Parse(inputLayout, surat.TglAwal)
-	surat.TglAwal = parsedTime.Format(layout)
-	parsedTime, _ = time.Parse(inputLayout, surat.TglAkhir)
-	surat.TglAkhir = parsedTime.Format(layout)
+	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
 
 	if err != nil {
 		return surat, err
