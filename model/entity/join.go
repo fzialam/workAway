@@ -4,6 +4,7 @@ import "time"
 
 type SuratTugasJOINApprovedUserParticipan struct {
 	Id               int                  `json:"id"`
+	Tipe             int                  `json:"tipe"`
 	UserId           int                  `json:"user_id"`
 	LokasiTujuan     string               `json:"lokasi_tujuan"`
 	JenisProgram     int                  `json:"jenis_program"`
@@ -13,8 +14,8 @@ type SuratTugasJOINApprovedUserParticipan struct {
 	DokPendukungPdf  string               `json:"dok_pendukung_pdf"`
 	TglAwal          string               `json:"tgl_awal"`
 	TglAkhir         string               `json:"tgl_akhir"`
-	CreateAt         time.Time            `json:"CreateAt"`
-	Status           int                  `json:"status"`
+	CreateAt         time.Time            `json:"create_at"`
+	Status           string               `json:"status"`
 	UserNIP          string               `json:"user_nip"`
 	UserName         string               `json:"user_name"`
 	UserNoTelp       string               `json:"user_no_telp"`
@@ -22,37 +23,43 @@ type SuratTugasJOINApprovedUserParticipan struct {
 	Participans      []ParticipanJoinUser `json:"participans"`
 }
 type SuratTugasJOINApprovedUser struct {
-	Id               int    `json:"id"`
-	UserId           int    `json:"user_id"`
-	LokasiTujuan     string `json:"lokasi_tujuan"`
-	JenisProgram     int    `json:"jenis_program"`
-	DokumenName      string `json:"dokumen_name"`
-	DokumenPDF       string `json:"dokumen_pdf"`
-	DokPendukungName string `json:"dok_pendukung_name"`
-	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
-	TglAwal          string `json:"tgl_awal"`
-	TglAkhir         string `json:"tgl_akhir"`
-	CreateAt         string `json:"CreateAt"`
-	Status           int    `json:"status"`
-	UserNIP          string `json:"user_nip"`
-	UserName         string `json:"user_name"`
-	UserNoTelp       string `json:"user_no_telp"`
-	UserEmail        string `json:"user_email"`
+	Id                int    `json:"id"`
+	Tipe              int    `json:"tipe"`
+	UserId            int    `json:"user_id"`
+	LokasiTujuan      string `json:"lokasi_tujuan"`
+	JenisProgram      int    `json:"jenis_program"`
+	DokumenName       string `json:"dokumen_name"`
+	DokumenPDF        string `json:"dokumen_pdf"`
+	DokPendukungName  string `json:"dok_pendukung_name"`
+	DokPendukungPdf   string `json:"dok_pendukung_pdf"`
+	TglAwal           string `json:"tgl_awal"`
+	TglAkhir          string `json:"tgl_akhir"`
+	CreateAt          string `json:"create_at"`
+	Status            string `json:"status"`
+	StatusTTD         string `json:"status_ttd"`
+	StatusTTDCreateAt string `json:"status_ttd_create_at"`
+	UserNIP           string `json:"user_nip"`
+	UserName          string `json:"user_name"`
+	UserNoTelp        string `json:"user_no_telp"`
+	UserEmail         string `json:"user_email"`
 }
 
 type SuratTugasJOINApproved struct {
-	Id               int       `json:"id"`
-	UserId           int       `json:"user_id"`
-	LokasiTujuan     string    `json:"lokasi_tujuan"`
-	JenisProgram     int       `json:"jenis_program"`
-	DokumenName      string    `json:"dokumen_name"`
-	DokumenPDF       string    `json:"dokumen_pdf"`
-	DokPendukungName string    `json:"dok_pendukung_name"`
-	DokPendukungPdf  string    `json:"dok_pendukung_pdf"`
-	TglAwal          string    `json:"tgl_awal"`
-	TglAkhir         string    `json:"tgl_akhir"`
-	CreateAt         time.Time `json:"CreateAt"`
-	Status           int       `json:"status"`
+	Id                int       `json:"id"`
+	Tipe              int       `json:"tipe"`
+	UserId            int       `json:"user_id"`
+	LokasiTujuan      string    `json:"lokasi_tujuan"`
+	JenisProgram      int       `json:"jenis_program"`
+	DokumenName       string    `json:"dokumen_name"`
+	DokumenPDF        string    `json:"dokumen_pdf"`
+	DokPendukungName  string    `json:"dok_pendukung_name"`
+	DokPendukungPdf   string    `json:"dok_pendukung_pdf"`
+	TglAwal           string    `json:"tgl_awal"`
+	TglAkhir          string    `json:"tgl_akhir"`
+	CreateAt          time.Time `json:"create_at"`
+	Status            string    `json:"status"`
+	StatusTTD         string    `json:"status_ttd"`
+	StatusTTDCreateAt string    `json:"status_ttd_create_at"`
 }
 
 type ParticipanJoinUser struct {

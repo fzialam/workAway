@@ -47,5 +47,7 @@ view
 test
 
 middleware
-
+penugasan_repository
+penugasan_service
+penugasan_controller
 TODO.md

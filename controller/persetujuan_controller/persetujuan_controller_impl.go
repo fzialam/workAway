@@ -78,7 +78,7 @@ func (ps *PersetujunanControllerImpl) SetApproved(w http.ResponseWriter, r *http
 	helper.ReadFromRequestBody(r, &persetujuanRequest)
 
 	persetujuanRequest.SuratTugasId = idInt
-	persetujuanRequest.CreateAt = helper.TimeNowToString()
+	persetujuanRequest.StatusTTD = "0"
 
 	persetujuanResponse := ps.PersetujuanService.SetApproved(r.Context(), persetujuanRequest)
 

@@ -2,6 +2,7 @@ package surattugasreqres
 
 type SuratTugasResponse struct {
 	Id               int    `json:"id"`
+	Tipe             int    `json:"tipe"`
 	UserId           int    `json:"user_id"`
 	LokasiTujuan     string `json:"lokasi_tujuan"`
 	JenisProgram     int    `json:"jenis_program"`
@@ -15,6 +16,7 @@ type SuratTugasResponse struct {
 
 type SuratTugasJOINApprovedResponse struct {
 	Id               int    `json:"id"`
+	Tipe             int    `json:"tipe"`
 	UserId           int    `json:"user_id"`
 	LokasiTujuan     string `json:"lokasi_tujuan"`
 	JenisProgram     int    `json:"jenis_program"`
@@ -24,5 +26,5 @@ type SuratTugasJOINApprovedResponse struct {
 	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
 	TglAwal          string `json:"tgl_awal"`
 	TglAkhir         string `json:"tgl_akhir"`
-	Status           int    `json:"status"`
+	Status           string `json:"status"`
 }

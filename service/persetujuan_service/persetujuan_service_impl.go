@@ -37,7 +37,7 @@ func (ps *PersetujuanServiceImpl) SetApproved(ctx context.Context, request perse
 	izin := entity.Izin{
 		SuratTugasId: request.SuratTugasId,
 		Status:       request.Status,
-		CreateAt:     request.CreateAt,
+		StatusTTD:    request.StatusTTD,
 	}
 
 	izin = ps.PersetujuanRepo.SetApproved(ctx, tx, izin)

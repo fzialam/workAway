@@ -37,6 +37,7 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 	defer helper.CommitOrRollback(tx)
 
 	surat := entity.SuratTugas{
+		Tipe:             0,
 		UserId:           request.UserPemohonId,
 		LokasiTujuan:     request.LokasiTujuan,
 		JenisProgram:     request.JenisProgram,

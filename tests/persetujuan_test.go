@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/fzialam/workAway/app"
 	"github.com/fzialam/workAway/helper"
@@ -53,11 +52,11 @@ func TestSetApproved(t *testing.T) {
 	sql, err := app.NewDB().Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(sql)
-	w := time.Now().Format("2006-01-02 15:04:05")
+	// w := time.Now().Format("2006-01-02 15:04:05")
 	x := entity.Izin{
 		SuratTugasId: 1,
-		Status:       2,
-		CreateAt:     w,
+		Status:       "0",
+		StatusTTD:    "0",
 	}
 	r := persetujuanrepository.NewPersetujuanRepo().SetApproved(ctx, sql, x)
 	fmt.Println(r)

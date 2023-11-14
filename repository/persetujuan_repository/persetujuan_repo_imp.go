@@ -18,8 +18,8 @@ func NewPersetujuanRepo() PersetujuanRepo {
 
 // SetApproved implements PersetujuanRepo.
 func (pr *PersetujuanRepoImpl) SetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
-	SQL := "UPDATE `approved` SET `status` = ?, `Create_at` = ? WHERE `surat_tugas_id` = ?;"
-	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.CreateAt, izin.SuratTugasId)
+	SQL := "UPDATE `approved` SET `status` = ?, `create_at` = NOW(), `status_ttd` = ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
+	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.StatusTTD, izin.SuratTugasId)
 	helper.PanicIfError(err)
 	return izin
 }
@@ -50,7 +50,7 @@ func (pr *PersetujuanRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Con
 
 // GetAllSuratTugas implements PersetujuanRepo.
 func (pr *PersetujuanRepoImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tgl_awal > NOW();"
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tgl_awal > NOW() AND;"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -58,6 +58,7 @@ func (pr *PersetujuanRepoImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Cont
 		surat := entity.SuratTugasJOINApprovedUser{}
 		rows.Scan(
 			&surat.Id,
+			&surat.Tipe,
 			&surat.UserId,
 			&surat.LokasiTujuan,
 			&surat.JenisProgram,
@@ -93,6 +94,7 @@ func (pr *PersetujuanRepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 	err := row.Scan(
 		&surat.Id,
+		&surat.Tipe,
 		&surat.UserId,
 		&surat.LokasiTujuan,
 		&surat.JenisProgram,

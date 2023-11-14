@@ -2,6 +2,7 @@ package presensireqres
 
 type GetSuratForPresensiResponse struct {
 	Id               int    `json:"id"`
+	Tipe             int    `json:"tipe"`
 	LokasiTujuan     string `json:"lokasi_tujuan"`
 	JenisProgram     int    `json:"jenis_program"`
 	DokumenName      string `json:"dokumen_name"`
