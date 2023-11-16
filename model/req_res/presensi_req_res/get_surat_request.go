@@ -1,5 +1,5 @@
 package presensireqres
 
 type GetSuratForPresensiRequest struct {
-	UserId int `json:"user_id"`
+	UserId int `validate:"required" json:"user_id"`
 }

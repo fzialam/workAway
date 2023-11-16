@@ -91,8 +91,8 @@ func ToPersetujuanResponses(izin entity.Izin) persetujuanreqres.PersetujuanRespo
 	}
 
 }
-func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUser) persetujuanreqres.SuratTugasJOINApprovedUserResponse {
-	return persetujuanreqres.SuratTugasJOINApprovedUserResponse{
+func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUser) surattugasreqres.SuratTugasJOINApprovedUserResponse {
+	return surattugasreqres.SuratTugasJOINApprovedUserResponse{
 		Id:               surat.Id,
 		UserId:           surat.UserId,
 		LokasiTujuan:     surat.LokasiTujuan,
@@ -112,16 +112,16 @@ func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUse
 	}
 }
 
-func ToSuratTugasJOINApprovedUserResponses(surats []entity.SuratTugasJOINApprovedUser) []persetujuanreqres.SuratTugasJOINApprovedUserResponse {
-	var suratTugasJOINApprovedUserResponses []persetujuanreqres.SuratTugasJOINApprovedUserResponse
+func ToSuratTugasJOINApprovedUserResponses(surats []entity.SuratTugasJOINApprovedUser) []surattugasreqres.SuratTugasJOINApprovedUserResponse {
+	var suratTugasJOINApprovedUserResponses []surattugasreqres.SuratTugasJOINApprovedUserResponse
 	for _, surat := range surats {
 		suratTugasJOINApprovedUserResponses = append(suratTugasJOINApprovedUserResponses, ToSuratTugasJOINApprovedUserResponse(surat))
 	}
 	return suratTugasJOINApprovedUserResponses
 }
 
-func ToSuratTugasJOINApprovedUserParticipanResponse(req entity.SuratTugasJOINApprovedUserParticipan) persetujuanreqres.SuratTugasJOINApprovedUserParticipanResponse {
-	return persetujuanreqres.SuratTugasJOINApprovedUserParticipanResponse{
+func ToSuratTugasJOINApprovedUserParticipanResponse(req entity.SuratTugasJOINApprovedUserParticipan) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse {
+	return surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse{
 		Id:               req.Id,
 		UserId:           req.UserId,
 		LokasiTujuan:     req.LokasiTujuan,

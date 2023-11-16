@@ -89,7 +89,6 @@ func (pr *PersetujuanRepoImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Cont
 // GetSuratTugasById implements PersetujuanRepo.
 func (pr *PersetujuanRepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error) {
 	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
-	// log.Fatal(len(SQL))
 	surat := entity.SuratTugasJOINApprovedUserParticipan{}
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 	err := row.Scan(

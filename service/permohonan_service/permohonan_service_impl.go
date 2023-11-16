@@ -3,7 +3,6 @@ package permohonanservice
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
@@ -54,7 +53,6 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 		SuratTugasId: surat.Id,
 	}
 
-	log.Println("After AddPemohon")
 	participan, err = ps.PermohonanRepo.AddParticipans(ctx, tx, participan)
 	helper.PanicIfError(err)
 

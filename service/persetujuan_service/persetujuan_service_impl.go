@@ -7,6 +7,7 @@ import (
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	persetujuanreqres "github.com/fzialam/workAway/model/req_res/persetujuan_req_res"
+	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	persetujuanrepository "github.com/fzialam/workAway/repository/persetujuan_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -46,7 +47,7 @@ func (ps *PersetujuanServiceImpl) SetApproved(ctx context.Context, request perse
 }
 
 // GetAllSuratTugasJOINApprovedPemohonUser implements PersetujuanService.
-func (ps *PersetujuanServiceImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Context) []persetujuanreqres.SuratTugasJOINApprovedUserResponse {
+func (ps *PersetujuanServiceImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -57,7 +58,7 @@ func (ps *PersetujuanServiceImpl) GetAllSuratTugasJOINApprovedUser(ctx context.C
 }
 
 // GetSuratTugasById implements PersetujuanService.
-func (ps *PersetujuanServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) persetujuanreqres.SuratTugasJOINApprovedUserParticipanResponse {
+func (ps *PersetujuanServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
