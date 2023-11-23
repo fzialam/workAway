@@ -3,14 +3,17 @@ package app
 import (
 	"database/sql"
 
+	penugasancontroller "github.com/fzialam/workAway/controller/penugasan_controller"
 	permohonancontroller "github.com/fzialam/workAway/controller/permohonan_controller"
 	persetujuancontroller "github.com/fzialam/workAway/controller/persetujuan_controller"
 	presensicontroller "github.com/fzialam/workAway/controller/presensi_controller"
 	usercontroller "github.com/fzialam/workAway/controller/user_controller"
+	penugasanrepository "github.com/fzialam/workAway/repository/penugasan_repository"
 	permohonanrepository "github.com/fzialam/workAway/repository/permohonan_repository"
 	persetujuanrepository "github.com/fzialam/workAway/repository/persetujuan_repository"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
+	penugasanservice "github.com/fzialam/workAway/service/penugasan_service"
 	permohonanservice "github.com/fzialam/workAway/service/permohonan_service"
 	persetujuanservice "github.com/fzialam/workAway/service/persetujuan_service"
 	presensiservice "github.com/fzialam/workAway/service/presensi_service"
@@ -45,6 +48,13 @@ func InitializedPersetujuan(db *sql.DB, validate *validator.Validate) persetujua
 	pr := persetujuanrepository.NewPersetujuanRepo()
 	ps := persetujuanservice.NewPersetujuanService(pr, db, validate)
 	pc := persetujuancontroller.NewPersetujuanController(ps)
+
+	return pc
+}
+func InitializedPenugasan(db *sql.DB, validate *validator.Validate) penugasancontroller.PenugasanController {
+	pr := penugasanrepository.NewPenugasanRepo()
+	ps := penugasanservice.NewPenugasanService(pr, db, validate)
+	pc := penugasancontroller.NewPenugasanController(ps)
 
 	return pc
 }

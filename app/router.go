@@ -15,6 +15,7 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	presensi := InitializedPresensi(db, validate)
 	permohonan := InitializedPermohonan(db, validate)
 	persetujuan := InitializedPersetujuan(db, validate)
+	penugasan := InitializedPenugasan(db, validate)
 
 	staticDir := "/static/"
 	r.PathPrefix(staticDir).Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("./view/static/"))))
@@ -39,6 +40,12 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	s.HandleFunc("/persetujuan", persetujuan.Index).Methods("GET")
 	s.HandleFunc("/{suratId}/persetujuan", persetujuan.DetailSurat).Methods("GET")
 	s.HandleFunc("/{suratId}/persetujuan", persetujuan.SetApproved).Methods("POST")
+
+	// Penugasan Section
+	s.HandleFunc("/penugasan", penugasan.Index).Methods("GET")
+	s.HandleFunc("/penugasan", penugasan.CreatePenugasan).Methods("POST")
+	s.HandleFunc("/{suratId}/penugasan", penugasan.DetailSurat).Methods("GET")
+	s.HandleFunc("/{suratId}/penugasan", penugasan.SetApproved).Methods("POST")
 
 	s.HandleFunc("/all-user", user.FindAll).Methods("GET")
 
