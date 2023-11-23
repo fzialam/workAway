@@ -35,10 +35,6 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	s.HandleFunc("/permohonan/{userId}", permohonan.Index).Methods("GET")
 	s.HandleFunc("/permohonan/{userId}", permohonan.CreatePermohonan).Methods("POST")
 
-	// Penugasan Section
-	s.HandleFunc("/penugasan/{userId}", permohonan.Index)
-	s.HandleFunc("/penugasan/{userId}", permohonan.CreatePermohonan).Methods("POST")
-
 	// Persetujuan Section
 	s.HandleFunc("/persetujuan", persetujuan.Index).Methods("GET")
 	s.HandleFunc("/{suratId}/persetujuan", persetujuan.DetailSurat).Methods("GET")

@@ -7,7 +7,7 @@ type SuratTugasJOINApprovedUserParticipan struct {
 	Tipe             int                  `json:"tipe"`
 	UserId           int                  `json:"user_id"`
 	LokasiTujuan     string               `json:"lokasi_tujuan"`
-	JenisProgram     int                  `json:"jenis_program"`
+	JenisProgram     string               `json:"jenis_program"`
 	DokumenName      string               `json:"dokumen_name"`
 	DokumenPDF       string               `json:"dokumen_pdf"`
 	DokPendukungName string               `json:"dok_pendukung_name"`
@@ -16,6 +16,7 @@ type SuratTugasJOINApprovedUserParticipan struct {
 	TglAkhir         string               `json:"tgl_akhir"`
 	CreateAt         time.Time            `json:"create_at"`
 	Status           string               `json:"status"`
+	StatusTTD        string               `json:"status_ttd"`
 	UserNIP          string               `json:"user_nip"`
 	UserName         string               `json:"user_name"`
 	UserNoTelp       string               `json:"user_no_telp"`
@@ -27,7 +28,7 @@ type SuratTugasJOINApprovedUser struct {
 	Tipe              int    `json:"tipe"`
 	UserId            int    `json:"user_id"`
 	LokasiTujuan      string `json:"lokasi_tujuan"`
-	JenisProgram      int    `json:"jenis_program"`
+	JenisProgram      string `json:"jenis_program"`
 	DokumenName       string `json:"dokumen_name"`
 	DokumenPDF        string `json:"dokumen_pdf"`
 	DokPendukungName  string `json:"dok_pendukung_name"`
@@ -49,7 +50,7 @@ type SuratTugasJOINApproved struct {
 	Tipe              int       `json:"tipe"`
 	UserId            int       `json:"user_id"`
 	LokasiTujuan      string    `json:"lokasi_tujuan"`
-	JenisProgram      int       `json:"jenis_program"`
+	JenisProgram      string    `json:"jenis_program"`
 	DokumenName       string    `json:"dokumen_name"`
 	DokumenPDF        string    `json:"dokumen_pdf"`
 	DokPendukungName  string    `json:"dok_pendukung_name"`

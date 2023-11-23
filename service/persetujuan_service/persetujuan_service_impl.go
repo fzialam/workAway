@@ -6,7 +6,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
-	persetujuanreqres "github.com/fzialam/workAway/model/req_res/persetujuan_req_res"
+	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	persetujuanrepository "github.com/fzialam/workAway/repository/persetujuan_repository"
 	"github.com/go-playground/validator/v10"
@@ -27,7 +27,7 @@ func NewPersetujuanService(persetujuanRepo persetujuanrepository.PersetujuanRepo
 }
 
 // SetApproved implements PersetujuanService.
-func (ps *PersetujuanServiceImpl) SetApproved(ctx context.Context, request persetujuanreqres.PersetujuanRequest) persetujuanreqres.PersetujuanResponse {
+func (ps *PersetujuanServiceImpl) SetApproved(ctx context.Context, request izinreqres.IzinRequest) izinreqres.IzinResponse {
 	err := ps.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -43,7 +43,7 @@ func (ps *PersetujuanServiceImpl) SetApproved(ctx context.Context, request perse
 
 	izin = ps.PersetujuanRepo.SetApproved(ctx, tx, izin)
 
-	return helper.ToPersetujuanResponses(izin)
+	return helper.ToIzinResponses(izin)
 }
 
 // GetAllSuratTugasJOINApprovedPemohonUser implements PersetujuanService.

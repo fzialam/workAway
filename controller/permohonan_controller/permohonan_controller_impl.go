@@ -22,6 +22,20 @@ func NewPermohonanController(permohonanService permohonanservice.PermohonanServi
 	}
 }
 
+// Index implements PermohonanController.
+func (pc *PermohonanControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
+
+	allUserResponse := pc.PermohonanService.GetAllUserId(r.Context())
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   allUserResponse,
+	}
+	temp, err := template.ParseFiles("./view/permohonan.html")
+	helper.PanicIfError(err)
+	temp.Execute(w, response)
+}
+
 // CreatePermohonan implements PermohonanController.
 func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -42,19 +56,4 @@ func (pc *PermohonanControllerImpl) CreatePermohonan(w http.ResponseWriter, r *h
 		Data:   permohonanResponse,
 	}
 	helper.WriteToResponseBody(w, response)
-}
-
-// Index implements PermohonanController.
-func (pc *PermohonanControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
-
-	allUserResponse := pc.PermohonanService.GetAllUserId(r.Context())
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   allUserResponse,
-	}
-	temp, err := template.ParseFiles("./view/permohonan.html")
-	helper.PanicIfError(err)
-	temp.Execute(w, response)
-
 }

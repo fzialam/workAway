@@ -88,7 +88,7 @@ func TestAddSurat(t *testing.T) {
 
 	x, err := permohonanrepository.NewPermohonanRepo().CreateSurat(ctx, tx, entity.SuratTugas{
 		LokasiTujuan:     "Unesa",
-		JenisProgram:     1,
+		JenisProgram:     "1",
 		DokPendukungName: "dokumne.pdf",
 		DokPendukungPdf:  "ISI DOKUMEN PDF",
 		TglAwal:          "2023-10-12",

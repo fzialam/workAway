@@ -7,7 +7,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model"
-	persetujuanreqres "github.com/fzialam/workAway/model/req_res/persetujuan_req_res"
+	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	persetujuanservice "github.com/fzialam/workAway/service/persetujuan_service"
 	"github.com/gorilla/mux"
 )
@@ -23,9 +23,9 @@ func NewPersetujuanController(persetujuanService persetujuanservice.PersetujuanS
 }
 
 // Index implements PersetujunanController.
-func (ps *PersetujunanControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
+func (pc *PersetujunanControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
 
-	response := ps.PersetujuanService.GetAllSuratTugasJOINApprovedUser(r.Context())
+	response := pc.PersetujuanService.GetAllSuratTugasJOINApprovedUser(r.Context())
 	data := map[string]interface{}{
 		"response": response,
 		"status":   r.URL.Query().Get("s"),
@@ -42,13 +42,13 @@ func (ps *PersetujunanControllerImpl) Index(w http.ResponseWriter, r *http.Reque
 }
 
 // DetailSurat implements PersetujunanController.
-func (ps *PersetujunanControllerImpl) DetailSurat(w http.ResponseWriter, r *http.Request) {
+func (pc *PersetujunanControllerImpl) DetailSurat(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	idSurat, err := strconv.Atoi(vars["suratId"])
 	helper.PanicIfError(err)
 
-	response := ps.PersetujuanService.GetSuratTugasById(r.Context(), idSurat)
+	response := pc.PersetujuanService.GetSuratTugasById(r.Context(), idSurat)
 
 	data := map[string]interface{}{
 		"response": response,
@@ -67,20 +67,20 @@ func (ps *PersetujunanControllerImpl) DetailSurat(w http.ResponseWriter, r *http
 }
 
 // SetApproved implements PersetujunanController.
-func (ps *PersetujunanControllerImpl) SetApproved(w http.ResponseWriter, r *http.Request) {
+func (pc *PersetujunanControllerImpl) SetApproved(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id := vars["suratId"]
 	idInt, err := strconv.Atoi(id)
 	helper.PanicIfError(err)
 
-	persetujuanRequest := persetujuanreqres.PersetujuanRequest{}
-	helper.ReadFromRequestBody(r, &persetujuanRequest)
+	izinRequest := izinreqres.IzinRequest{}
+	helper.ReadFromRequestBody(r, &izinRequest)
 
-	persetujuanRequest.SuratTugasId = idInt
-	persetujuanRequest.StatusTTD = "0"
+	izinRequest.SuratTugasId = idInt
+	izinRequest.StatusTTD = "0"
 
-	persetujuanResponse := ps.PersetujuanService.SetApproved(r.Context(), persetujuanRequest)
+	persetujuanResponse := pc.PersetujuanService.SetApproved(r.Context(), izinRequest)
 
 	response := model.Response{
 		Code:   200,

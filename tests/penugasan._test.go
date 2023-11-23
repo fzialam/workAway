@@ -32,8 +32,8 @@ func TestGetSuratTugasById(t *testing.T) {
 	response, err := penugasanrepository.NewPenugasanRepo().GetSuratTugasById(
 		context.Background(),
 		tx,
-		1,
+		32,
 	)
 	helper.PanicIfError(err)
-	fmt.Println(response.DokumenName)
+	fmt.Println(response.DokumenPDF)
 }

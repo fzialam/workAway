@@ -68,5 +68,5 @@ func (ps *PresensiServiceImpl) GetSurat(ctx context.Context, request presensireq
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	return helper.ToGetSuratResponses(surat)
+	return helper.ToSuratTugasJOINApprovedResponses(surat)
 }

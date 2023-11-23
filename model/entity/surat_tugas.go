@@ -7,7 +7,7 @@ type SuratTugas struct {
 	Tipe             int       `json:"tipe"`
 	UserId           int       `json:"user_id"`
 	LokasiTujuan     string    `json:"lokasi_tujuan"`
-	JenisProgram     int       `json:"jenis_program"`
+	JenisProgram     string    `json:"jenis_program"`
 	DokumenName      string    `json:"dokumen_name"`
 	DokumenPDF       string    `json:"dokumen_pdf"`
 	DokPendukungName string    `json:"dok_pendukung_name"`

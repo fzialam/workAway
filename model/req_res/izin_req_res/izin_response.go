@@ -1,6 +1,6 @@
-package persetujuanreqres
+package izinreqres
 
-type PersetujuanResponse struct {
+type IzinResponse struct {
 	Status  string ` json:"status"`
 	Message string `json:"message"`
 }
