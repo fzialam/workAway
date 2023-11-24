@@ -43,6 +43,11 @@ mobile/android/app/debug
 mobile/android/app/profile
 mobile/android/app/release
 
+tu_controller
+tu_service
+tu_repository
+tu_req_res
+
 view
 test
 

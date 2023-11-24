@@ -22,7 +22,7 @@ class _TakePhotoState extends State<TakePhoto> {
   late final http.Response response;
 
   Future fetchData() async {
-    final url = Uri.parse('$URL/android/${widget.user.id}');
+    final url = Uri.parse('$URL/wp/${widget.user.id}/mobile');
     response = await http.get(url);
 
     if (response.statusCode == 200) {
