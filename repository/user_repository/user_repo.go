@@ -10,7 +10,10 @@ import (
 type UserRepo interface {
 	Login(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
 	Register(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
-	CheckEmailNIP(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
+	CheckEmail(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
+	CheckNIP(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
+	CheckNIK(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
+	CheckNPWP(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error)
 	Save(ctx context.Context, tx *sql.Tx, user entity.User) entity.User
 	Delete(ctx context.Context, tx *sql.Tx, user entity.User)
 	FindByNIP(ctx context.Context, tx *sql.Tx, nip string) (entity.User, error)

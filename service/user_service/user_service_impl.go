@@ -10,6 +10,7 @@ import (
 	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceImpl struct {
@@ -36,13 +37,17 @@ func (us *UserServiceImpl) Login(ctx context.Context, request userreqres.UserLog
 	defer helper.CommitOrRollback(tx)
 
 	user := entity.User{
-		Email:    request.Email,
-		Password: request.Password,
+		Email: request.Email,
 	}
 
 	user, err = us.UserRepo.Login(ctx, tx, user)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+	if err != nil {
+		panic(exception.NewUnauthorized("email atau password salah"))
 	}
 
 	return helper.ToUserResponse(user)
@@ -57,16 +62,47 @@ func (us *UserServiceImpl) Register(ctx context.Context, request userreqres.User
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+
 	user := entity.User{
 		NIP:      request.NIP,
+		NIK:      request.NIK,
+		NPWP:     request.NPWP,
+		Name:     request.Name,
+		Rank:     0,
+		NoTelp:   request.NoTelp,
+		TglLahir: request.TglLahir,
+		Status:   "1",
+		Gender:   request.Gender,
+		Alamat:   request.Alamat,
 		Email:    request.Email,
-		Password: request.Password,
+		Password: string(hashPassword),
 	}
 
-	user, err = us.UserRepo.CheckEmailNIP(ctx, tx, user)
+	// Chechk Duplicate Email
+	user, err = us.UserRepo.CheckEmail(ctx, tx, user)
 	if err != nil {
 		panic(exception.NewDuplicatedError(err.Error()))
 	}
+
+	// Chechk Duplicate NIP
+	user, err = us.UserRepo.CheckNIP(ctx, tx, user)
+	if err != nil {
+		panic(exception.NewDuplicatedError(err.Error()))
+	}
+
+	// Chechk Duplicate NIK
+	user, err = us.UserRepo.CheckNIK(ctx, tx, user)
+	if err != nil {
+		panic(exception.NewDuplicatedError(err.Error()))
+	}
+
+	// Chechk Duplicate NPWP
+	user, err = us.UserRepo.CheckNPWP(ctx, tx, user)
+	if err != nil {
+		panic(exception.NewDuplicatedError(err.Error()))
+	}
+
 	user, err = us.UserRepo.Register(ctx, tx, user)
 	helper.PanicIfError(err)
 
@@ -87,9 +123,11 @@ func (us *UserServiceImpl) Update(ctx context.Context, request userreqres.UserUp
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 	user = entity.User{
-		NIP:      request.NIP,
-		Email:    request.Email,
-		Password: request.Password,
+		Id:       request.Id,
+		Name:     request.Name,
+		NoTelp:   request.NoTelp,
+		TglLahir: request.TglLahir,
+		Alamat:   request.Alamat,
 	}
 
 	user = us.UserRepo.Save(ctx, tx, user)

@@ -3,6 +3,7 @@ package usercontroller
 import (
 	"net/http"
 	"strconv"
+	"text/template"
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model"
@@ -21,17 +22,25 @@ func NewUserController(userService userservice.UserService) UserController {
 	}
 }
 
-// Login implements UserController.
 // IndexL implements UserController.
-func (*UserControllerImpl) IndexL(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+func (uc *UserControllerImpl) IndexL(w http.ResponseWriter, r *http.Request) {
+	temp, err := template.ParseFiles("./view/login.html")
+	helper.PanicIfError(err)
+
+	err = temp.Execute(w, nil)
+	helper.PanicIfError(err)
 }
 
 // IndexR implements UserController.
-func (*UserControllerImpl) IndexR(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+func (uc *UserControllerImpl) IndexR(w http.ResponseWriter, r *http.Request) {
+	temp, err := template.ParseFiles("./view/register.html")
+	helper.PanicIfError(err)
+
+	err = temp.Execute(w, nil)
+	helper.PanicIfError(err)
 }
 
+// Login implements UserController.
 func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	userLoginRequest := userreqes.UserLoginRequest{}
 	helper.ReadFromRequestBody(r, &userLoginRequest)
@@ -63,7 +72,15 @@ func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request) {
 
 // Logout implements UserController.
 func (*UserControllerImpl) Logout(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	// Redirect to the login page
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 // Update implements UserController.

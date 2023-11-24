@@ -24,6 +24,10 @@ func PanicHandler(next http.Handler) http.Handler {
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
 
+	if unauthorizedError(writer, request, err) {
+		return
+	}
+
 	if notFoundError(writer, request, err) {
 		return
 	}
@@ -37,6 +41,25 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 	}
 
 	internalServerError(writer, request, err)
+}
+
+func unauthorizedError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
+	exception, ok := err.(Unauthorized)
+	if ok {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusUnauthorized)
+
+		response := model.Response{
+			Code:   http.StatusUnauthorized,
+			Status: "UNAUTHORIZED",
+			Data:   exception.Error,
+		}
+
+		helper.WriteToResponseBody(writer, response)
+		return true
+	} else {
+		return false
+	}
 }
 
 func validationErrors(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
