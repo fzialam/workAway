@@ -56,6 +56,9 @@ func (ps *PermohonanServiceImpl) CreatePermohonan(ctx context.Context, request p
 	participan, err = ps.PermohonanRepo.AddParticipans(ctx, tx, participan)
 	helper.PanicIfError(err)
 
+	err = ps.PermohonanRepo.Set0Approved(ctx, tx, surat.Id)
+	helper.PanicIfError(err)
+
 	return helper.ToPermohonanResponse(surat, participan)
 }
 

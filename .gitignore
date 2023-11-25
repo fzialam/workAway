@@ -47,6 +47,7 @@ tu_controller
 tu_service
 tu_repository
 tu_req_res
+tu_test.go
 
 view
 test

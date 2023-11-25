@@ -15,7 +15,7 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	presensi := InitializedPresensi(db, validate)
 	permohonan := InitializedPermohonan(db, validate)
 	pimpinan := InitializedPimpinan(db, validate)
-	// sppd := InitializedTU(db, validate)
+	tu := InitializedTU(db, validate)
 
 	staticDir := "/static/"
 	r.PathPrefix(staticDir).Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("./view/static/"))))
@@ -42,9 +42,10 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	// ===========> TU Section Start <===========
 
 	// Permohonan Section
-	// tu := r.PathPrefix("/wt").Subrouter()
-	// tu.HandleFunc("/sppd", sppd.Index).Methods("GET")
-	// tu.HandleFunc("/sppd", sppd.CreateSPPD).Methods("POST")
+	t := r.PathPrefix("/wt").Subrouter()
+	t.HandleFunc("/sppd", tu.Index).Methods("GET")
+	t.HandleFunc("/{suratId}/sppd", tu.DetailSurat).Methods("GET")
+	t.HandleFunc("/{suratId}/sppd", tu.CreateSPPD).Methods("POST")
 
 	// ===========> TU Section End <===========
 

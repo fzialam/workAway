@@ -3,23 +3,20 @@ package app
 import (
 	"database/sql"
 
-	penugasancontroller "github.com/fzialam/workAway/controller/penugasan_controller"
 	permohonancontroller "github.com/fzialam/workAway/controller/permohonan_controller"
-	persetujuancontroller "github.com/fzialam/workAway/controller/persetujuan_controller"
 	pimpinancontroller "github.com/fzialam/workAway/controller/pimpinan_controller"
 	presensicontroller "github.com/fzialam/workAway/controller/presensi_controller"
+	tucontroller "github.com/fzialam/workAway/controller/tu_controller"
 	usercontroller "github.com/fzialam/workAway/controller/user_controller"
-	penugasanrepository "github.com/fzialam/workAway/repository/penugasan_repository"
 	permohonanrepository "github.com/fzialam/workAway/repository/permohonan_repository"
-	persetujuanrepository "github.com/fzialam/workAway/repository/persetujuan_repository"
 	pimpinanrepository "github.com/fzialam/workAway/repository/pimpinan_repository"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
+	turepository "github.com/fzialam/workAway/repository/tu_repository"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
-	penugasanservice "github.com/fzialam/workAway/service/penugasan_service"
 	permohonanservice "github.com/fzialam/workAway/service/permohonan_service"
-	persetujuanservice "github.com/fzialam/workAway/service/persetujuan_service"
 	pimpinanservice "github.com/fzialam/workAway/service/pimpinan_service"
 	presensiservice "github.com/fzialam/workAway/service/presensi_service"
+	tuservice "github.com/fzialam/workAway/service/tu_service"
 	userservice "github.com/fzialam/workAway/service/user_service"
 	"github.com/go-playground/validator/v10"
 )
@@ -47,25 +44,18 @@ func InitializedPermohonan(db *sql.DB, validate *validator.Validate) permohonanc
 	return permohonanController
 }
 
-func InitializedPersetujuan(db *sql.DB, validate *validator.Validate) persetujuancontroller.PersetujunanController {
-	pr := persetujuanrepository.NewPersetujuanRepo()
-	ps := persetujuanservice.NewPersetujuanService(pr, db, validate)
-	pc := persetujuancontroller.NewPersetujuanController(ps)
-
-	return pc
-}
-func InitializedPenugasan(db *sql.DB, validate *validator.Validate) penugasancontroller.PenugasanController {
-	pr := penugasanrepository.NewPenugasanRepo()
-	ps := penugasanservice.NewPenugasanService(pr, db, validate)
-	pc := penugasancontroller.NewPenugasanController(ps)
-
-	return pc
-}
-
 func InitializedPimpinan(db *sql.DB, validate *validator.Validate) pimpinancontroller.PimpinanController {
 	pr := pimpinanrepository.NewPimpinanRepo()
 	ps := pimpinanservice.NewPimpinanService(pr, db, validate)
 	pc := pimpinancontroller.NewPimpinanController(ps)
 
 	return pc
+}
+
+func InitializedTU(db *sql.DB, validate *validator.Validate) tucontroller.TUController {
+	tr := turepository.NewTURepo()
+	ts := tuservice.NewTUService(tr, db, validate)
+	tc := tucontroller.NewTUController(ts)
+
+	return tc
 }

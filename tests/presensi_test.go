@@ -23,7 +23,7 @@ func TestPresensiSucces(t *testing.T) {
 		"gambar" : "img",
 		"lokasi": "LOKASI"
 	}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile/1", reqBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/w/mobile/1", reqBody)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()
@@ -50,7 +50,7 @@ func TestPresensiFailed(t *testing.T) {
 		"gambar" : "img",
 		"lokasi": ""
 	}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/mobile/1", reqBody)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/wp/1/mobile", reqBody)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()

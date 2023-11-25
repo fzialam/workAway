@@ -63,6 +63,16 @@ func (pr *PermohonanRepoImpl) AddParticipans(ctx context.Context, tx *sql.Tx, pa
 	}
 }
 
+// Set0Approved implements PermohonanRepo.
+func (pr *PermohonanRepoImpl) Set0Approved(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "INSERT INTO `approved`(`surat_tugas_id`, `status`, `status_ttd`) VALUES(?, 0, 0);"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetAllUserID implements PresensiRepo.
 func (pr *PermohonanRepoImpl) GetAllUserID(ctx context.Context, tx *sql.Tx) []entity.User {
 	SQL := "SELECT `id`, `name` FROM `user` WHERE `rank`=0;"
