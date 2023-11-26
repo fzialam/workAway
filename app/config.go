@@ -3,16 +3,19 @@ package app
 import (
 	"database/sql"
 
+	pegawaicontroller "github.com/fzialam/workAway/controller/pegawai_controller"
 	permohonancontroller "github.com/fzialam/workAway/controller/permohonan_controller"
 	pimpinancontroller "github.com/fzialam/workAway/controller/pimpinan_controller"
 	presensicontroller "github.com/fzialam/workAway/controller/presensi_controller"
 	tucontroller "github.com/fzialam/workAway/controller/tu_controller"
 	usercontroller "github.com/fzialam/workAway/controller/user_controller"
+	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
 	permohonanrepository "github.com/fzialam/workAway/repository/permohonan_repository"
 	pimpinanrepository "github.com/fzialam/workAway/repository/pimpinan_repository"
 	presensirepository "github.com/fzialam/workAway/repository/presensi_repository"
 	turepository "github.com/fzialam/workAway/repository/tu_repository"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
+	pegawaiservice "github.com/fzialam/workAway/service/pegawai_service"
 	permohonanservice "github.com/fzialam/workAway/service/permohonan_service"
 	pimpinanservice "github.com/fzialam/workAway/service/pimpinan_service"
 	presensiservice "github.com/fzialam/workAway/service/presensi_service"
@@ -58,4 +61,12 @@ func InitializedTU(db *sql.DB, validate *validator.Validate) tucontroller.TUCont
 	tc := tucontroller.NewTUController(ts)
 
 	return tc
+}
+
+func InitializedPegawai(db *sql.DB, validate *validator.Validate) pegawaicontroller.PegawaiController {
+	pr := pegawairepository.NewPegawaieRpo()
+	ps := pegawaiservice.NewPegawaiService(pr, db, validate)
+	pc := pegawaicontroller.NewPegawaiController(ps)
+
+	return pc
 }

@@ -12,8 +12,7 @@ import (
 func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	r := mux.NewRouter()
 	user := InitializedUser(db, validate)
-	presensi := InitializedPresensi(db, validate)
-	permohonan := InitializedPermohonan(db, validate)
+	pegawai := InitializedPegawai(db, validate)
 	pimpinan := InitializedPimpinan(db, validate)
 	tu := InitializedTU(db, validate)
 
@@ -30,12 +29,12 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 
 	// Permohonan Section
 	p := r.PathPrefix("/wp").Subrouter()
-	p.HandleFunc("/permohonan/{userId}", permohonan.Index).Methods("GET")
-	p.HandleFunc("/permohonan/{userId}", permohonan.CreatePermohonan).Methods("POST")
+	p.HandleFunc("/permohonan/{userId}", pegawai.Index).Methods("GET")
+	p.HandleFunc("/permohonan/{userId}", pegawai.CreatePermohonan).Methods("POST")
 
 	// Mobile Section
-	p.HandleFunc("/{userId}/mobile", presensi.GetSuratForPresensi).Methods("GET")
-	p.HandleFunc("/{userId}/mobile", presensi.Presensi).Methods("POST")
+	p.HandleFunc("/{userId}/mobile", pegawai.GetSurat).Methods("GET")
+	p.HandleFunc("/{userId}/mobile", pegawai.Presensi).Methods("POST")
 
 	// ===========> Pegawai Section End <===========
 
