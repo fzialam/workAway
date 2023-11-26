@@ -13,39 +13,6 @@ import (
 type PimpinanRepoImpl struct {
 }
 
-// GetSuratTugasByIdPermohonan implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
-	surat := entity.SuratTugasJOINApprovedUserParticipan{}
-	row := tx.QueryRowContext(ctx, SQL, suratId)
-	err := row.Scan(
-		&surat.Id,
-		&surat.Tipe,
-		&surat.UserId,
-		&surat.LokasiTujuan,
-		&surat.JenisProgram,
-		&surat.DokumenName,
-		&surat.DokumenPDF,
-		&surat.DokPendukungName,
-		&surat.DokPendukungPdf,
-		&surat.TglAwal,
-		&surat.TglAkhir,
-		&surat.CreateAt,
-		&surat.Status,
-		&surat.UserNIP,
-		&surat.UserName,
-		&surat.UserNoTelp,
-		&surat.UserEmail,
-	)
-	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
-	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
-
-	if err != nil {
-		return surat, err
-	}
-	return surat, nil
-}
-
 func NewPimpinanRepo() PimpinanRepo {
 	return &PimpinanRepoImpl{}
 }
@@ -257,6 +224,39 @@ func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx conte
 		return surats, errors.New("Tidak ada surat tugas")
 	}
 	return surats, nil
+}
+
+// GetSuratTugasByIdPermohonan implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error) {
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
+	surat := entity.SuratTugasJOINApprovedUserParticipan{}
+	row := tx.QueryRowContext(ctx, SQL, suratId)
+	err := row.Scan(
+		&surat.Id,
+		&surat.Tipe,
+		&surat.UserId,
+		&surat.LokasiTujuan,
+		&surat.JenisProgram,
+		&surat.DokumenName,
+		&surat.DokumenPDF,
+		&surat.DokPendukungName,
+		&surat.DokPendukungPdf,
+		&surat.TglAwal,
+		&surat.TglAkhir,
+		&surat.CreateAt,
+		&surat.Status,
+		&surat.UserNIP,
+		&surat.UserName,
+		&surat.UserNoTelp,
+		&surat.UserEmail,
+	)
+	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+
+	if err != nil {
+		return surat, err
+	}
+	return surat, nil
 }
 
 // SetApprovedPermohonan implements PimpinanRepo.

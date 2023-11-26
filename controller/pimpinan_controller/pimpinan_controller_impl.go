@@ -110,6 +110,29 @@ func (pc *PimpinanControllerImpl) SPPDDetailSurat(w http.ResponseWriter, r *http
 	helper.PanicIfError(err)
 }
 
+// SPPDSetApproved implements PimpinanController.
+func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["suratId"]
+	idInt, err := strconv.Atoi(id)
+	helper.PanicIfError(err)
+
+	izinRequest := izinreqres.IzinRequest{}
+	helper.ReadFromRequestBody(r, &izinRequest)
+
+	izinRequest.SuratTugasId = idInt
+
+	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), izinRequest)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   persetujuanResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
+}
+
 // PermohonanDetailSurat implements PimpinanController.
 func (pc *PimpinanControllerImpl) PermohonanDetailSurat(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -147,29 +170,6 @@ func (pc *PimpinanControllerImpl) PermohonanSetApproved(w http.ResponseWriter, r
 	izinRequest.StatusTTD = "0"
 
 	persetujuanResponse := pc.PimpinanService.PermohonanSetApproved(r.Context(), izinRequest)
-
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   persetujuanResponse,
-	}
-
-	helper.WriteToResponseBody(w, response)
-}
-
-// SPPDSetApproved implements PimpinanController.
-func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["suratId"]
-	idInt, err := strconv.Atoi(id)
-	helper.PanicIfError(err)
-
-	izinRequest := izinreqres.IzinRequest{}
-	helper.ReadFromRequestBody(r, &izinRequest)
-
-	izinRequest.SuratTugasId = idInt
-
-	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), izinRequest)
 
 	response := model.Response{
 		Code:   200,

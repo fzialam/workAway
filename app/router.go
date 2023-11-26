@@ -53,15 +53,15 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 
 	// Persetujuan Section
 	pp := r.PathPrefix("/wpp").Subrouter()
-	pp.HandleFunc("/persetujuan", pimpinan.IndexPermohonan).Methods("GET")
-	pp.HandleFunc("/{suratId}/persetujuan", pimpinan.PermohonanDetailSurat).Methods("GET")
-	pp.HandleFunc("/{suratId}/persetujuan", pimpinan.PermohonanSetApproved).Methods("POST")
+	pp.HandleFunc("/permohonan", pimpinan.IndexPermohonan).Methods("GET")
+	pp.HandleFunc("/{suratId}/permohonan", pimpinan.PermohonanDetailSurat).Methods("GET")
+	pp.HandleFunc("/{suratId}/permohonan", pimpinan.PermohonanSetApproved).Methods("POST")
 
 	// Penugasan Section
-	pp.HandleFunc("/penugasan", pimpinan.IndexSPPD).Methods("GET")
+	pp.HandleFunc("/sppd", pimpinan.IndexSPPD).Methods("GET")
 	pp.HandleFunc("/penugasan", pimpinan.CreatePenugasan).Methods("POST")
-	pp.HandleFunc("/{suratId}/penugasan", pimpinan.SPPDDetailSurat).Methods("GET")
-	pp.HandleFunc("/{suratId}/penugasan", pimpinan.SPPDSetApproved).Methods("POST")
+	pp.HandleFunc("/{suratId}/sppd", pimpinan.SPPDDetailSurat).Methods("GET")
+	pp.HandleFunc("/{suratId}/sppd", pimpinan.SPPDSetApproved).Methods("POST")
 
 	// ===========> Pimpinan Section End <===========
 
