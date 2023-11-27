@@ -14,7 +14,7 @@ import (
 	"github.com/fzialam/workAway/app"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
-	permohonanrepository "github.com/fzialam/workAway/repository/permohonan_repository"
+	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
 )
 
 func TestGetAllUserId(t *testing.T) {
@@ -86,7 +86,7 @@ func TestAddSurat(t *testing.T) {
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	x, err := permohonanrepository.NewPermohonanRepo().CreateSurat(ctx, tx, entity.SuratTugas{
+	x, err := pegawairepository.NewPegawaiRepo().CreateSurat(ctx, tx, entity.SuratTugas{
 		LokasiTujuan:     "Unesa",
 		JenisProgram:     "1",
 		DokPendukungName: "dokumne.pdf",

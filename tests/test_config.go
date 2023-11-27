@@ -22,15 +22,14 @@ type ResponseData struct {
 
 func setupRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
-	presInit := app.InitializedPresensi(db, validate)
-	permInit := app.InitializedPermohonan(db, validate)
+	pegawai := app.InitializedPegawai(db, validate)
 	tu := app.InitializedTU(db, validate)
 	r := mux.NewRouter()
 	s := r.PathPrefix("/w").Subrouter()
-	s.HandleFunc("/mobile/{userId}", presInit.GetSuratForPresensi).Methods("GET")
-	s.HandleFunc("/mobile/{userId}", presInit.Presensi).Methods("POST")
-	s.HandleFunc("/permohonan/{userId}", permInit.CreatePermohonan).Methods("POST")
-	s.HandleFunc("/pengajuan/{userId}", permInit.Index).Methods("GET")
+	s.HandleFunc("/mobile/{userId}", pegawai.GetSurat).Methods("GET")
+	s.HandleFunc("/mobile/{userId}", pegawai.Presensi).Methods("POST")
+	s.HandleFunc("/permohonan/{userId}", pegawai.CreatePermohonan).Methods("POST")
+	s.HandleFunc("/pengajuan/{userId}", pegawai.Index).Methods("GET")
 
 	r.HandleFunc("/sppd", tu.Index).Methods("GET")
 	r.HandleFunc("/{suratId}/sppd", tu.DetailSurat).Methods("GET")

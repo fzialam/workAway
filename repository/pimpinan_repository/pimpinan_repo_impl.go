@@ -8,6 +8,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	pimpinanreqres "github.com/fzialam/workAway/model/req_res/pimpinan_req_res"
 )
 
 type PimpinanRepoImpl struct {
@@ -105,7 +106,7 @@ func (pr *PimpinanRepoImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Con
 		surats = append(surats, surat)
 	}
 	if err != nil {
-		return surats, errors.New("Tidak ada surat tugas")
+		return surats, errors.New("tidak ada surat tugas")
 	}
 	return surats, nil
 }
@@ -128,7 +129,7 @@ func (pr *PimpinanRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Contex
 		participans = append(participans, participan)
 	}
 	if err != nil {
-		return participans, errors.New("Tidak ada participan tugas")
+		return participans, errors.New("tidak ada participan tugas")
 	}
 	return participans, nil
 }
@@ -180,14 +181,6 @@ func (pr *PimpinanRepoImpl) SPPDGetSuratTugasById(ctx context.Context, tx *sql.T
 	return surat, nil
 }
 
-// SetApprovedSPPD implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
-	SQL := "UPDATE `approved` SET `status` = 1, `status_ttd` = ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
-	_, err := tx.ExecContext(ctx, SQL, izin.StatusTTD, izin.SuratTugasId)
-	helper.PanicIfError(err)
-	return izin
-}
-
 // GetAllSuratTugasJOINApprovedUserPermohonan implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
 	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tgl_awal > NOW();"
@@ -221,14 +214,17 @@ func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx conte
 		surats = append(surats, surat)
 	}
 	if err != nil {
-		return surats, errors.New("Tidak ada surat tugas")
+		return surats, errors.New("tidak ada surat tugas")
 	}
 	return surats, nil
 }
 
 // GetSuratTugasByIdPermohonan implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
 	surat := entity.SuratTugasJOINApprovedUserParticipan{}
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 	err := row.Scan(
@@ -265,4 +261,60 @@ func (pr *PimpinanRepoImpl) PermohonanSetApproved(ctx context.Context, tx *sql.T
 	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.StatusTTD, izin.SuratTugasId)
 	helper.PanicIfError(err)
 	return izin
+}
+
+// SetNullApprovedAktivitas implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetNullApprovedAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "INSERT INTO `approved_lap_ak`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 2, 0;"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SetNullApprovedAnggaran implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetNullApprovedAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "INSERT INTO `approved_lap_angg`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 4, 0);"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SetNullLaporanAktivitas implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetNullLaporanAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "INSERT INTO `laporan_aktivitas`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 2, 0);"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SetNullLaporanAnggaran implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetNullLaporanAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "INSERT INTO `laporan_anggaran`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 4, 0);"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SPPDSetApproved implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
+	SQL := "UPDATE `approved` SET `status_ttd` = ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
+	_, err := tx.ExecContext(ctx, SQL, izin.StatusTTD, izin.SuratTugasId)
+	helper.PanicIfError(err)
+	return izin
+}
+
+// UploadSPPDAproved implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) UploadSPPDAproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error {
+	SQL := "UPDATE `approved` SET `dokumen_name` = ?, `dokumen_pdf` = ? WHERE `surat_tugas_id` = ?;"
+	_, err := tx.ExecContext(ctx, SQL, request.DokName, request.DokPDF, request.SuratTugasId)
+	helper.PanicIfError(err)
+	return nil
 }

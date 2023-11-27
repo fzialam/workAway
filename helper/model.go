@@ -173,3 +173,63 @@ func ToPenugasanResponse(surat entity.SuratTugas, participan entity.Participan) 
 		TglAkhir:      surat.TglAkhir,
 	}
 }
+
+func ToSuratTugasJOINApprovedLaporanResponse(surat entity.SuratTugasJOINApprovedLaporan) surattugasreqres.SuratTugasJOINApprovedLaporanResponse {
+	return surattugasreqres.SuratTugasJOINApprovedLaporanResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		StatusPimpinan:   surat.StatusPimpinan,
+		StatusKeuangan:   surat.StatusKeuangan,
+	}
+
+}
+
+func ToSuratTugasJOINApprovedLaporanResponses(surats []entity.SuratTugasJOINApprovedLaporan) []surattugasreqres.SuratTugasJOINApprovedLaporanResponse {
+	var suratResponses []surattugasreqres.SuratTugasJOINApprovedLaporanResponse
+	for _, surat := range surats {
+		suratResponses = append(suratResponses, ToSuratTugasJOINApprovedLaporanResponse(surat))
+	}
+	return suratResponses
+}
+
+func ToSuratTugasJOINUserParticipanLaporanResponse(
+	surat entity.SuratTugasJOINUserParticipan,
+	presensi entity.Presensi,
+	lapAkAngg entity.LaporanAktivitasAnggaran) surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse {
+	return surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse{
+		Id:                   surat.Id,
+		Tipe:                 surat.Tipe,
+		UserId:               surat.UserId,
+		LokasiTujuan:         surat.LokasiTujuan,
+		JenisProgram:         surat.JenisProgram,
+		DokumenName:          surat.DokumenName,
+		DokumenPDF:           surat.DokumenPDF,
+		DokPendukungName:     surat.DokPendukungName,
+		DokPendukungPdf:      surat.DokPendukungPdf,
+		TglAwal:              surat.TglAwal,
+		TglAkhir:             surat.TglAkhir,
+		CreateAt:             surat.CreateAt,
+		UserNIP:              surat.UserNIP,
+		UserName:             surat.UserName,
+		UserNoTelp:           surat.UserNoTelp,
+		UserEmail:            surat.UserEmail,
+		Participans:          surat.Participans,
+		LaporanAktivitasName: lapAkAngg.DokAktivitasName,
+		LaporanAktivitasPDF:  lapAkAngg.DokAktivitasPDF,
+		LaporanAnggaranName:  lapAkAngg.DokAnggaranName,
+		LaporanAnggaranPDF:   lapAkAngg.DokAnggaranPDF,
+		Gambar:               presensi.Gambar,
+		Lokasi:               presensi.Lokasi,
+		Koordinat:            presensi.Koordinat,
+	}
+}

@@ -2,7 +2,6 @@ package tests
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"testing"
@@ -19,22 +18,47 @@ func TestDB(t *testing.T) {
 	}
 	defer db.Close()
 
-	user := entity.User{
-		Email:    "email@unesa.ac.id",
-		Password: "password",
-	}
-	SQL := "SELECT `id`, `nip`, `rank`, `email`, `password` FROM `user` WHERE email=? AND password=?"
-	fmt.Println(user)
-	rows, err := db.Query(SQL, user.Email, user.Password)
+	// user := entity.User{
+	// 	Email:    "email@unesa.ac.id",
+	// 	Password: "password",
+	// }
+	SQL := "SELECT `s`.*, `ala`.status as 'status_ala', `alg`.status as 'status_alg' "
+	SQL += "FROM `surat_tugas` `s` "
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "INNER JOIN `user` `u` on `u`.id =`s`.user_id "
+	SQL += "INNER JOIN `approved_lap_ak` `ala` on `ala`.surat_tugas_id =`s`.id  "
+	SQL += "INNER JOIN `approved_lap_angg` `alg` on `alg`.surat_tugas_id =`s`.id "
+	SQL += "LEFT JOIN `approved` `a` on `s`.id = `a`.surat_tugas_id "
+	SQL += "WHERE (`s`.user_id = 1 OR `p`.user_id = 1) AND `a`.status_ttd = '1' AND `s`.tgl_awal > NOW();"
+	// fmt.Println(SQL)
+	rows, err := db.Query(SQL)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
-	newUser := entity.User{}
-	if rows.Next() {
-		err := rows.Scan(&newUser.Id, &newUser.NIP, &newUser.Rank, &newUser.Email, &newUser.Password)
+	surats := []entity.SuratTugasJOINApprovedLaporan{}
+	for rows.Next() {
+		surat := entity.SuratTugasJOINApprovedLaporan{}
+		err := rows.Scan(
+			&surat.Id,
+			&surat.Tipe,
+			&surat.UserId,
+			&surat.LokasiTujuan,
+			&surat.JenisProgram,
+			&surat.DokPendukungName,
+			&surat.DokumenPDF,
+			&surat.DokPendukungName,
+			&surat.DokPendukungPdf,
+			&surat.TglAwal,
+			&surat.TglAkhir,
+			&surat.CreateAt,
+			&surat.StatusPimpinan,
+			&surat.StatusKeuangan,
+		)
 		helper.PanicIfError(err)
-		fmt.Println(newUser, nil)
-	} else {
-		fmt.Println(newUser, errors.New("user is not found"))
+		surats = append(surats, surat)
+	}
+
+	for _, i := range surats {
+		fmt.Println(i.Id)
 	}
 }

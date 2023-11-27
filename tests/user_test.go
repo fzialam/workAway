@@ -1,10 +1,12 @@
 package tests
 
 import (
+	"fmt"
 	"log"
 	"testing"
 
 	"github.com/fzialam/workAway/exception"
+	"github.com/fzialam/workAway/helper"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,6 +30,20 @@ func TestHash(t *testing.T) {
 		}
 		log.Println(err)
 
+	}
+
+}
+
+func TestGeneratePassword(t *testing.T) {
+	pasw := []string{"password", "pimpinan", "tuunesa", "pegawai2", "pegawai3", "keuangan"}
+
+	result := []string{}
+
+	for i := 0; i < len(pasw); i++ {
+		hash, err := bcrypt.GenerateFromPassword([]byte(pasw[i]), bcrypt.DefaultCost)
+		helper.PanicIfError(err)
+		result = append(result, string(hash))
+		fmt.Println(pasw[i], result[i])
 	}
 
 }

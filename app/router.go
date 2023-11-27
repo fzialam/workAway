@@ -29,8 +29,14 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 
 	// Permohonan Section
 	p := r.PathPrefix("/wp").Subrouter()
-	p.HandleFunc("/permohonan/{userId}", pegawai.Index).Methods("GET")
-	p.HandleFunc("/permohonan/{userId}", pegawai.CreatePermohonan).Methods("POST")
+	p.HandleFunc("/{userId}/permohonan", pegawai.Index).Methods("GET")
+	p.HandleFunc("/{userId}/permohonan", pegawai.CreatePermohonan).Methods("POST")
+
+	// p.HandleFunc("/{userId}/penugasan", pegawai.PenugasanIndex).Methods("GET")
+
+	p.HandleFunc("/{userId}/laporan", pegawai.LaporanIndex).Methods("GET")
+	p.HandleFunc("/{userId}/laporan-ak", pegawai.UploadLapAktivitas).Methods("POST")
+	p.HandleFunc("/{userId}/laporan-ang", pegawai.UploadLapAnggaran).Methods("POST")
 
 	// Mobile Section
 	p.HandleFunc("/{userId}/mobile", pegawai.GetSurat).Methods("GET")

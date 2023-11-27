@@ -7,6 +7,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
@@ -91,11 +92,6 @@ func (ps *PegawaiServiceImpl) PresensiFoto(ctx context.Context, request presensi
 		Lokasi:       request.Lokasi,
 	}
 
-	err = ps.PegawaiRepo.CheckIzin(ctx, tx, presensi)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
-	}
-
 	presensi, err = ps.PegawaiRepo.PresensiFoto(ctx, tx, presensi)
 	helper.PanicIfError(err)
 
@@ -117,4 +113,107 @@ func (ps *PegawaiServiceImpl) GetSurat(ctx context.Context, request presensireqr
 	}
 
 	return helper.ToSuratTugasJOINApprovedResponses(surat)
+}
+
+// LaporanGetAllSPPDByUserId implements PegawaiService.
+func (ps *PegawaiServiceImpl) LaporanGetAllSPPDByUserId(ctx context.Context, userId int) []surattugasreqres.SuratTugasJOINApprovedLaporanResponse {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat, err := ps.PegawaiRepo.LaporanGetAllSPPDByUserId(ctx, tx, userId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToSuratTugasJOINApprovedLaporanResponses(surat)
+
+}
+
+// LaporanGetSPPDById implements PegawaiService.
+func (ps *PegawaiServiceImpl) LaporanGetSPPDById(ctx context.Context, request laporanreqres.LaporanGetSPPDByIdRequest) surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse {
+	err := ps.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat, err := ps.PegawaiRepo.LaporanGetSPPDById(ctx, tx, request.SuratTugasId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	presensi := ps.PegawaiRepo.GetFotoByUserIdAndSPPDId(ctx, tx, request)
+
+	lapAkAngg := entity.LaporanAktivitasAnggaran{
+		SuratId: request.SuratTugasId,
+		UserId:  request.UserId,
+	}
+
+	lapAkAngg, err = ps.PegawaiRepo.GetLaporanAktivitasByUserIdAndSPPDId(ctx, tx, lapAkAngg)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	lapAkAngg, err = ps.PegawaiRepo.GetLaporanAnggaranByUserIdAndSPPDId(ctx, tx, lapAkAngg)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToSuratTugasJOINUserParticipanLaporanResponse(surat, presensi, lapAkAngg)
+}
+
+// UploadLapAktivitas implements PegawaiService.
+func (ps *PegawaiServiceImpl) UploadLapAktivitas(ctx context.Context, request laporanreqres.UploadLaporanRequest) laporanreqres.UploadLaporanResponse {
+	err := ps.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	laporan := entity.LaporanAktivitas{
+		SuratTugasId:   request.SuratTugasId,
+		UserId:         request.UserId,
+		DokLaporanName: request.DokLaporanName,
+		DokLaporanPDF:  request.DokLaporanPDF,
+	}
+
+	uploadLaporan, err := ps.PegawaiRepo.UploadLaporanAct(ctx, tx, laporan)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return laporanreqres.UploadLaporanResponse{
+		DokLaporanName: uploadLaporan.DokLaporanName,
+		Message:        "Success",
+	}
+}
+
+// UploadLapAnggaran implements PegawaiService.
+func (ps *PegawaiServiceImpl) UploadLapAnggaran(ctx context.Context, request laporanreqres.UploadLaporanRequest) laporanreqres.UploadLaporanResponse {
+	err := ps.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	laporan := entity.LaporanAnggaran{
+		SuratTugasId:   request.SuratTugasId,
+		UserId:         request.UserId,
+		DokLaporanName: request.DokLaporanName,
+		DokLaporanPDF:  request.DokLaporanPDF,
+	}
+
+	uploadLaporan, err := ps.PegawaiRepo.UploadLaporanAngg(ctx, tx, laporan)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return laporanreqres.UploadLaporanResponse{
+		DokLaporanName: uploadLaporan.DokLaporanName,
+		Message:        "Success",
+	}
 }

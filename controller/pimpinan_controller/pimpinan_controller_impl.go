@@ -10,6 +10,7 @@ import (
 	"github.com/fzialam/workAway/model"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
+	pimpinanreqres "github.com/fzialam/workAway/model/req_res/pimpinan_req_res"
 	pimpinanservice "github.com/fzialam/workAway/service/pimpinan_service"
 	"github.com/gorilla/mux"
 )
@@ -50,10 +51,11 @@ func (pc *PimpinanControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Reque
 	if result == 0 {
 		allUserResponse := pc.PimpinanService.GetAllUserId(r.Context())
 		data := map[string]interface{}{
-			"user": allUserResponse,
+			"user":   allUserResponse,
+			"create": "true",
 		}
 
-		temp, err := template.ParseFiles("./view/penugasan-form.html")
+		temp, err := template.ParseFiles("./view/pimpinan.html")
 		helper.PanicIfError(err)
 
 		err = temp.Execute(w, data)
@@ -65,7 +67,7 @@ func (pc *PimpinanControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Reque
 			"status": r.URL.Query().Get("v"),
 		}
 
-		temp, err := template.ParseFiles("./view/penugasan.html")
+		temp, err := template.ParseFiles("./view/pimpinan.html")
 		helper.PanicIfError(err)
 
 		temp.Funcs(template.FuncMap{"index": helper.AddIndex})
@@ -103,7 +105,7 @@ func (pc *PimpinanControllerImpl) SPPDDetailSurat(w http.ResponseWriter, r *http
 		"status": r.URL.Query().Get("v"),
 	}
 
-	temp, err := template.ParseFiles("./view/penugasan.html")
+	temp, err := template.ParseFiles("./view/pimpinan.html")
 	helper.PanicIfError(err)
 
 	err = temp.Execute(w, data)
@@ -113,16 +115,15 @@ func (pc *PimpinanControllerImpl) SPPDDetailSurat(w http.ResponseWriter, r *http
 // SPPDSetApproved implements PimpinanController.
 func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["suratId"]
-	idInt, err := strconv.Atoi(id)
-	helper.PanicIfError(err)
+	idS := vars["suratId"]
+	suratId, _ := strconv.Atoi(idS)
 
-	izinRequest := izinreqres.IzinRequest{}
-	helper.ReadFromRequestBody(r, &izinRequest)
+	sppdAprroved := pimpinanreqres.UploadSPPDRequest{}
+	helper.ReadFromRequestBody(r, &sppdAprroved)
 
-	izinRequest.SuratTugasId = idInt
+	sppdAprroved.SuratTugasId = suratId
 
-	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), izinRequest)
+	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), sppdAprroved)
 
 	response := model.Response{
 		Code:   200,

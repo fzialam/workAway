@@ -43,11 +43,11 @@ mobile/android/app/debug
 mobile/android/app/profile
 mobile/android/app/release
 
-# tu_controller
-# tu_service
-# tu_repository
-# tu_req_res
-# tu_test.go
+# pegawai_controller
+# pegawai_service
+# pegawai_repository
+# pegawai_req_res
+# pegawai_test.go
 
 view
 test

@@ -8,4 +8,8 @@ type PegawaiController interface {
 
 	Presensi(w http.ResponseWriter, r *http.Request)
 	GetSurat(w http.ResponseWriter, r *http.Request)
+
+	LaporanIndex(w http.ResponseWriter, r *http.Request)
+	UploadLapAktivitas(w http.ResponseWriter, r *http.Request)
+	UploadLapAnggaran(w http.ResponseWriter, r *http.Request)
 }

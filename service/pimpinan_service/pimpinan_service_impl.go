@@ -8,6 +8,7 @@ import (
 	"github.com/fzialam/workAway/model/entity"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
+	pimpinanreqres "github.com/fzialam/workAway/model/req_res/pimpinan_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	pimpinanrepository "github.com/fzialam/workAway/repository/pimpinan_repository"
@@ -56,6 +57,7 @@ func (ps *PimpinanServiceImpl) CreatePenugasan(ctx context.Context, request penu
 		UserId:       request.ParticipansId,
 		SuratTugasId: surat.Id,
 	}
+
 	if len(participan.UserId) > 0 {
 		participan, err = ps.PimpinanRepo.AddParticipans(ctx, tx, participan)
 		helper.PanicIfError(err)
@@ -154,7 +156,7 @@ func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratI
 }
 
 // SPPDSetApproved implements PimpinanService.
-func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request izinreqres.IzinRequest) izinreqres.IzinResponse {
+func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) izinreqres.IzinResponse {
 	err := ps.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -164,10 +166,27 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request izin
 
 	izin := entity.Izin{
 		SuratTugasId: request.SuratTugasId,
-		StatusTTD:    request.StatusTTD,
+		StatusTTD:    request.Status,
 	}
 
 	izin = ps.PimpinanRepo.SPPDSetApproved(ctx, tx, izin)
+
+	if izin.StatusTTD == "1" {
+		err = ps.PimpinanRepo.UploadSPPDAproved(ctx, tx, request)
+		helper.PanicIfError(err)
+
+		err = ps.PimpinanRepo.SetNullApprovedAktivitas(ctx, tx, izin.SuratTugasId)
+		helper.PanicIfError(err)
+
+		err = ps.PimpinanRepo.SetNullApprovedAnggaran(ctx, tx, izin.SuratTugasId)
+		helper.PanicIfError(err)
+
+		err = ps.PimpinanRepo.SetNullLaporanAktivitas(ctx, tx, izin.SuratTugasId)
+		helper.PanicIfError(err)
+
+		err = ps.PimpinanRepo.SetNullLaporanAnggaran(ctx, tx, izin.SuratTugasId)
+		helper.PanicIfError(err)
+	}
 
 	return helper.ToIzinResponses(izin)
 }
