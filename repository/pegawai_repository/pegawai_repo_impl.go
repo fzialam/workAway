@@ -288,11 +288,11 @@ func (*PegawaiRepoImpl) GetFotoByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx
 }
 
 // GetLaporanAktivitasByUserIdAndSPPDId implements PegawaiRepo.
-func (pr *PegawaiRepoImpl) GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitasAnggaran) (entity.LaporanAktivitasAnggaran, error) {
+func (pr *PegawaiRepoImpl) GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error) {
 	SQL := "SELECT dok_laporan_name, dok_laporan_pdf FROM `laporan_aktivitas` WHERE `surat_tugas_id` =? AND `user_id`=?"
-	err := tx.QueryRowContext(ctx, SQL, laporan.SuratId, laporan.UserId).Scan(
-		&laporan.DokAktivitasName,
-		&laporan.DokAktivitasPDF,
+	err := tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId, laporan.UserId).Scan(
+		&laporan.DokLaporanName,
+		&laporan.DokLaporanPDF,
 	)
 	helper.PanicIfError(err)
 
@@ -300,11 +300,11 @@ func (pr *PegawaiRepoImpl) GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Cont
 }
 
 // GetLaporanAnggaranByUserIdAndSPPDId implements PegawaiRepo.
-func (pr *PegawaiRepoImpl) GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitasAnggaran) (entity.LaporanAktivitasAnggaran, error) {
+func (pr *PegawaiRepoImpl) GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error) {
 	SQL := "SELECT dok_laporan_name, dok_laporan_pdf FROM `laporan_anggaran` WHERE `surat_tugas_id` =? AND `user_id`=?"
-	err := tx.QueryRowContext(ctx, SQL, laporan.SuratId, laporan.UserId).Scan(
-		&laporan.DokAnggaranName,
-		&laporan.DokAnggaranPDF,
+	err := tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId, laporan.UserId).Scan(
+		&laporan.DokLaporanName,
+		&laporan.DokLaporanPDF,
 	)
 	helper.PanicIfError(err)
 
@@ -312,7 +312,7 @@ func (pr *PegawaiRepoImpl) GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Conte
 }
 
 // UploadLaporanAct implements PegawaiRepo.
-func (pr *PegawaiRepoImpl) UploadLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitas) (entity.LaporanAktivitas, error) {
+func (pr *PegawaiRepoImpl) UploadLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error) {
 	SQL := "INSERT TO `laporan_aktivitas`(`surat_tugas_id`, `user_id`, `dok_laporan_name`, `dok_laporan_pdf`) VALUES(?, ?, ?, ?);"
 	result, err := tx.ExecContext(ctx, SQL,
 		laporan.SuratTugasId,
@@ -332,7 +332,7 @@ func (pr *PegawaiRepoImpl) UploadLaporanAct(ctx context.Context, tx *sql.Tx, lap
 }
 
 // UploadLaporanAngg implements PegawaiRepo.
-func (pr *PegawaiRepoImpl) UploadLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAnggaran) (entity.LaporanAnggaran, error) {
+func (pr *PegawaiRepoImpl) UploadLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error) {
 	SQL := "INSERT TO `laporan_anggaran` (`surat_tugas_id`, `user_id`, `dok_laporan_name`, `dok_laporan_pdf`) VALUES(?, ?, ?, ?);"
 	result, err := tx.ExecContext(ctx, SQL,
 		laporan.SuratTugasId,

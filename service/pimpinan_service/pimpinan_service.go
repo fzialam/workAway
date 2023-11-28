@@ -24,6 +24,6 @@ type PimpinanService interface {
 	SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasResponse
 
 	LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse
-	LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoResponse
+	LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanResponse
 	SetApprovedLaporan(ctx context.Context, request laporanreqres.ApprovedLaporanRequest) laporanreqres.ApprovedLaporanResponse
 }

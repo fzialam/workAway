@@ -26,9 +26,9 @@ type PegawaiRepo interface {
 	GetAllParticipanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) ([]entity.ParticipanJoinUser, error)
 	GetFotoByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, request laporanreqres.LaporanGetSPPDByIdRequest) entity.Presensi
 
-	GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitasAnggaran) (entity.LaporanAktivitasAnggaran, error)
-	GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitasAnggaran) (entity.LaporanAktivitasAnggaran, error)
+	GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
+	GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
 
-	UploadLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitas) (entity.LaporanAktivitas, error)
-	UploadLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAnggaran) (entity.LaporanAnggaran, error)
+	UploadLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
+	UploadLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
 }

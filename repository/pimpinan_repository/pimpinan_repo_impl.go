@@ -363,23 +363,19 @@ func (pr *PimpinanRepoImpl) LaporanSPPDById(ctx context.Context, tx *sql.Tx, sur
 }
 
 // GetLaporanSPPDById implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanAktivitasAnggaran {
-	SQL := "SELECT `laporan_aktivitas`.id, `laporan_aktivitas`.dok_laporan_name, `laporan_aktivitas`.dok_laporan_pdf, `laporan_anggaran`.id,`laporan_anggaran`.dok_laporan_name, `laporan_anggaran`.dok_laporan_pdf "
-	SQL += "FROM `surat_tugas` "
-	SQL += "INNER JOIN `laporan_aktivitas` on `surat_tugas`.id = `laporan_aktivitas`.surat_tugas_id "
-	SQL += "INNER JOIN `laporan_anggaran` on `surat_tugas`.id = `laporan_anggaran`.surat_tugas_id "
-	SQL += "WHERE `surat_tugas`.id = ?;"
+func (pr *PimpinanRepoImpl) GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.Laporan {
+	SQL := "SELECT * FROM `laporan_aktivitas` WHERE surat_tugas_id = ?;"
 
-	var laporan entity.LaporanAktivitasAnggaran
+	var laporan entity.Laporan
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 
 	row.Scan(
-		&laporan.DokAktivitasId,
-		&laporan.DokAktivitasName,
-		&laporan.DokAktivitasPDF,
-		&laporan.DokAnggaranId,
-		&laporan.DokAnggaranName,
-		&laporan.DokAnggaranPDF,
+		&laporan.Id,
+		&laporan.SuratTugasId,
+		&laporan.UserId,
+		&laporan.DokLaporanName,
+		&laporan.DokLaporanPDF,
+		&laporan.CreateAt,
 	)
 
 	return laporan

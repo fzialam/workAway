@@ -33,7 +33,7 @@ func TestDB(t *testing.T) {
 	// SQL += "INNER JOIN `laporan_anggaran` on `surat_tugas`.id = `laporan_anggaran`.surat_tugas_id "
 	// SQL += "WHERE `surat_tugas`.id = ?;"
 
-	// var laporan entity.LaporanAktivitasAnggaran
+	// var laporan entity.Laporan
 	ctx := context.Background()
 	tx, err := db.Begin()
 	helper.PanicIfError(err)

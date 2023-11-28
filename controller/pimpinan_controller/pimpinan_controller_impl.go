@@ -204,27 +204,21 @@ func (pc *PimpinanControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Re
 
 // LaporanSetAprroved implements PimpinanController.
 func (pc *PimpinanControllerImpl) LaporanSetAprroved(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["suratId"]
-	idInt, err := strconv.Atoi(id)
-	helper.PanicIfError(err)
-
 	approvedReq := laporanreqres.ApprovedLaporanRequest{
-		LaporanId: idInt,
-		UserId:    2,
+		UserId: 2,
 	}
 
 	helper.ReadFromRequestBody(r, &approvedReq)
 
-	approvedRes := pc.PimpinanService.SetApprovedLaporan(r.Context(), approvedReq)
+	// approvedRes := pc.PimpinanService.SetApprovedLaporan(r.Context(), approvedReq)
 
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   approvedRes,
-	}
+	// response := model.Response{
+	// 	Code:   200,
+	// 	Status: "OK",
+	// 	Data:   approvedRes,
+	// }
 
-	helper.WriteToResponseBody(w, response)
+	helper.WriteToResponseBody(w, approvedReq)
 }
 
 // LaporanDetail implements PimpinanController.

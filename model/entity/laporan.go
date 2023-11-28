@@ -1,6 +1,6 @@
 package entity
 
-type LaporanAktivitas struct {
+type Laporan struct {
 	Id             int    `json:"id"`
 	SuratTugasId   int    `json:"surat_tugas_id"`
 	UserId         int    `json:"user_id"`

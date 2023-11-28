@@ -196,7 +196,7 @@ func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattug
 }
 
 // LaporanSPPDById implements PimpinanService.
-func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoResponse {
+func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)

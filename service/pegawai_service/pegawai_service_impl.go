@@ -146,9 +146,9 @@ func (ps *PegawaiServiceImpl) LaporanGetSPPDById(ctx context.Context, request la
 
 	presensi := ps.PegawaiRepo.GetFotoByUserIdAndSPPDId(ctx, tx, request)
 
-	lapAkAngg := entity.LaporanAktivitasAnggaran{
-		SuratId: request.SuratTugasId,
-		UserId:  request.UserId,
+	lapAkAngg := entity.Laporan{
+		SuratTugasId: request.SuratTugasId,
+		UserId:       request.UserId,
 	}
 
 	lapAkAngg, err = ps.PegawaiRepo.GetLaporanAktivitasByUserIdAndSPPDId(ctx, tx, lapAkAngg)
@@ -173,7 +173,7 @@ func (ps *PegawaiServiceImpl) UploadLapAktivitas(ctx context.Context, request la
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	laporan := entity.LaporanAktivitas{
+	laporan := entity.Laporan{
 		SuratTugasId:   request.SuratTugasId,
 		UserId:         request.UserId,
 		DokLaporanName: request.DokLaporanName,
@@ -200,7 +200,7 @@ func (ps *PegawaiServiceImpl) UploadLapAnggaran(ctx context.Context, request lap
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	laporan := entity.LaporanAnggaran{
+	laporan := entity.Laporan{
 		SuratTugasId:   request.SuratTugasId,
 		UserId:         request.UserId,
 		DokLaporanName: request.DokLaporanName,

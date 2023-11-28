@@ -30,7 +30,7 @@ type PimpinanRepo interface {
 	// Laporan
 	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedLaporanDokumen
 	LaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserFoto, error)
-	GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanAktivitasAnggaran
+	GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.Laporan
 
 	GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto
 	GetAllFotoParticipanById(ctx context.Context, tx *sql.Tx, participan entity.ParticipanJoinUser) entity.ParticipanJoinUserFoto
