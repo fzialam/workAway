@@ -302,3 +302,30 @@ func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(
 	}
 
 }
+
+func ToSuratTugasJOINLaporanApprovedResponse(surat entity.SuratTugasJOINLaporanApproved) surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
+	return surattugasreqres.SuratTugasJOINLaporanApprovedResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		Laporan:          surat.Laporan,
+	}
+}
+
+func ToSuratTugasJOINLaporanApprovedResponses(surats []entity.SuratTugasJOINLaporanApproved) []surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
+	var responses []surattugasreqres.SuratTugasJOINLaporanApprovedResponse
+
+	for _, surat := range surats {
+		responses = append(responses, ToSuratTugasJOINLaporanApprovedResponse(surat))
+	}
+	return responses
+}

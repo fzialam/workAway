@@ -28,7 +28,8 @@ type PimpinanRepo interface {
 	UploadSPPDAproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error
 
 	// Laporan
-	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedLaporanDokumen
+	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINLaporanApproved
+	LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved
 	LaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserFoto, error)
 	GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.Laporan
 

@@ -210,15 +210,15 @@ func (pc *PimpinanControllerImpl) LaporanSetAprroved(w http.ResponseWriter, r *h
 
 	helper.ReadFromRequestBody(r, &approvedReq)
 
-	// approvedRes := pc.PimpinanService.SetApprovedLaporan(r.Context(), approvedReq)
+	approvedRes := pc.PimpinanService.SetApprovedLaporan(r.Context(), approvedReq)
 
-	// response := model.Response{
-	// 	Code:   200,
-	// 	Status: "OK",
-	// 	Data:   approvedRes,
-	// }
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   approvedRes,
+	}
 
-	helper.WriteToResponseBody(w, approvedReq)
+	helper.WriteToResponseBody(w, response)
 }
 
 // LaporanDetail implements PimpinanController.

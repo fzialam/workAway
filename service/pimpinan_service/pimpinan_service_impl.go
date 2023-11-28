@@ -186,13 +186,18 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 }
 
 // LaporanGetAllSPPD implements PimpinanService.
-func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
+func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	surat := ps.PimpinanRepo.LaporanGetAllSPPD(ctx, tx)
-	return helper.ToSuratTugasJOINApprovedLaporanDokumens(surat)
+
+	for i := range surat {
+		laporan := ps.PimpinanRepo.LaporanBySPPDId(ctx, tx, surat[i].Id)
+		surat[i].Laporan = laporan
+	}
+	return helper.ToSuratTugasJOINLaporanApprovedResponses(surat)
 }
 
 // LaporanSPPDById implements PimpinanService.

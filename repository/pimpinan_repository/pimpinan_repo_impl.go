@@ -288,19 +288,16 @@ func (pr *PimpinanRepoImpl) UploadSPPDAproved(ctx context.Context, tx *sql.Tx, r
 }
 
 // LaproanGetAllSPPD implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedLaporanDokumen {
-	SQL := "SELECT `surat_tugas`.*, `laporan_aktivitas`.dok_laporan_name,  `laporan_aktivitas`.dok_laporan_pdf, `approved_lap_ak`.status "
+func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINLaporanApproved {
+	SQL := "SELECT `surat_tugas`.* "
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
-	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
-	SQL += "INNER JOIN `laporan_aktivitas` ON `surat_tugas`.id = `laporan_aktivitas`.surat_tugas_id "
-	SQL += "INNER JOIN `approved_lap_ak` ON `laporan_aktivitas`.id = `approved_lap_ak`.laporan_id "
 	SQL += "WHERE `surat_tugas`.tgl_akhir > NOW() AND `approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-';"
-	surats := []entity.SuratTugasJOINApprovedLaporanDokumen{}
+	surats := []entity.SuratTugasJOINLaporanApproved{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 	for rows.Next() {
-		surat := entity.SuratTugasJOINApprovedLaporanDokumen{}
+		surat := entity.SuratTugasJOINLaporanApproved{}
 		rows.Scan(
 			&surat.Id,
 			&surat.Tipe,
@@ -314,18 +311,37 @@ func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) [
 			&surat.TglAwal,
 			&surat.TglAkhir,
 			&surat.CreateAt,
-			&surat.LaporanAkName,
-			&surat.LaporanAkPDF,
-			&surat.StatusPimpinan,
 		)
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
-		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 		surats = append(surats, surat)
 	}
 
 	return surats
+}
+
+// LaporanBySPPDId implements PimpinanRepo.
+func (*PimpinanRepoImpl) LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved {
+	SQL := "SELECT `laporan_aktivitas`.*, `approved_lap_ak`.status "
+	SQL += "FROM `laporan_aktivitas` "
+	SQL += "INNER JOIN `approved_lap_ak` ON `laporan_aktivitas`.id = `approved_lap_ak`.laporan_id "
+	SQL += "WHERE `laporan_aktivitas`.surat_tugas_id=?;"
+
+	row := tx.QueryRowContext(ctx, SQL, suratId)
+
+	var laporanAprroved entity.LaporanJoinApproved
+	row.Scan(
+		&laporanAprroved.Id,
+		&laporanAprroved.SuratTugasId,
+		&laporanAprroved.UserId,
+		&laporanAprroved.DokLaporanName,
+		&laporanAprroved.DokLaporanPDF,
+		&laporanAprroved.CreateAt,
+		&laporanAprroved.Status,
+	)
+
+	return laporanAprroved
 }
 
 // LaproanSPPDById implements PimpinanRepo.

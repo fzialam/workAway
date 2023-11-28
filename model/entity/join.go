@@ -1,7 +1,6 @@
 package entity
 
 // Surat Tugas
-
 type SuratTugasJOINApproved struct {
 	Id                int    `json:"id"`
 	Tipe              int    `json:"tipe"`
@@ -18,6 +17,22 @@ type SuratTugasJOINApproved struct {
 	Status            string `json:"status"`
 	StatusTTD         string `json:"status_ttd"`
 	StatusTTDCreateAt string `json:"status_ttd_create_at"`
+}
+
+type SuratTugasJOINLaporanApproved struct {
+	Id               int                 `json:"id"`
+	Tipe             int                 `json:"tipe"`
+	UserId           int                 `json:"user_id"`
+	LokasiTujuan     string              `json:"lokasi_tujuan"`
+	JenisProgram     string              `json:"jenis_program"`
+	DokumenName      string              `json:"dokumen_name"`
+	DokumenPDF       string              `json:"dokumen_pdf"`
+	DokPendukungName string              `json:"dok_pendukung_name"`
+	DokPendukungPdf  string              `json:"dok_pendukung_pdf"`
+	TglAwal          string              `json:"tgl_awal"`
+	TglAkhir         string              `json:"tgl_akhir"`
+	CreateAt         string              `json:"create_at"`
+	Laporan          LaporanJoinApproved `json:"laporan"`
 }
 
 type SuratTugasJOINUser struct {
@@ -224,4 +239,14 @@ type LaporanAktivitasAnggaran struct {
 	DokAnggaranId    int    `json:"dok_anggaran_id"`
 	DokAnggaranName  string `json:"dok_anggaran_name"`
 	DokAnggaranPDF   string `json:"dok_anggaran_pdf"`
+}
+
+type LaporanJoinApproved struct {
+	Id             int    `json:"id"`
+	SuratTugasId   int    `json:"surat_tugas_id"`
+	UserId         int    `json:"user_id"`
+	DokLaporanName string `json:"dok_laporan_name"`
+	DokLaporanPDF  string `json:"dok_laporan_pdf"`
+	CreateAt       string `json:"create_at"`
+	Status         string `json:"status"`
 }
