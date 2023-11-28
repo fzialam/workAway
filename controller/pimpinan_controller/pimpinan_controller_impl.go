@@ -230,11 +230,14 @@ func (pc *PimpinanControllerImpl) LaporanDetail(w http.ResponseWriter, r *http.R
 	helper.PanicIfError(err)
 
 	surat := pc.PimpinanService.LaporanSPPDById(r.Context(), idInt)
+	var data map[string]interface{}
 
-	data := map[string]interface{}{
-		"sppd":    surat,
-		"viewLap": "true",
-		"lenP":    len(surat.Participans),
+	if surat.LaporanDokName != "" {
+		data = map[string]interface{}{
+			"sppd":    surat,
+			"viewLap": "true",
+			"lenP":    len(surat.Participans),
+		}
 	}
 
 	temp, err := template.ParseFiles("view/pimpinan.html")

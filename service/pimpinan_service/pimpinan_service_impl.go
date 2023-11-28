@@ -195,13 +195,16 @@ func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattug
 
 	for i := range surat {
 		laporan := ps.PimpinanRepo.LaporanBySPPDId(ctx, tx, surat[i].Id)
+		statusLaporan := ps.PimpinanRepo.LaporanIsApproved(ctx, tx, laporan.Id)
+
+		laporan.Status = statusLaporan.Status
 		surat[i].Laporan = laporan
 	}
 	return helper.ToSuratTugasJOINLaporanApprovedResponses(surat)
 }
 
 // LaporanSPPDById implements PimpinanService.
-func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanResponse {
+func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -215,6 +218,8 @@ func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int)
 
 	laporan := ps.PimpinanRepo.GetLaporanSPPDById(ctx, tx, suratId)
 
+	isApproved := ps.PimpinanRepo.IsLaporanApproved(ctx, tx, laporan.Id)
+
 	participans := ps.PimpinanRepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
 
 	participansFoto := []entity.ParticipanJoinUserFoto{}
@@ -225,7 +230,7 @@ func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int)
 		}
 	}
 
-	return helper.ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(surat, laporan, participansFoto)
+	return helper.ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(surat, laporan, isApproved, participansFoto)
 }
 
 // SetApprovedLaporan implements PimpinanService.

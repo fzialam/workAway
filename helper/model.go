@@ -271,10 +271,11 @@ func ToSuratTugasJOINApprovedLaporanDokumens(surats []entity.SuratTugasJOINAppro
 func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(
 	surat entity.SuratTugasJOINUserFoto,
 	laporan entity.Laporan,
+	isApproved string,
 	participansFoto []entity.ParticipanJoinUserFoto,
-) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanResponse {
+) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse {
 
-	return surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanResponse{
+	return surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse{
 		Id:               surat.Id,
 		Tipe:             surat.Tipe,
 		UserId:           surat.UserId,
@@ -295,6 +296,7 @@ func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(
 		LaporanId:        laporan.Id,
 		LaporanDokName:   laporan.DokLaporanName,
 		LaporanDokPDF:    laporan.DokLaporanPDF,
+		Status:           isApproved,
 		NameGambar:       surat.UserNameGambar,
 		Gambar:           surat.UserGambar,
 		Lokasi:           surat.UserLokasi,

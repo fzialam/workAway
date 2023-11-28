@@ -141,7 +141,7 @@ type SuratTugasJOINUserParticipanLaporanResponse struct {
 	Koordinat        string                      `json:"koordinat"`
 }
 
-type SuratTugasJOINUserFotoParticipanFotoLaporanResponse struct {
+type SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse struct {
 	Id               int                             `json:"id"`
 	Tipe             int                             `json:"tipe"`
 	UserId           int                             `json:"user_id"`
@@ -162,6 +162,7 @@ type SuratTugasJOINUserFotoParticipanFotoLaporanResponse struct {
 	LaporanId        int                             `json:"laporan_id"`
 	LaporanDokName   string                          `json:"laporan_dok_name"`
 	LaporanDokPDF    string                          `json:"laporan_dok_pdf"`
+	Status           string                          `json:"status"`
 	NameGambar       string                          `json:"name_gambar"`
 	Gambar           string                          `json:"gambar"`
 	Lokasi           string                          `json:"lokasi"`

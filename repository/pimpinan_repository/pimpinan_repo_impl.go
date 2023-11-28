@@ -322,8 +322,8 @@ func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) [
 }
 
 // LaporanBySPPDId implements PimpinanRepo.
-func (*PimpinanRepoImpl) LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved {
-	SQL := "SELECT `laporan_aktivitas`.*, `approved_lap_ak`.status "
+func (pr *PimpinanRepoImpl) LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved {
+	SQL := "SELECT `laporan_aktivitas`.* "
 	SQL += "FROM `laporan_aktivitas` "
 	SQL += "INNER JOIN `approved_lap_ak` ON `laporan_aktivitas`.id = `approved_lap_ak`.laporan_id "
 	SQL += "WHERE `laporan_aktivitas`.surat_tugas_id=?;"
@@ -338,6 +338,21 @@ func (*PimpinanRepoImpl) LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratI
 		&laporanAprroved.DokLaporanName,
 		&laporanAprroved.DokLaporanPDF,
 		&laporanAprroved.CreateAt,
+	)
+
+	return laporanAprroved
+}
+
+// LaporanIsApproved implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) LaporanIsApproved(ctx context.Context, tx *sql.Tx, laporanId int) entity.ApprovedLaporan {
+	SQL := "SELECT `approved_lap_ak`.status "
+	SQL += "FROM `approved_lap_ak` "
+	SQL += "WHERE `approved_lap_ak`.laporan_id=?;"
+
+	row := tx.QueryRowContext(ctx, SQL, laporanId)
+
+	var laporanAprroved entity.ApprovedLaporan
+	row.Scan(
 		&laporanAprroved.Status,
 	)
 
@@ -380,7 +395,7 @@ func (pr *PimpinanRepoImpl) LaporanSPPDById(ctx context.Context, tx *sql.Tx, sur
 
 // GetLaporanSPPDById implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.Laporan {
-	SQL := "SELECT * FROM `laporan_aktivitas` WHERE surat_tugas_id = ?;"
+	SQL := "SELECT * FROM `laporan_aktivitas` WHERE surat_tugas_id = ? AND dok_laporan_name != '';"
 
 	var laporan entity.Laporan
 	row := tx.QueryRowContext(ctx, SQL, suratId)
@@ -395,6 +410,22 @@ func (pr *PimpinanRepoImpl) GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, 
 	)
 
 	return laporan
+}
+
+// IsLaporanApproved implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) IsLaporanApproved(ctx context.Context, tx *sql.Tx, laporanId int) string {
+	SQL := "SELECT status FROM `approved_lap_ak` WHERE id = ?;"
+
+	var status string
+
+	row := tx.QueryRowContext(ctx, SQL, laporanId)
+
+	row.Scan(
+		&status,
+	)
+
+	return status
+
 }
 
 // SetApprovedLaporan implements PimpinanRepo.
