@@ -12,4 +12,8 @@ type PimpinanController interface {
 	IndexPermohonan(w http.ResponseWriter, r *http.Request)
 	PermohonanDetailSurat(w http.ResponseWriter, r *http.Request)
 	PermohonanSetApproved(w http.ResponseWriter, r *http.Request)
+
+	IndexLaporan(w http.ResponseWriter, r *http.Request)
+	LaporanDetail(w http.ResponseWriter, r *http.Request)
+	LaporanSetAprroved(w http.ResponseWriter, r *http.Request)
 }

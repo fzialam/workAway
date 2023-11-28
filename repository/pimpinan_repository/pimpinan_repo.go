@@ -13,23 +13,26 @@ type PimpinanRepo interface {
 	GetAllUserId(ctx context.Context, tx *sql.Tx) []entity.User
 	CreateSurat(ctx context.Context, tx *sql.Tx, surat entity.SuratTugas) (entity.SuratTugas, error)
 	AddParticipans(ctx context.Context, tx *sql.Tx, participans entity.Participan) (entity.Participan, error)
-	GetAllParticipanJOINUserBySuratId(ctx context.Context, tx *sql.Tx, suratId int) ([]entity.ParticipanJoinUser, error)
+	GetAllParticipanJOINUserBySuratId(ctx context.Context, tx *sql.Tx, suratId int) []entity.ParticipanJoinUser
 
 	// Permohonan
 	PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
 	PermohonanGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error)
-	PermohonanSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin
+	PermohonanSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved
 
 	// SPPD
 	SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
 	SPPDGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugas, error)
-	SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin
-
-	SetNullLaporanAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error
-	SetNullLaporanAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error
-
-	SetNullApprovedAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error
-	SetNullApprovedAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error
+	SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved
 
 	UploadSPPDAproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error
+
+	// Laporan
+	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedLaporanDokumen
+	LaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserFoto, error)
+	GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanAktivitasAnggaran
+
+	GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto
+	GetAllFotoParticipanById(ctx context.Context, tx *sql.Tx, participan entity.ParticipanJoinUser) entity.ParticipanJoinUserFoto
+	SetApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan
 }

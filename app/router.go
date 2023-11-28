@@ -68,6 +68,9 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	pp.HandleFunc("/{suratId}/sppd", pimpinan.SPPDDetailSurat).Methods("GET")
 	pp.HandleFunc("/{suratId}/sppd", pimpinan.SPPDSetApproved).Methods("POST")
 
+	pp.HandleFunc("/laporan", pimpinan.IndexLaporan).Methods("GET")
+	pp.HandleFunc("/{suratId}/laporan", pimpinan.LaporanDetail).Methods("GET")
+	pp.HandleFunc("/{suratId}/laporan", pimpinan.LaporanSetAprroved).Methods("POST")
 	// ===========> Pimpinan Section End <===========
 
 	r.Use(exception.PanicHandler)

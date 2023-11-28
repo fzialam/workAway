@@ -196,11 +196,11 @@ func (pr *PegawaiRepoImpl) Set0Approved(ctx context.Context, tx *sql.Tx, suratId
 }
 
 // GetAllUserID implements PegawaiRepo.
-func (pr *PegawaiRepoImpl) GetAllUserID(ctx context.Context, tx *sql.Tx) []entity.User {
-	SQL := "SELECT `id`, `name` FROM `user` WHERE `rank`=0;"
+func (pr *PegawaiRepoImpl) GetAllUserID(ctx context.Context, tx *sql.Tx, userId int) []entity.User {
+	SQL := "SELECT `id`, `name` FROM `user` WHERE `rank`=0 AND `id` != ?;"
 	var users []entity.User
 
-	rows, err := tx.QueryContext(ctx, SQL)
+	rows, err := tx.QueryContext(ctx, SQL, userId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
@@ -313,12 +313,12 @@ func (pr *PegawaiRepoImpl) GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Conte
 
 // UploadLaporanAct implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) UploadLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAktivitas) (entity.LaporanAktivitas, error) {
-	SQL := "UPDATE `laporan_aktivitas` SET `user_id` = ?, `dok_laporan_name` = ?, `dok_laporan_pdf` = ?, `create_at` = NOW()  WHERE `surat_tugas_id` = ?;"
+	SQL := "INSERT TO `laporan_aktivitas`(`surat_tugas_id`, `user_id`, `dok_laporan_name`, `dok_laporan_pdf`) VALUES(?, ?, ?, ?);"
 	result, err := tx.ExecContext(ctx, SQL,
+		laporan.SuratTugasId,
 		laporan.UserId,
 		laporan.DokLaporanName,
 		laporan.DokLaporanPDF,
-		laporan.SuratTugasId,
 	)
 	if err != nil {
 		return laporan, errors.New("error upload laporan")
@@ -333,12 +333,12 @@ func (pr *PegawaiRepoImpl) UploadLaporanAct(ctx context.Context, tx *sql.Tx, lap
 
 // UploadLaporanAngg implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) UploadLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.LaporanAnggaran) (entity.LaporanAnggaran, error) {
-	SQL := "UPDATE `laporan_anggaran` SET `user_id` = ?, `dok_laporan_name` = ?, `dok_laporan_pdf` = ?, `create_at` = NOW()  WHERE `surat_tugas_id` = ?;"
+	SQL := "INSERT TO `laporan_anggaran` (`surat_tugas_id`, `user_id`, `dok_laporan_name`, `dok_laporan_pdf`) VALUES(?, ?, ?, ?);"
 	result, err := tx.ExecContext(ctx, SQL,
+		laporan.SuratTugasId,
 		laporan.UserId,
 		laporan.DokLaporanName,
 		laporan.DokLaporanPDF,
-		laporan.SuratTugasId,
 	)
 	if err != nil {
 		return laporan, errors.New("error upload laporan")

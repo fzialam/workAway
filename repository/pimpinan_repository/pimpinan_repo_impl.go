@@ -75,7 +75,11 @@ func (pr *PimpinanRepoImpl) AddParticipans(ctx context.Context, tx *sql.Tx, part
 
 // GetAllSuratTugasJOINApprovedUserSPPD implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tgl_awal > NOW() AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-';"
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "WHERE `surat_tugas`.tgl_awal > NOW() AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-';"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -103,6 +107,7 @@ func (pr *PimpinanRepoImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Con
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 		surats = append(surats, surat)
 	}
 	if err != nil {
@@ -112,11 +117,13 @@ func (pr *PimpinanRepoImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Con
 }
 
 // GetAllParticipanJOINUserBySuratId implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Context, tx *sql.Tx, suratId int) ([]entity.ParticipanJoinUser, error) {
+func (pr *PimpinanRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Context, tx *sql.Tx, suratId int) []entity.ParticipanJoinUser {
 	SQL := "SELECT `participan`.user_id, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `participan` INNER JOIN `user` ON `participan`.user_id = `user`.id WHERE `surat_tugas_id`=?"
-	participans := []entity.ParticipanJoinUser{}
+
 	rows, err := tx.QueryContext(ctx, SQL, suratId)
 	helper.PanicIfError(err)
+
+	participans := []entity.ParticipanJoinUser{}
 	for rows.Next() {
 		participan := entity.ParticipanJoinUser{}
 		rows.Scan(
@@ -128,10 +135,7 @@ func (pr *PimpinanRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Contex
 		)
 		participans = append(participans, participan)
 	}
-	if err != nil {
-		return participans, errors.New("tidak ada participan tugas")
-	}
-	return participans, nil
+	return participans
 }
 
 // GetAllUserID implements PimpinanRepo.
@@ -174,6 +178,7 @@ func (pr *PimpinanRepoImpl) SPPDGetSuratTugasById(ctx context.Context, tx *sql.T
 	)
 	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+	surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 
 	if err != nil {
 		return surat, err
@@ -211,6 +216,7 @@ func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx conte
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 		surats = append(surats, surat)
 	}
 	if err != nil {
@@ -224,7 +230,8 @@ func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx 
 	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
-	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "WHERE `surat_tugas`.id= ?;"
 	surat := entity.SuratTugasJOINApprovedUserParticipan{}
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 	err := row.Scan(
@@ -248,6 +255,7 @@ func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx 
 	)
 	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+	surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 
 	if err != nil {
 		return surat, err
@@ -256,65 +264,173 @@ func (pr *PimpinanRepoImpl) PermohonanGetSuratTugasById(ctx context.Context, tx 
 }
 
 // SetApprovedPermohonan implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) PermohonanSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
-	SQL := "UPDATE `approved` SET `status` = ?, `create_at` = NOW(), `status_ttd` = ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
-	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.StatusTTD, izin.SuratTugasId)
+func (pr *PimpinanRepoImpl) PermohonanSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved {
+	SQL := "UPDATE `approved` SET `status` = ? `message`=?, `create_at` = NOW(), `status_ttd` = ?, `message_ttd`=?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
+	_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.Message, izin.StatusTTD, izin.MessageTTD, izin.SuratTugasId)
 	helper.PanicIfError(err)
 	return izin
 }
 
-// SetNullApprovedAktivitas implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SetNullApprovedAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error {
-	SQL := "INSERT INTO `approved_lap_ak`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 2, 0;"
-	_, err := tx.ExecContext(ctx, SQL, suratId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// SetNullApprovedAnggaran implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SetNullApprovedAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error {
-	SQL := "INSERT INTO `approved_lap_angg`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 4, 0);"
-	_, err := tx.ExecContext(ctx, SQL, suratId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// SetNullLaporanAktivitas implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SetNullLaporanAktivitas(ctx context.Context, tx *sql.Tx, suratId int) error {
-	SQL := "INSERT INTO `laporan_aktivitas`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 2, 0);"
-	_, err := tx.ExecContext(ctx, SQL, suratId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// SetNullLaporanAnggaran implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SetNullLaporanAnggaran(ctx context.Context, tx *sql.Tx, suratId int) error {
-	SQL := "INSERT INTO `laporan_anggaran`(`surat_tugas_id`, `user_id`, `status`) VALUES(?, 4, 0);"
-	_, err := tx.ExecContext(ctx, SQL, suratId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // SPPDSetApproved implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Izin) entity.Izin {
-	SQL := "UPDATE `approved` SET `status_ttd` = ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
-	_, err := tx.ExecContext(ctx, SQL, izin.StatusTTD, izin.SuratTugasId)
+func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved {
+	SQL := "UPDATE `approved` SET `status_ttd` = ?, `message_ttd`= ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
+	_, err := tx.ExecContext(ctx, SQL, izin.StatusTTD, izin.MessageTTD, izin.SuratTugasId)
 	helper.PanicIfError(err)
 	return izin
 }
 
 // UploadSPPDAproved implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) UploadSPPDAproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error {
-	SQL := "UPDATE `approved` SET `dokumen_name` = ?, `dokumen_pdf` = ? WHERE `surat_tugas_id` = ?;"
+	SQL := "UPDATE `surat_tugas` SET `dokumen_name` = ?, `dokumen_pdf` = ? WHERE id = ?;"
 	_, err := tx.ExecContext(ctx, SQL, request.DokName, request.DokPDF, request.SuratTugasId)
 	helper.PanicIfError(err)
 	return nil
+}
+
+// LaproanGetAllSPPD implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedLaporanDokumen {
+	SQL := "SELECT `surat_tugas`.*, `laporan_aktivitas`.dok_laporan_name,  `laporan_aktivitas`.dok_laporan_pdf, `approved_lap_ak`.status "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "INNER JOIN `laporan_aktivitas` ON `surat_tugas`.id = `laporan_aktivitas`.surat_tugas_id "
+	SQL += "INNER JOIN `approved_lap_ak` ON `laporan_aktivitas`.id = `approved_lap_ak`.laporan_id "
+	SQL += "WHERE `surat_tugas`.tgl_akhir > NOW() AND `approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-';"
+	surats := []entity.SuratTugasJOINApprovedLaporanDokumen{}
+	rows, err := tx.QueryContext(ctx, SQL)
+	helper.PanicIfError(err)
+	for rows.Next() {
+		surat := entity.SuratTugasJOINApprovedLaporanDokumen{}
+		rows.Scan(
+			&surat.Id,
+			&surat.Tipe,
+			&surat.UserId,
+			&surat.LokasiTujuan,
+			&surat.JenisProgram,
+			&surat.DokumenName,
+			&surat.DokumenPDF,
+			&surat.DokPendukungName,
+			&surat.DokPendukungPdf,
+			&surat.TglAwal,
+			&surat.TglAkhir,
+			&surat.CreateAt,
+			&surat.LaporanAkName,
+			&surat.LaporanAkPDF,
+			&surat.StatusPimpinan,
+		)
+
+		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
+		surats = append(surats, surat)
+	}
+
+	return surats
+}
+
+// LaproanSPPDById implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) LaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserFoto, error) {
+	SQL := "SELECT `surat_tugas`.*, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "WHERE `surat_tugas`.id= ?;"
+	surat := entity.SuratTugasJOINUserFoto{}
+	row := tx.QueryRowContext(ctx, SQL, suratId)
+	err := row.Scan(
+		&surat.Id,
+		&surat.Tipe,
+		&surat.UserId,
+		&surat.LokasiTujuan,
+		&surat.JenisProgram,
+		&surat.DokumenName,
+		&surat.DokumenPDF,
+		&surat.DokPendukungName,
+		&surat.DokPendukungPdf,
+		&surat.TglAwal,
+		&surat.TglAkhir,
+		&surat.CreateAt,
+		&surat.UserNIP,
+		&surat.UserName,
+		&surat.UserNoTelp,
+		&surat.UserEmail,
+	)
+	surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+	surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+	if err != nil {
+		return surat, err
+	}
+	return surat, nil
+}
+
+// GetLaporanSPPDById implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) GetLaporanSPPDById(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanAktivitasAnggaran {
+	SQL := "SELECT `laporan_aktivitas`.id, `laporan_aktivitas`.dok_laporan_name, `laporan_aktivitas`.dok_laporan_pdf, `laporan_anggaran`.id,`laporan_anggaran`.dok_laporan_name, `laporan_anggaran`.dok_laporan_pdf "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `laporan_aktivitas` on `surat_tugas`.id = `laporan_aktivitas`.surat_tugas_id "
+	SQL += "INNER JOIN `laporan_anggaran` on `surat_tugas`.id = `laporan_anggaran`.surat_tugas_id "
+	SQL += "WHERE `surat_tugas`.id = ?;"
+
+	var laporan entity.LaporanAktivitasAnggaran
+	row := tx.QueryRowContext(ctx, SQL, suratId)
+
+	row.Scan(
+		&laporan.DokAktivitasId,
+		&laporan.DokAktivitasName,
+		&laporan.DokAktivitasPDF,
+		&laporan.DokAnggaranId,
+		&laporan.DokAnggaranName,
+		&laporan.DokAnggaranPDF,
+	)
+
+	return laporan
+}
+
+// SetApprovedLaporan implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan {
+	SQL := "INSERT TO `approved_lap_ak`(`laporan_id`, `user_id`, `status`, `message`) VALUES(?,?,?,?)"
+	_, err := tx.ExecContext(ctx, SQL, laporan.LaporanId, laporan.UserId, laporan.Status, laporan.Message)
+	helper.PanicIfError(err)
+	return laporan
+}
+
+// GetFotoKetuaSPPDById implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto {
+	SQL := "SELECT name, gambar, lokasi, koordinat FROM `presensi` WHERE user_id=? AND surat_tugas_id=?"
+
+	row := tx.QueryRowContext(ctx, SQL, surat.UserId, surat.Id)
+
+	row.Scan(
+		&surat.UserNameGambar,
+		&surat.UserGambar,
+		&surat.UserLokasi,
+		&surat.UserKoordinat,
+	)
+
+	return surat
+}
+
+// GetAllFotoParticipanById implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) GetAllFotoParticipanById(ctx context.Context, tx *sql.Tx, participan entity.ParticipanJoinUser) entity.ParticipanJoinUserFoto {
+	SQL := "SELECT * FROM `presensi` WHERE user_id=? AND surat_tugas_id=?"
+
+	row := tx.QueryRowContext(ctx, SQL, participan.UserId, participan.SuratTugasId)
+
+	result := entity.ParticipanJoinUserFoto{
+		NIP:    participan.NIP,
+		Name:   participan.Name,
+		NoTelp: participan.NoTelp,
+		Email:  participan.Email,
+	}
+
+	row.Scan(
+		&result.Id,
+		&result.UserId,
+		&result.SuratTugasId,
+		&result.NameGambar,
+		&result.Gambar,
+		&result.Lokasi,
+		&result.Koordinat,
+	)
+
+	return result
 }

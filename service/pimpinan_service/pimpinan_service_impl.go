@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
+	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
 	pimpinanreqres "github.com/fzialam/workAway/model/req_res/pimpinan_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
@@ -63,10 +65,12 @@ func (ps *PimpinanServiceImpl) CreatePenugasan(ctx context.Context, request penu
 		helper.PanicIfError(err)
 	}
 
-	ps.PimpinanRepo.SPPDSetApproved(ctx, tx, entity.Izin{
+	ps.PimpinanRepo.SPPDSetApproved(ctx, tx, entity.Approved{
 		SuratTugasId:      surat.Id,
 		Status:            "1",
+		Message:           "OK",
 		StatusTTD:         "0",
+		MessageTTD:        "0",
 		CreateAt:          helper.TimeNowToString(),
 		StatusTTDCreateAt: helper.TimeNowToString(),
 	})
@@ -104,8 +108,7 @@ func (ps *PimpinanServiceImpl) PermohonanGetSuratTugasById(ctx context.Context, 
 	result, err := ps.PimpinanRepo.PermohonanGetSuratTugasById(ctx, tx, suratId)
 	helper.PanicIfError(err)
 
-	participans, err := ps.PimpinanRepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
-	helper.PanicIfError(err)
+	participans := ps.PimpinanRepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
 
 	result.Participans = participans
 
@@ -121,10 +124,12 @@ func (ps *PimpinanServiceImpl) PermohonanSetApproved(ctx context.Context, reques
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	izin := entity.Izin{
+	izin := entity.Approved{
 		SuratTugasId: request.SuratTugasId,
 		Status:       request.Status,
+		Message:      request.Message,
 		StatusTTD:    request.StatusTTD,
+		MessageTTD:   request.MessageTTD,
 	}
 
 	izin = ps.PimpinanRepo.PermohonanSetApproved(ctx, tx, izin)
@@ -164,9 +169,10 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	izin := entity.Izin{
+	izin := entity.Approved{
 		SuratTugasId: request.SuratTugasId,
 		StatusTTD:    request.Status,
+		MessageTTD:   request.Message,
 	}
 
 	izin = ps.PimpinanRepo.SPPDSetApproved(ctx, tx, izin)
@@ -174,19 +180,69 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 	if izin.StatusTTD == "1" {
 		err = ps.PimpinanRepo.UploadSPPDAproved(ctx, tx, request)
 		helper.PanicIfError(err)
-
-		err = ps.PimpinanRepo.SetNullApprovedAktivitas(ctx, tx, izin.SuratTugasId)
-		helper.PanicIfError(err)
-
-		err = ps.PimpinanRepo.SetNullApprovedAnggaran(ctx, tx, izin.SuratTugasId)
-		helper.PanicIfError(err)
-
-		err = ps.PimpinanRepo.SetNullLaporanAktivitas(ctx, tx, izin.SuratTugasId)
-		helper.PanicIfError(err)
-
-		err = ps.PimpinanRepo.SetNullLaporanAnggaran(ctx, tx, izin.SuratTugasId)
-		helper.PanicIfError(err)
 	}
 
 	return helper.ToIzinResponses(izin)
+}
+
+// LaporanGetAllSPPD implements PimpinanService.
+func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat := ps.PimpinanRepo.LaporanGetAllSPPD(ctx, tx)
+	return helper.ToSuratTugasJOINApprovedLaporanDokumens(surat)
+}
+
+// LaporanSPPDById implements PimpinanService.
+func (ps *PimpinanServiceImpl) LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoResponse {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat, err := ps.PimpinanRepo.LaporanSPPDById(ctx, tx, suratId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	surat = ps.PimpinanRepo.GetFotoKetuaSPPDById(ctx, tx, surat)
+
+	laporan := ps.PimpinanRepo.GetLaporanSPPDById(ctx, tx, suratId)
+
+	participans := ps.PimpinanRepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
+
+	participansFoto := []entity.ParticipanJoinUserFoto{}
+	if len(participans) > 0 {
+		for i := range participans {
+			parFo := ps.PimpinanRepo.GetAllFotoParticipanById(ctx, tx, participans[i])
+			participansFoto = append(participansFoto, parFo)
+		}
+	}
+
+	return helper.ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(surat, laporan, participansFoto)
+}
+
+// SetApprovedLaporan implements PimpinanService.
+func (ps *PimpinanServiceImpl) SetApprovedLaporan(ctx context.Context, request laporanreqres.ApprovedLaporanRequest) laporanreqres.ApprovedLaporanResponse {
+	err := ps.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	laporan := entity.ApprovedLaporan{
+		LaporanId: request.LaporanId,
+		UserId:    request.UserId,
+		Status:    request.Status,
+		Message:   request.Message,
+	}
+
+	laporan = ps.PimpinanRepo.SetApprovedLaporan(ctx, tx, laporan)
+
+	return laporanreqres.ApprovedLaporanResponse{
+		Status:  laporan.Status,
+		Message: "Success",
+	}
 }

@@ -11,3 +11,10 @@ type UploadLaporanRequest struct {
 	DokLaporanName string `validate:"required" json:"dok_laporan_name"`
 	DokLaporanPDF  string `validate:"required" json:"dok_laporan_pdf"`
 }
+
+type ApprovedLaporanRequest struct {
+	LaporanId int    `validate:"required" json:"laporan_id"`
+	UserId    int    `validate:"required" json:"user_id"`
+	Status    string `validate:"required" json:"status"`
+	Message   string `validate:"required" json:"message"`
+}

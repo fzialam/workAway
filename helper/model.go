@@ -37,7 +37,7 @@ func ToUserResponses(users []entity.User) []userreqres.UserResponse {
 }
 
 // Izin Section
-func ToIzinResponses(izin entity.Izin) izinreqres.IzinResponse {
+func ToIzinResponses(izin entity.Approved) izinreqres.IzinResponse {
 	return izinreqres.IzinResponse{
 		Status:  izin.Status,
 		Message: "Success",
@@ -232,4 +232,75 @@ func ToSuratTugasJOINUserParticipanLaporanResponse(
 		Lokasi:               presensi.Lokasi,
 		Koordinat:            presensi.Koordinat,
 	}
+}
+
+func ToSuratTugasJOINApprovedLaporanDokumen(surat entity.SuratTugasJOINApprovedLaporanDokumen) surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
+	return surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		LaporanAkName:    surat.LaporanAkName,
+		LaporanAkPDF:     surat.LaporanAkPDF,
+		LaporanAgName:    surat.LaporanAgName,
+		LaporanAgPDF:     surat.LaporanAgPDF,
+		StatusPimpinan:   surat.StatusPimpinan,
+		StatusKeuangan:   surat.StatusKeuangan,
+	}
+
+}
+
+func ToSuratTugasJOINApprovedLaporanDokumens(surats []entity.SuratTugasJOINApprovedLaporanDokumen) []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
+	var suratResponses []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse
+
+	for _, surat := range surats {
+		suratResponses = append(suratResponses, ToSuratTugasJOINApprovedLaporanDokumen(surat))
+	}
+
+	return suratResponses
+
+}
+
+func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(
+	surat entity.SuratTugasJOINUserFoto,
+	laporan entity.LaporanAktivitasAnggaran,
+	participansFoto []entity.ParticipanJoinUserFoto,
+) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoResponse {
+
+	return surattugasreqres.SuratTugasJOINUserFotoParticipanFotoResponse{
+		Id:                   surat.Id,
+		Tipe:                 surat.Tipe,
+		UserId:               surat.UserId,
+		LokasiTujuan:         surat.LokasiTujuan,
+		JenisProgram:         surat.JenisProgram,
+		DokumenName:          surat.DokumenName,
+		DokumenPDF:           surat.DokumenPDF,
+		DokPendukungName:     surat.DokPendukungName,
+		DokPendukungPdf:      surat.DokPendukungPdf,
+		TglAwal:              surat.TglAwal,
+		TglAkhir:             surat.TglAkhir,
+		CreateAt:             surat.CreateAt,
+		UserNIP:              surat.UserNIP,
+		UserName:             surat.UserName,
+		UserNoTelp:           surat.UserNoTelp,
+		UserEmail:            surat.UserEmail,
+		Participans:          participansFoto,
+		LaporanAktivitasName: laporan.DokAktivitasName,
+		LaporanAktivitasPDF:  laporan.DokAktivitasPDF,
+		LaporanAnggaranName:  laporan.DokAnggaranName,
+		LaporanAnggaranPDF:   laporan.DokAnggaranPDF,
+		NameGambar:           surat.UserNameGambar,
+		Gambar:               surat.UserGambar,
+		Lokasi:               surat.UserLokasi,
+		Koordinat:            surat.UserKoordinat,
+	}
+
 }

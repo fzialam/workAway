@@ -5,4 +5,5 @@ type UploadSPPDRequest struct {
 	DokName      string `validate:"required" json:"dok_name"`
 	DokPDF       string `validate:"required" json:"dok_pdf"`
 	Status       string `validate:"required" json:"status"`
+	Message      string `validate:"required" json:"message"`
 }

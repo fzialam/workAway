@@ -13,7 +13,7 @@ import (
 type PegawaiService interface {
 	// Create Permohonan
 	CreatePermohonan(ctx context.Context, request permohonanreqres.PermohonanRequest) permohonanreqres.PermohonanResponse
-	GetAllUserId(ctx context.Context) []userreqres.UserResponse
+	GetAllUserId(ctx context.Context, userId int) []userreqres.UserResponse
 
 	// Mobile
 	PresensiFoto(ctx context.Context, request presensireqres.PresensiFotoRequest) presensireqres.PresensiFotoResponse

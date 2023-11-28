@@ -9,6 +9,7 @@ import (
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
+	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
 	pimpinanreqres "github.com/fzialam/workAway/model/req_res/pimpinan_req_res"
 	pimpinanservice "github.com/fzialam/workAway/service/pimpinan_service"
@@ -169,6 +170,7 @@ func (pc *PimpinanControllerImpl) PermohonanSetApproved(w http.ResponseWriter, r
 
 	izinRequest.SuratTugasId = idInt
 	izinRequest.StatusTTD = "0"
+	izinRequest.MessageTTD = "0"
 
 	persetujuanResponse := pc.PimpinanService.PermohonanSetApproved(r.Context(), izinRequest)
 
@@ -179,4 +181,74 @@ func (pc *PimpinanControllerImpl) PermohonanSetApproved(w http.ResponseWriter, r
 	}
 
 	helper.WriteToResponseBody(w, response)
+}
+
+// IndexLaporan implements PimpinanController.
+func (pc *PimpinanControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Request) {
+	sppds := pc.PimpinanService.LaporanGetAllSPPD(r.Context())
+
+	data := map[string]interface{}{
+		"sppds": sppds,
+		"lap":   "true",
+	}
+
+	temp, err := template.ParseFiles("view/pimpinan.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
+
+}
+
+// LaporanSetAprroved implements PimpinanController.
+func (pc *PimpinanControllerImpl) LaporanSetAprroved(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["suratId"]
+	idInt, err := strconv.Atoi(id)
+	helper.PanicIfError(err)
+
+	approvedReq := laporanreqres.ApprovedLaporanRequest{
+		LaporanId: idInt,
+		UserId:    2,
+	}
+
+	helper.ReadFromRequestBody(r, &approvedReq)
+
+	approvedRes := pc.PimpinanService.SetApprovedLaporan(r.Context(), approvedReq)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   approvedRes,
+	}
+
+	helper.WriteToResponseBody(w, response)
+}
+
+// LaporanDetail implements PimpinanController.
+func (pc *PimpinanControllerImpl) LaporanDetail(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["suratId"]
+	idInt, err := strconv.Atoi(id)
+	helper.PanicIfError(err)
+
+	surat := pc.PimpinanService.LaporanSPPDById(r.Context(), idInt)
+
+	data := map[string]interface{}{
+		"sppd":    surat,
+		"viewLap": "true",
+		"lenP":    len(surat.Participans),
+	}
+
+	temp, err := template.ParseFiles("view/pimpinan.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
+
 }

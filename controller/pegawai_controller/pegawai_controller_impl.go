@@ -32,7 +32,10 @@ func (pc *PegawaiControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("v")
 
 	if (create == "true") && (status == "") {
-		allUserResponse := pc.PegawaiService.GetAllUserId(r.Context())
+		vars := mux.Vars(r)
+		idS := vars["userId"]
+		id, _ := strconv.Atoi(idS)
+		allUserResponse := pc.PegawaiService.GetAllUserId(r.Context(), id)
 		data = map[string]interface{}{
 			"create": create,
 			"data":   allUserResponse,

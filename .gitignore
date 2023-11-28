@@ -43,11 +43,11 @@ mobile/android/app/debug
 mobile/android/app/profile
 mobile/android/app/release
 
-# pegawai_controller
-# pegawai_service
-# pegawai_repository
-# pegawai_req_res
-# pegawai_test.go
+keuangan_controller
+keuangan_service
+keuangan_repository
+keuangan_req_res
+keuangan_test.go
 
 view
 test

@@ -67,12 +67,12 @@ func (ps *PegawaiServiceImpl) CreatePermohonan(ctx context.Context, request perm
 }
 
 // GetAllUserId implements PegawaiService.
-func (ps *PegawaiServiceImpl) GetAllUserId(ctx context.Context) []userreqres.UserResponse {
+func (ps *PegawaiServiceImpl) GetAllUserId(ctx context.Context, userId int) []userreqres.UserResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	user := ps.PegawaiRepo.GetAllUserID(ctx, tx)
+	user := ps.PegawaiRepo.GetAllUserID(ctx, tx, userId)
 	return helper.ToUserResponses(user)
 }
 

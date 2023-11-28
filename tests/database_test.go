@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	pimpinanrepository "github.com/fzialam/workAway/repository/pimpinan_repository"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -22,43 +24,43 @@ func TestDB(t *testing.T) {
 	// 	Email:    "email@unesa.ac.id",
 	// 	Password: "password",
 	// }
-	SQL := "SELECT `s`.*, `ala`.status as 'status_ala', `alg`.status as 'status_alg' "
-	SQL += "FROM `surat_tugas` `s` "
-	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
-	SQL += "INNER JOIN `user` `u` on `u`.id =`s`.user_id "
-	SQL += "INNER JOIN `approved_lap_ak` `ala` on `ala`.surat_tugas_id =`s`.id  "
-	SQL += "INNER JOIN `approved_lap_angg` `alg` on `alg`.surat_tugas_id =`s`.id "
-	SQL += "LEFT JOIN `approved` `a` on `s`.id = `a`.surat_tugas_id "
-	SQL += "WHERE (`s`.user_id = 1 OR `p`.user_id = 1) AND `a`.status_ttd = '1' AND `s`.tgl_awal > NOW();"
-	// fmt.Println(SQL)
-	rows, err := db.Query(SQL)
+
+	// `presensi`.name, `presensi`.gambar, `presensi`.lokasi, `presensi`.koordinat
+
+	// SQL := "SELECT `laporan_aktivitas`.id, `laporan_aktivitas`.dok_laporan_name, `laporan_aktivitas`.dok_laporan_pdf, `laporan_anggaran`.id,`laporan_anggaran`.dok_laporan_name, `laporan_anggaran`.dok_laporan_pdf "
+	// SQL += "FROM `surat_tugas` "
+	// SQL += "INNER JOIN `laporan_aktivitas` on `surat_tugas`.id = `laporan_aktivitas`.surat_tugas_id "
+	// SQL += "INNER JOIN `laporan_anggaran` on `surat_tugas`.id = `laporan_anggaran`.surat_tugas_id "
+	// SQL += "WHERE `surat_tugas`.id = ?;"
+
+	// var laporan entity.LaporanAktivitasAnggaran
+	ctx := context.Background()
+	tx, err := db.Begin()
 	helper.PanicIfError(err)
-	defer rows.Close()
 
-	surats := []entity.SuratTugasJOINApprovedLaporan{}
-	for rows.Next() {
-		surat := entity.SuratTugasJOINApprovedLaporan{}
-		err := rows.Scan(
-			&surat.Id,
-			&surat.Tipe,
-			&surat.UserId,
-			&surat.LokasiTujuan,
-			&surat.JenisProgram,
-			&surat.DokPendukungName,
-			&surat.DokumenPDF,
-			&surat.DokPendukungName,
-			&surat.DokPendukungPdf,
-			&surat.TglAwal,
-			&surat.TglAkhir,
-			&surat.CreateAt,
-			&surat.StatusPimpinan,
-			&surat.StatusKeuangan,
-		)
-		helper.PanicIfError(err)
-		surats = append(surats, surat)
-	}
+	defer helper.CommitOrRollback(tx)
 
-	for _, i := range surats {
-		fmt.Println(i.Id)
-	}
+	stjf := pimpinanrepository.NewPimpinanRepo().GetFotoKetuaSPPDById(ctx, tx, entity.SuratTugasJOINUserFoto{
+		UserId: 1,
+		Id:     32,
+	})
+	// helper.PanicIfError(err)
+
+	fmt.Println(stjf.UserGambar)
+	// row := db.QueryRow(SQL, 70)
+
+	// err = row.Scan(
+	// 	&laporan.DokAktivitasId,
+	// 	&laporan.DokAktivitasName,
+	// 	&laporan.DokAktivitasPDF,
+	// 	&laporan.DokAnggaranId,
+	// 	&laporan.DokAnggaranName,
+	// 	&laporan.DokAnggaranPDF,
+	// )
+	// // helper.PanicIfError(err)
+	// log.Println(err)
+
+	// // return laporan, nil
+	// fmt.Println(laporan.DokAktivitasName)
+	// fmt.Println(laporan.DokAnggaranName)
 }
