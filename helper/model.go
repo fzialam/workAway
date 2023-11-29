@@ -76,7 +76,6 @@ func ToSuratTugasJOINApprovedUserResponse(surat entity.SuratTugasJOINApprovedUse
 		TglAkhir:         surat.TglAkhir,
 		CreateAt:         surat.CreateAt,
 		Status:           surat.Status,
-		StatusTTD:        surat.StatusTTD,
 		UserNIP:          surat.UserNIP,
 		UserName:         surat.UserName,
 		UserNoTelp:       surat.UserNoTelp,
@@ -231,41 +230,6 @@ func ToSuratTugasJOINUserParticipanLaporanResponse(
 		Lokasi:           presensi.Lokasi,
 		Koordinat:        presensi.Koordinat,
 	}
-}
-
-func ToSuratTugasJOINApprovedLaporanDokumen(surat entity.SuratTugasJOINApprovedLaporanDokumen) surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
-	return surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse{
-		Id:               surat.Id,
-		Tipe:             surat.Tipe,
-		UserId:           surat.UserId,
-		LokasiTujuan:     surat.LokasiTujuan,
-		JenisProgram:     surat.JenisProgram,
-		DokumenName:      surat.DokumenName,
-		DokumenPDF:       surat.DokumenPDF,
-		DokPendukungName: surat.DokPendukungName,
-		DokPendukungPdf:  surat.DokPendukungPdf,
-		TglAwal:          surat.TglAwal,
-		TglAkhir:         surat.TglAkhir,
-		CreateAt:         surat.CreateAt,
-		LaporanAkName:    surat.LaporanAkName,
-		LaporanAkPDF:     surat.LaporanAkPDF,
-		LaporanAgName:    surat.LaporanAgName,
-		LaporanAgPDF:     surat.LaporanAgPDF,
-		StatusPimpinan:   surat.StatusPimpinan,
-		StatusKeuangan:   surat.StatusKeuangan,
-	}
-
-}
-
-func ToSuratTugasJOINApprovedLaporanDokumens(surats []entity.SuratTugasJOINApprovedLaporanDokumen) []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse {
-	var suratResponses []surattugasreqres.SuratTugasJOINApprovedLaporanDokumenResponse
-
-	for _, surat := range surats {
-		suratResponses = append(suratResponses, ToSuratTugasJOINApprovedLaporanDokumen(surat))
-	}
-
-	return suratResponses
-
 }
 
 func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(

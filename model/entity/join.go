@@ -94,7 +94,6 @@ type SuratTugasJOINApprovedUser struct {
 	TglAkhir          string `json:"tgl_akhir"`
 	CreateAt          string `json:"create_at"`
 	Status            string `json:"status"`
-	StatusTTD         string `json:"status_ttd"`
 	StatusTTDCreateAt string `json:"status_ttd_create_at"`
 	UserNIP           string `json:"user_nip"`
 	UserName          string `json:"user_name"`
@@ -154,33 +153,11 @@ type SuratTugasJOINUserParticipan struct {
 	TglAwal          string               `json:"tgl_awal"`
 	TglAkhir         string               `json:"tgl_akhir"`
 	CreateAt         string               `json:"create_at"`
-	StatusTTD        string               `json:"status_ttd"`
 	UserNIP          string               `json:"user_nip"`
 	UserName         string               `json:"user_name"`
 	UserNoTelp       string               `json:"user_no_telp"`
 	UserEmail        string               `json:"user_email"`
 	Participans      []ParticipanJoinUser `json:"participans"`
-}
-
-type SuratTugasJOINApprovedLaporanDokumen struct {
-	Id               int    `json:"id"`
-	Tipe             int    `json:"tipe"`
-	UserId           int    `json:"user_id"`
-	LokasiTujuan     string `json:"lokasi_tujuan"`
-	JenisProgram     string `json:"jenis_program"`
-	DokumenName      string `json:"dokumen_name"`
-	DokumenPDF       string `json:"dokumen_pdf"`
-	DokPendukungName string `json:"dok_pendukung_name"`
-	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
-	TglAwal          string `json:"tgl_awal"`
-	TglAkhir         string `json:"tgl_akhir"`
-	CreateAt         string `json:"create_at"`
-	LaporanAkName    string `json:"laporan_ak_name"`
-	LaporanAkPDF     string `json:"laporan_ak_pdf"`
-	LaporanAgName    string `json:"laporan_ag_name"`
-	LaporanAgPDF     string `json:"laporan_ag_pdf"`
-	StatusPimpinan   string `json:"status_pimpinan"`
-	StatusKeuangan   string `json:"status_keuangan"`
 }
 
 type SuratTugasJOINUserParticipanFoto struct {
@@ -230,23 +207,12 @@ type ParticipanJoinUserFoto struct {
 }
 
 // Laporan
-type LaporanAktivitasAnggaran struct {
-	SuratId          int    `json:"surat_id"`
-	UserId           int    `json:"user_id"`
-	DokAktivitasId   int    `json:"dok_aktivitas_id"`
-	DokAktivitasName string `json:"dok_aktivitas_name"`
-	DokAktivitasPDF  string `json:"dok_aktivitas_pdf"`
-	DokAnggaranId    int    `json:"dok_anggaran_id"`
-	DokAnggaranName  string `json:"dok_anggaran_name"`
-	DokAnggaranPDF   string `json:"dok_anggaran_pdf"`
-}
-
 type LaporanJoinApproved struct {
-	Id             int    `json:"id"`
-	SuratTugasId   int    `json:"surat_tugas_id"`
-	UserId         int    `json:"user_id"`
-	DokLaporanName string `json:"dok_laporan_name"`
-	DokLaporanPDF  string `json:"dok_laporan_pdf"`
-	CreateAt       string `json:"create_at"`
-	Status         string `json:"status"`
+	Id           int    `json:"id"`
+	SuratTugasId int    `json:"surat_tugas_id"`
+	UserId       int    `json:"user_id"`
+	DokName      string `json:"dok_name"`
+	DokPDF       string `json:"dok_pdf"`
+	CreateAt     string `json:"create_at"`
+	Status       string `json:"status"`
 }

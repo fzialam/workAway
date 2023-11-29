@@ -188,7 +188,7 @@ func (pr *PimpinanRepoImpl) SPPDGetSuratTugasById(ctx context.Context, tx *sql.T
 
 // GetAllSuratTugasJOINApprovedUserPermohonan implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tgl_awal > NOW();"
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tipe=0 AND `surat_tugas`.tgl_awal > NOW();"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -280,7 +280,7 @@ func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izi
 }
 
 // UploadSPPDAproved implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) UploadSPPDAproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error {
+func (pr *PimpinanRepoImpl) UploadSPPDApproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error {
 	SQL := "UPDATE `surat_tugas` SET `dokumen_name` = ?, `dokumen_pdf` = ? WHERE id = ?;"
 	_, err := tx.ExecContext(ctx, SQL, request.DokName, request.DokPDF, request.SuratTugasId)
 	helper.PanicIfError(err)
@@ -335,8 +335,8 @@ func (pr *PimpinanRepoImpl) LaporanBySPPDId(ctx context.Context, tx *sql.Tx, sur
 		&laporanAprroved.Id,
 		&laporanAprroved.SuratTugasId,
 		&laporanAprroved.UserId,
-		&laporanAprroved.DokLaporanName,
-		&laporanAprroved.DokLaporanPDF,
+		&laporanAprroved.DokName,
+		&laporanAprroved.DokPDF,
 		&laporanAprroved.CreateAt,
 	)
 
@@ -418,14 +418,11 @@ func (pr *PimpinanRepoImpl) IsLaporanApproved(ctx context.Context, tx *sql.Tx, l
 
 	var status string
 
-	row := tx.QueryRowContext(ctx, SQL, laporanId)
-
-	row.Scan(
+	tx.QueryRowContext(ctx, SQL, laporanId).Scan(
 		&status,
 	)
 
 	return status
-
 }
 
 // SetApprovedLaporan implements PimpinanRepo.

@@ -53,7 +53,7 @@ func (tr *TURepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) ([]entity.Surat
 			&surat.TglAwal,
 			&surat.TglAkhir,
 			&surat.CreateAt,
-			&surat.StatusTTD,
+			&surat.Status,
 			&surat.UserName,
 		)
 
@@ -62,7 +62,7 @@ func (tr *TURepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) ([]entity.Surat
 		surats = append(surats, surat)
 	}
 	if err != nil {
-		return surats, errors.New("Tidak ada surat tugas")
+		return surats, errors.New("tidak ada surat tugas")
 	}
 	return surats, nil
 }
@@ -85,7 +85,7 @@ func (tr *TURepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Context, tx 
 		participans = append(participans, participan)
 	}
 	if err != nil {
-		return participans, errors.New("Tidak ada participan tugas")
+		return participans, errors.New("tidak ada participan tugas")
 	}
 	return participans, nil
 }

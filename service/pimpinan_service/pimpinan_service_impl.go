@@ -178,7 +178,7 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 	izin = ps.PimpinanRepo.SPPDSetApproved(ctx, tx, izin)
 
 	if izin.StatusTTD == "1" {
-		err = ps.PimpinanRepo.UploadSPPDAproved(ctx, tx, request)
+		err = ps.PimpinanRepo.UploadSPPDApproved(ctx, tx, request)
 		helper.PanicIfError(err)
 	}
 

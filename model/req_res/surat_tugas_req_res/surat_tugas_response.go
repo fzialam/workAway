@@ -51,27 +51,6 @@ type SuratTugasJOINApprovedLaporanResponse struct {
 	StatusKeuangan   string `json:"status_keuangan"`
 }
 
-type SuratTugasJOINApprovedLaporanDokumenResponse struct {
-	Id               int    `json:"id"`
-	Tipe             int    `json:"tipe"`
-	UserId           int    `json:"user_id"`
-	LokasiTujuan     string `json:"lokasi_tujuan"`
-	JenisProgram     string `json:"jenis_program"`
-	DokumenName      string `json:"dokumen_name"`
-	DokumenPDF       string `json:"dokumen_pdf"`
-	DokPendukungName string `json:"dok_pendukung_name"`
-	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
-	TglAwal          string `json:"tgl_awal"`
-	TglAkhir         string `json:"tgl_akhir"`
-	CreateAt         string `json:"create_at"`
-	LaporanAkName    string `json:"laporan_ak_name"`
-	LaporanAkPDF     string `json:"laporan_ak_pdf"`
-	LaporanAgName    string `json:"laporan_ag_name"`
-	LaporanAgPDF     string `json:"laporan_ag_pdf"`
-	StatusPimpinan   string `json:"status_pimpinan"`
-	StatusKeuangan   string `json:"status_keuangan"`
-}
-
 type SuratTugasJOINApprovedUserResponse struct {
 	Id               int    `json:"id"`
 	Tipe             int    `json:"tipe"`
