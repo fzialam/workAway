@@ -10,5 +10,5 @@ import (
 type TUService interface {
 	CreateSPPD(ctx context.Context, request tureqres.CreateSPPDRequest) tureqres.CreateSPPDResponse
 	GetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
-	GetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse
+	GetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse
 }

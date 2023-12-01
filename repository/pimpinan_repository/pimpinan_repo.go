@@ -22,13 +22,17 @@ type PimpinanRepo interface {
 
 	// SPPD
 	SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
-	SPPDGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugas, error)
+	SPPDGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINRincian, error)
 	SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved
 
+	RincianSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) error
+
 	UploadSPPDApproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error
+	GetRincianBiayaBySuratId(ctx context.Context, tx *sql.Tx, suratId int) entity.RincianAnggaran
+	AddApprovedRincianBiayaById(ctx context.Context, tx *sql.Tx, approved entity.Approved) error
 
 	// Laporan
-	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINLaporanApproved
+	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINUserLaporanApproved
 	LaporanIsApproved(ctx context.Context, tx *sql.Tx, laporanId int) entity.ApprovedLaporan
 
 	LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved
@@ -38,5 +42,5 @@ type PimpinanRepo interface {
 
 	GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto
 	GetAllFotoParticipanById(ctx context.Context, tx *sql.Tx, participan entity.ParticipanJoinUser) entity.ParticipanJoinUserFoto
-	SetApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan
+	ApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan
 }

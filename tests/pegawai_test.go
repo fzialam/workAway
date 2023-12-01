@@ -2,26 +2,26 @@ package tests
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"testing"
 
 	"github.com/fzialam/workAway/app"
-	"github.com/fzialam/workAway/exception"
-	"github.com/fzialam/workAway/helper"
 	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
+	pegawaiservice "github.com/fzialam/workAway/service/pegawai_service"
+	"github.com/go-playground/validator/v10"
 )
 
 func TestGetlaporanByUserId(t *testing.T) {
-	tx, err := app.NewDB().Begin()
-	helper.PanicIfError(err)
-	defer helper.CommitOrRollback(tx)
+	db := app.NewDB()
+
+	v := validator.New()
+	pr := pegawairepository.NewPegawaiRepo()
 
 	ctx := context.Background()
-	surat, err := pegawairepository.NewPegawaiRepo().LaporanGetAllSPPDByUserId(ctx, tx, 1)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
-	}
+	surats := pegawaiservice.NewPegawaiService(pr, db, v).LaporanGetAllSPPDByUserId(ctx, 1)
 
-	log.Println(surat[len(surat)-1].TglAwal)
-	log.Println(surat[len(surat)-1].CreateAt)
+	for _, stjlr := range surats {
+		fmt.Printf("stjlr.StatusPimpinan: %v\n", stjlr.StatusPimpinan)
+		fmt.Printf("stjlr.StatusKeuangan: %v\n", stjlr.StatusKeuangan)
+	}
 }

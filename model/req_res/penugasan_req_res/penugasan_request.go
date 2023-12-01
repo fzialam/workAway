@@ -9,9 +9,3 @@ type PenugasanRequest struct {
 	TglAwal       string `validate:"required" json:"tgl_awal"`
 	TglAkhir      string `validate:"required" json:"tgl_akhir"`
 }
-
-type ApprovedRequest struct {
-	SuratTugasId int    `validate:"required" json:"surat_tugas_id"`
-	Status       string `validate:"required" json:"status"`
-	StatusTTD    string `validate:"required" json:"status_ttd"`
-}

@@ -7,12 +7,14 @@ import (
 
 func ReadFromRequestBody(request *http.Request, result interface{}) {
 	decoder := json.NewDecoder(request.Body)
+	defer request.Body.Close()
+
 	err := decoder.Decode(result)
 	PanicIfError(err)
 }
 
 func WriteToResponseBody(writer http.ResponseWriter, response interface{}) {
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	PanicIfError(err)

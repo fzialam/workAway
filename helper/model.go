@@ -2,7 +2,8 @@ package helper
 
 import (
 	"github.com/fzialam/workAway/model/entity"
-	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
+	approvedreqres "github.com/fzialam/workAway/model/req_res/approved_req_res"
+	keuanganreqres "github.com/fzialam/workAway/model/req_res/keuangan_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
@@ -37,8 +38,8 @@ func ToUserResponses(users []entity.User) []userreqres.UserResponse {
 }
 
 // Izin Section
-func ToIzinResponses(izin entity.Approved) izinreqres.IzinResponse {
-	return izinreqres.IzinResponse{
+func ToIzinResponses(izin entity.Approved) approvedreqres.ApprovedResponse {
+	return approvedreqres.ApprovedResponse{
 		Status:  izin.Status,
 		Message: "Success",
 	}
@@ -59,6 +60,31 @@ func ToSuratTugasResponse(surat entity.SuratTugas) surattugasreqres.SuratTugasRe
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
 	}
+}
+
+func ToSuratTugasJOINRincianResponse(surat entity.SuratTugasJOINRincian) surattugasreqres.SuratTugasJOINRincianResponse {
+	return surattugasreqres.SuratTugasJOINRincianResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		Rincian:          surat.Rincian,
+	}
+}
+
+func ToSuratTugasJOINRincianResponses(surats []entity.SuratTugasJOINRincian) []surattugasreqres.SuratTugasJOINRincianResponse {
+	var responses []surattugasreqres.SuratTugasJOINRincianResponse
+	for _, surat := range surats {
+		responses = append(responses, ToSuratTugasJOINRincianResponse(surat))
+	}
+	return responses
 }
 
 // Join Model Section
@@ -113,6 +139,75 @@ func ToSuratTugasJOINApprovedUserParticipanResponse(req entity.SuratTugasJOINApp
 	}
 }
 
+func ToSuratTugasJOINUserParticipanResponse(req entity.SuratTugasJOINUserParticipan) surattugasreqres.SuratTugasJOINUserParticipanResponse {
+	return surattugasreqres.SuratTugasJOINUserParticipanResponse{
+		Id:               req.Id,
+		UserId:           req.UserId,
+		LokasiTujuan:     req.LokasiTujuan,
+		JenisProgram:     req.JenisProgram,
+		DokumenName:      req.DokumenName,
+		DokumenPDF:       req.DokumenPDF,
+		DokPendukungName: req.DokPendukungName,
+		DokPendukungPdf:  req.DokPendukungPdf,
+		TglAwal:          req.TglAwal,
+		TglAkhir:         req.TglAkhir,
+		CreateAt:         req.CreateAt,
+		UserNIP:          req.UserNIP,
+		UserName:         req.UserName,
+		UserNoTelp:       req.UserNoTelp,
+		UserEmail:        req.UserEmail,
+		Participans:      req.Participans,
+	}
+}
+
+func ToSuratTugasJOINDoubleApprovedUserParticipanResponse(req entity.SuratTugasJOINDoubleApprovedUserParticipan) surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse {
+	return surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse{
+		Id:               req.Id,
+		UserId:           req.UserId,
+		LokasiTujuan:     req.LokasiTujuan,
+		JenisProgram:     req.JenisProgram,
+		DokumenName:      req.DokumenName,
+		DokumenPDF:       req.DokumenPDF,
+		DokPendukungName: req.DokPendukungName,
+		DokPendukungPdf:  req.DokPendukungPdf,
+		TglAwal:          req.TglAwal,
+		TglAkhir:         req.TglAkhir,
+		CreateAt:         req.CreateAt,
+		Status:           req.Status,
+		UserNIP:          req.UserNIP,
+		UserName:         req.UserName,
+		UserNoTelp:       req.UserNoTelp,
+		UserEmail:        req.UserEmail,
+		Participans:      req.Participans,
+	}
+}
+
+func ToSuratTugasJOINApprovedUserParticipanLaporanResponse(
+	req entity.SuratTugasJOINApprovedUserParticipan,
+	laporan entity.Laporan) surattugasreqres.SuratTugasJOINApprovedUserParticipanLaporanResponse {
+	return surattugasreqres.SuratTugasJOINApprovedUserParticipanLaporanResponse{
+		Id:               req.Id,
+		Tipe:             req.Tipe,
+		UserId:           req.UserId,
+		LokasiTujuan:     req.LokasiTujuan,
+		JenisProgram:     req.JenisProgram,
+		DokumenName:      req.DokumenName,
+		DokumenPDF:       req.DokumenPDF,
+		DokPendukungName: req.DokPendukungName,
+		DokPendukungPdf:  req.DokPendukungPdf,
+		TglAwal:          req.TglAwal,
+		TglAkhir:         req.TglAkhir,
+		CreateAt:         req.CreateAt,
+		Status:           req.Status,
+		UserNIP:          req.UserNIP,
+		UserName:         req.UserName,
+		UserNoTelp:       req.UserNoTelp,
+		UserEmail:        req.UserEmail,
+		Participans:      req.Participans,
+		Laporan:          laporan,
+	}
+}
+
 func ToSuratTugasJOINApprovedResponse(surat entity.SuratTugasJOINApproved) surattugasreqres.SuratTugasJOINApprovedResponse {
 	return surattugasreqres.SuratTugasJOINApprovedResponse{
 		Id:               surat.Id,
@@ -137,6 +232,33 @@ func ToSuratTugasJOINApprovedResponses(surats []entity.SuratTugasJOINApproved) [
 	return suratResponses
 }
 
+func ToSuratTugasJOINSPPDApprovedAnggaranResponse(surat entity.SuratTugasJOINSPPDApprovedAnggaran) surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse {
+	return surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		Status:           surat.Status,
+		Rincian:          surat.Rincian,
+	}
+}
+
+func ToSuratTugasJOINSPPDApprovedAnggaranResponses(surats []entity.SuratTugasJOINSPPDApprovedAnggaran) []surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse {
+	var suratResponses []surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse
+	for _, surat := range surats {
+		suratResponses = append(suratResponses, ToSuratTugasJOINSPPDApprovedAnggaranResponse(surat))
+	}
+	return suratResponses
+}
+
 // Presensi Section
 func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoResponse {
 	return presensireqres.PresensiFotoResponse{
@@ -149,13 +271,11 @@ func ToPresensiResponse(presensi entity.Presensi) presensireqres.PresensiFotoRes
 }
 
 // Permohonan Section
-func ToPermohonanResponse(surat entity.SuratTugas, participan entity.Participan) permohonanreqres.PermohonanResponse {
+func ToPermohonanResponse(surat entity.SuratTugas) permohonanreqres.PermohonanResponse {
 	return permohonanreqres.PermohonanResponse{
-		UserPemohonId:    surat.UserId,
 		LokasiTujuan:     surat.LokasiTujuan,
 		JenisProgram:     surat.JenisProgram,
 		DokPendukungName: surat.DokumenName,
-		ParticipansId:    participan.UserId,
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
 	}
@@ -189,8 +309,8 @@ func ToSuratTugasJOINApprovedLaporanResponse(surat entity.SuratTugasJOINApproved
 		CreateAt:         surat.CreateAt,
 		StatusPimpinan:   surat.StatusPimpinan,
 		StatusKeuangan:   surat.StatusKeuangan,
+		Message:          surat.Message,
 	}
-
 }
 
 func ToSuratTugasJOINApprovedLaporanResponses(surats []entity.SuratTugasJOINApprovedLaporan) []surattugasreqres.SuratTugasJOINApprovedLaporanResponse {
@@ -201,11 +321,11 @@ func ToSuratTugasJOINApprovedLaporanResponses(surats []entity.SuratTugasJOINAppr
 	return suratResponses
 }
 
-func ToSuratTugasJOINUserParticipanLaporanResponse(
+func ToSuratTugasJOINUserParticipanLaporanJOINApprovedResponse(
 	surat entity.SuratTugasJOINUserParticipan,
 	presensi entity.Presensi,
-	laporan entity.Laporan) surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse {
-	return surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse{
+	laporan []entity.LaporanJoinApproved) surattugasreqres.SuratTugasJOINUserParticipanLaporanJOINApprovedResponse {
+	return surattugasreqres.SuratTugasJOINUserParticipanLaporanJOINApprovedResponse{
 		Id:               surat.Id,
 		Tipe:             surat.Tipe,
 		UserId:           surat.UserId,
@@ -223,9 +343,7 @@ func ToSuratTugasJOINUserParticipanLaporanResponse(
 		UserNoTelp:       surat.UserNoTelp,
 		UserEmail:        surat.UserEmail,
 		Participans:      surat.Participans,
-		LaporanId:        laporan.Id,
-		LaporanDokName:   laporan.DokLaporanName,
-		LaporanDokPDF:    laporan.DokLaporanPDF,
+		Laporan:          laporan,
 		Gambar:           presensi.Gambar,
 		Lokasi:           presensi.Lokasi,
 		Koordinat:        presensi.Koordinat,
@@ -266,11 +384,10 @@ func ToSuratTugasJOINApprovedUserFotoParticipanFotoResponse(
 		Lokasi:           surat.UserLokasi,
 		Koordinat:        surat.UserKoordinat,
 	}
-
 }
 
-func ToSuratTugasJOINLaporanApprovedResponse(surat entity.SuratTugasJOINLaporanApproved) surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
-	return surattugasreqres.SuratTugasJOINLaporanApprovedResponse{
+func ToSuratTugasJOINUserLaporanApprovedResponse(surat entity.SuratTugasJOINUserLaporanApproved) surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse {
+	return surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse{
 		Id:               surat.Id,
 		Tipe:             surat.Tipe,
 		UserId:           surat.UserId,
@@ -283,15 +400,48 @@ func ToSuratTugasJOINLaporanApprovedResponse(surat entity.SuratTugasJOINLaporanA
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
 		CreateAt:         surat.CreateAt,
+		UserName:         surat.UserName,
 		Laporan:          surat.Laporan,
 	}
 }
 
-func ToSuratTugasJOINLaporanApprovedResponses(surats []entity.SuratTugasJOINLaporanApproved) []surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
-	var responses []surattugasreqres.SuratTugasJOINLaporanApprovedResponse
+func ToSuratTugasJOINUserLaporanApprovedResponses(surats []entity.SuratTugasJOINUserLaporanApproved) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse {
+	var responses []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse
 
 	for _, surat := range surats {
-		responses = append(responses, ToSuratTugasJOINLaporanApprovedResponse(surat))
+		responses = append(responses, ToSuratTugasJOINUserLaporanApprovedResponse(surat))
+	}
+	return responses
+}
+
+func ToSuratTugasJOINApprovedUserOtherIdResponse(surat entity.SuratTugasJOINApprovedUserOtherId) keuanganreqres.SuratTugasJOINApprovedUserOtherIdResponse {
+	return keuanganreqres.SuratTugasJOINApprovedUserOtherIdResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		Status:           surat.Status,
+		OtherStatus:      surat.OtherStatus,
+		UserNIP:          surat.UserNIP,
+		UserName:         surat.UserName,
+		UserNoTelp:       surat.UserNoTelp,
+		UserEmail:        surat.UserEmail,
+		OtherId:          surat.OtherId,
+	}
+}
+
+func ToSuratTugasJOINApprovedUserOtherIdResponses(surats []entity.SuratTugasJOINApprovedUserOtherId) []keuanganreqres.SuratTugasJOINApprovedUserOtherIdResponse {
+	var responses []keuanganreqres.SuratTugasJOINApprovedUserOtherIdResponse
+	for _, surat := range surats {
+		responses = append(responses, ToSuratTugasJOINApprovedUserOtherIdResponse(surat))
 	}
 	return responses
 }

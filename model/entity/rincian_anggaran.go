@@ -7,3 +7,10 @@ type RincianAnggaran struct {
 	DokPDF       string `json:"dok_pdf"`
 	CreateAt     string `json:"create_at"`
 }
+
+type FullAnggaran struct {
+	Id        int    `json:"id"`
+	RincianId int    `json:"rincian_id"`
+	Status    string `json:"status"`
+	CreateAt  string `json:"create_at"`
+}

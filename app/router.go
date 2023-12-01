@@ -15,6 +15,7 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	pegawai := InitializedPegawai(db, validate)
 	pimpinan := InitializedPimpinan(db, validate)
 	tu := InitializedTU(db, validate)
+	keuangan := InitializedKeuangan(db, validate)
 
 	staticDir := "/static/"
 	r.PathPrefix(staticDir).Handler(http.StripPrefix(staticDir, http.FileServer(http.Dir("./view/static/"))))
@@ -29,14 +30,18 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 
 	// Permohonan Section
 	p := r.PathPrefix("/wp").Subrouter()
-	p.HandleFunc("/{userId}/permohonan", pegawai.Index).Methods("GET")
+	p.HandleFunc("/{userId}/home", pegawai.Index).Methods("GET")
+	p.HandleFunc("/{userId}/permohonan", pegawai.IndexPermohonan).Methods("GET")
 	p.HandleFunc("/{userId}/permohonan", pegawai.CreatePermohonan).Methods("POST")
 
-	// p.HandleFunc("/{userId}/penugasan", pegawai.PenugasanIndex).Methods("GET")
+	p.HandleFunc("/{userId}/sppd", pegawai.IndexSPPD).Methods("GET")
 
-	p.HandleFunc("/{userId}/laporan", pegawai.LaporanIndex).Methods("GET")
+	p.HandleFunc("/{userId}/laporan", pegawai.IndexLaporan).Methods("GET")
 	p.HandleFunc("/{userId}/laporan-ak", pegawai.UploadLapAktivitas).Methods("POST")
 	p.HandleFunc("/{userId}/laporan-ang", pegawai.UploadLapAnggaran).Methods("POST")
+
+	p.HandleFunc("/{userId}/set-laporan-ak", pegawai.SetLapAktivitas).Methods("POST")
+	p.HandleFunc("/{userId}/set-laporan-ang", pegawai.SetLapAnggaran).Methods("POST")
 
 	// Mobile Section
 	p.HandleFunc("/{userId}/mobile", pegawai.GetSurat).Methods("GET")
@@ -72,6 +77,21 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	pp.HandleFunc("/{suratId}/laporan", pimpinan.LaporanDetail).Methods("GET")
 	pp.HandleFunc("/{suratId}/laporan", pimpinan.LaporanSetAprroved).Methods("POST")
 	// ===========> Pimpinan Section End <===========
+
+	// ===========> Bagian Keuangan Section Start <===========
+	bk := r.PathPrefix("/wk").Subrouter()
+	bk.HandleFunc("/rincian-biaya", keuangan.IndexPermohonan).Methods("GET")
+	bk.HandleFunc("/{suratId}/rincian-biaya", keuangan.IndexPermohonan).Methods("GET")
+	bk.HandleFunc("/{suratId}/rincian-biaya", keuangan.UploadRincian).Methods("POST")
+	bk.HandleFunc("/{suratId}/set-rincian", keuangan.SetRincian).Methods("POST")
+
+	bk.HandleFunc("/sppd", keuangan.IndexSPPD).Methods("GET")
+	bk.HandleFunc("/sppd", keuangan.SetFullAnggaran).Methods("POST")
+
+	bk.HandleFunc("/laporan", keuangan.IndexLaporan).Methods("GET")
+	bk.HandleFunc("/laporan", keuangan.SetApprovedLaporan).Methods("POST")
+
+	// ===========> Bagian Keuangan Section End <===========
 
 	r.Use(exception.PanicHandler)
 

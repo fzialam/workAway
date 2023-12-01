@@ -28,54 +28,19 @@ func NewPimpinanController(pimpinanService pimpinanservice.PimpinanService) Pimp
 
 // IndexPermohonan implements PimpinanController.
 func (pc *PimpinanControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.Request) {
-	response := pc.PimpinanService.PermohonanGetAllSuratTugasJOINApprovedUser(r.Context())
+	permohonan := pc.PimpinanService.PermohonanGetAllSuratTugasJOINApprovedUser(r.Context())
 	data := map[string]interface{}{
-		"response": response,
-		"status":   r.URL.Query().Get("s"),
+		"permohonan": permohonan,
+		"menu":       "permohonan",
 	}
 
-	temp, err := template.ParseFiles("view/persetujuan.html")
+	temp, err := template.ParseFiles("view/pimpinan.html")
 	helper.PanicIfError(err)
 
 	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
 
 	err = temp.Execute(w, data)
 	helper.PanicIfError(err)
-}
-
-// Index implements PimpinanController.
-func (pc *PimpinanControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Request) {
-	create := r.URL.Query().Get("c")
-
-	result := strings.Compare(create, "true")
-
-	if result == 0 {
-		allUserResponse := pc.PimpinanService.GetAllUserId(r.Context())
-		data := map[string]interface{}{
-			"user":   allUserResponse,
-			"create": "true",
-		}
-
-		temp, err := template.ParseFiles("./view/pimpinan.html")
-		helper.PanicIfError(err)
-
-		err = temp.Execute(w, data)
-		helper.PanicIfError(err)
-	} else {
-		allSuratResponse := pc.PimpinanService.SPPDGetAllSuratTugasJOINApprovedUser(r.Context())
-		data := map[string]interface{}{
-			"surat":  allSuratResponse,
-			"status": r.URL.Query().Get("v"),
-		}
-
-		temp, err := template.ParseFiles("./view/pimpinan.html")
-		helper.PanicIfError(err)
-
-		temp.Funcs(template.FuncMap{"index": helper.AddIndex})
-
-		err = temp.Execute(w, data)
-		helper.PanicIfError(err)
-	}
 }
 
 // CreatePenugasan implements PimpinanController.
@@ -93,63 +58,21 @@ func (pc *PimpinanControllerImpl) CreatePenugasan(w http.ResponseWriter, r *http
 	helper.WriteToResponseBody(w, response)
 }
 
-// SPPDDetailSurat implements PimpinanController.
-func (pc *PimpinanControllerImpl) SPPDDetailSurat(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idSurat, err := strconv.Atoi(vars["suratId"])
-	helper.PanicIfError(err)
-
-	response := pc.PimpinanService.SPPDGetSuratTugasById(r.Context(), idSurat)
-
-	data := map[string]interface{}{
-		"surat":  response,
-		"status": r.URL.Query().Get("v"),
-	}
-
-	temp, err := template.ParseFiles("./view/pimpinan.html")
-	helper.PanicIfError(err)
-
-	err = temp.Execute(w, data)
-	helper.PanicIfError(err)
-}
-
-// SPPDSetApproved implements PimpinanController.
-func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idS := vars["suratId"]
-	suratId, _ := strconv.Atoi(idS)
-
-	sppdAprroved := pimpinanreqres.UploadSPPDRequest{}
-	helper.ReadFromRequestBody(r, &sppdAprroved)
-
-	sppdAprroved.SuratTugasId = suratId
-
-	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), sppdAprroved)
-
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   persetujuanResponse,
-	}
-
-	helper.WriteToResponseBody(w, response)
-}
-
 // PermohonanDetailSurat implements PimpinanController.
 func (pc *PimpinanControllerImpl) PermohonanDetailSurat(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idSurat, err := strconv.Atoi(vars["suratId"])
 	helper.PanicIfError(err)
 
-	response := pc.PimpinanService.PermohonanGetSuratTugasById(r.Context(), idSurat)
+	permohonan := pc.PimpinanService.PermohonanGetSuratTugasById(r.Context(), idSurat)
 
 	data := map[string]interface{}{
-		"response": response,
-		"lenP":     len(response.Participans),
-		"status":   r.URL.Query().Get("s"),
+		"permohonan": permohonan,
+		"lenP":       len(permohonan.Participans),
+		"menu":       "permohonanView",
 	}
 
-	temp, err := template.ParseFiles("view/persetujuan.html")
+	temp, err := template.ParseFiles("view/pimpinan.html")
 	helper.PanicIfError(err)
 
 	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
@@ -183,13 +106,91 @@ func (pc *PimpinanControllerImpl) PermohonanSetApproved(w http.ResponseWriter, r
 	helper.WriteToResponseBody(w, response)
 }
 
+// Index implements PimpinanController.
+func (pc *PimpinanControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Request) {
+	create := r.URL.Query().Get("c")
+
+	result := strings.Compare(create, "true")
+
+	if result == 0 {
+		allUserResponse := pc.PimpinanService.GetAllUserId(r.Context())
+		data := map[string]interface{}{
+			"user": allUserResponse,
+			"menu": "newPenugasan",
+		}
+
+		temp, err := template.ParseFiles("./view/pimpinan.html")
+		helper.PanicIfError(err)
+
+		err = temp.Execute(w, data)
+		helper.PanicIfError(err)
+	} else {
+		allSuratResponse := pc.PimpinanService.SPPDGetAllSuratTugasJOINApprovedUser(r.Context())
+		data := map[string]interface{}{
+			"menu":   "sppd",
+			"sppds":  allSuratResponse,
+			"status": r.URL.Query().Get("v"),
+		}
+
+		temp, err := template.ParseFiles("./view/pimpinan.html")
+		helper.PanicIfError(err)
+
+		temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+		err = temp.Execute(w, data)
+		helper.PanicIfError(err)
+	}
+}
+
+// SPPDDetailSurat implements PimpinanController.
+func (pc *PimpinanControllerImpl) SPPDDetailSurat(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idSurat, err := strconv.Atoi(vars["suratId"])
+	helper.PanicIfError(err)
+
+	response := pc.PimpinanService.SPPDGetSuratTugasById(r.Context(), idSurat)
+
+	data := map[string]interface{}{
+		"surat": response,
+		"menu":  "sppdView",
+	}
+
+	temp, err := template.ParseFiles("./view/pimpinan.html")
+	helper.PanicIfError(err)
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
+}
+
+// SPPDSetApproved implements PimpinanController.
+func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idS := vars["suratId"]
+	suratId, _ := strconv.Atoi(idS)
+
+	sppdAprroved := pimpinanreqres.UploadSPPDRequest{}
+	helper.ReadFromRequestBody(r, &sppdAprroved)
+
+	sppdAprroved.SuratTugasId = suratId
+
+	persetujuanResponse := pc.PimpinanService.SPPDSetApproved(r.Context(), sppdAprroved)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   persetujuanResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
+}
+
 // IndexLaporan implements PimpinanController.
 func (pc *PimpinanControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Request) {
 	sppds := pc.PimpinanService.LaporanGetAllSPPD(r.Context())
 
 	data := map[string]interface{}{
 		"sppds": sppds,
-		"lap":   "true",
+		"menu":  "laporan",
 	}
 
 	temp, err := template.ParseFiles("view/pimpinan.html")
@@ -199,7 +200,34 @@ func (pc *PimpinanControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Re
 
 	err = temp.Execute(w, data)
 	helper.PanicIfError(err)
+}
 
+// LaporanDetail implements PimpinanController.
+func (pc *PimpinanControllerImpl) LaporanDetail(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["suratId"]
+	idInt, err := strconv.Atoi(id)
+	helper.PanicIfError(err)
+
+	surat := pc.PimpinanService.LaporanSPPDById(r.Context(), idInt)
+	var data map[string]interface{}
+
+	if surat.LaporanDokName != "" {
+		data = map[string]interface{}{
+			"sppd": surat,
+			"menu": "viewLap",
+			"lenP": len(surat.Participans),
+		}
+	}
+
+	temp, err := template.ParseFiles("view/pimpinan.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
 }
 
 // LaporanSetAprroved implements PimpinanController.
@@ -219,33 +247,4 @@ func (pc *PimpinanControllerImpl) LaporanSetAprroved(w http.ResponseWriter, r *h
 	}
 
 	helper.WriteToResponseBody(w, response)
-}
-
-// LaporanDetail implements PimpinanController.
-func (pc *PimpinanControllerImpl) LaporanDetail(w http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
-	id := vars["suratId"]
-	idInt, err := strconv.Atoi(id)
-	helper.PanicIfError(err)
-
-	surat := pc.PimpinanService.LaporanSPPDById(r.Context(), idInt)
-	var data map[string]interface{}
-
-	if surat.LaporanDokName != "" {
-		data = map[string]interface{}{
-			"sppd":    surat,
-			"viewLap": "true",
-			"lenP":    len(surat.Participans),
-		}
-	}
-
-	temp, err := template.ParseFiles("view/pimpinan.html")
-	helper.PanicIfError(err)
-
-	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
-
-	err = temp.Execute(w, data)
-	helper.PanicIfError(err)
-
 }

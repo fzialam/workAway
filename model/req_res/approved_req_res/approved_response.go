@@ -1,6 +1,6 @@
-package izinreqres
+package approvedreqres
 
-type IzinResponse struct {
+type ApprovedResponse struct {
 	Status  string ` json:"status"`
 	Message string `json:"message"`
 }

@@ -36,11 +36,15 @@ func (ts *TUServiceImpl) CreateSPPD(ctx context.Context, request tureqres.Create
 	defer helper.CommitOrRollback(tx)
 
 	surat := entity.SuratTugas{
+		Id:          request.SuratTugasId,
 		DokumenName: request.DokumenName,
 		DokumenPDF:  request.DokumenPDF,
 	}
 
 	sppd, err := ts.TURepo.CreateSPPD(ctx, tx, surat)
+	helper.PanicIfError(err)
+
+	err = ts.TURepo.SetNULLStatus(ctx, tx, sppd.Id)
 	helper.PanicIfError(err)
 
 	return tureqres.CreateSPPDResponse{
@@ -63,7 +67,7 @@ func (ts *TUServiceImpl) GetAllSuratTugasJOINApprovedUser(ctx context.Context) [
 }
 
 // GetSuratTugasById implements TUService.
-func (ts *TUServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse {
+func (ts *TUServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse {
 	tx, err := ts.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -71,8 +75,8 @@ func (ts *TUServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) sur
 	surat, err := ts.TURepo.GetSuratTugasById(ctx, tx, suratId)
 	helper.PanicIfError(err)
 
-	participan, err := ts.TURepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
+	participan, _ := ts.TURepo.GetAllParticipanJOINUserBySuratId(ctx, tx, suratId)
 	surat.Participans = participan
 
-	return helper.ToSuratTugasJOINApprovedUserParticipanResponse(surat)
+	return helper.ToSuratTugasJOINDoubleApprovedUserParticipanResponse(surat)
 }

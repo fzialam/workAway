@@ -29,7 +29,7 @@ func setupRouter(db *sql.DB) http.Handler {
 	s.HandleFunc("/mobile/{userId}", pegawai.GetSurat).Methods("GET")
 	s.HandleFunc("/mobile/{userId}", pegawai.Presensi).Methods("POST")
 	s.HandleFunc("/permohonan/{userId}", pegawai.CreatePermohonan).Methods("POST")
-	s.HandleFunc("/pengajuan/{userId}", pegawai.Index).Methods("GET")
+	s.HandleFunc("/pengajuan/{userId}", pegawai.IndexPermohonan).Methods("GET")
 
 	r.HandleFunc("/sppd", tu.Index).Methods("GET")
 	r.HandleFunc("/{suratId}/sppd", tu.DetailSurat).Methods("GET")

@@ -18,7 +18,7 @@ func NewTURepo() TURepo {
 
 // CreateSPPD implements TURepo.
 func (tr *TURepoImpl) CreateSPPD(ctx context.Context, tx *sql.Tx, surat entity.SuratTugas) (entity.SuratTugas, error) {
-	SQL := "UPDATE `surat_tugas` SET dokumen_name=?, dokumen_pdf=?, WHERE id=?"
+	SQL := "UPDATE `surat_tugas` SET dokumen_name=?, dokumen_pdf=? WHERE id=?"
 	_, err := tx.ExecContext(ctx, SQL,
 		surat.DokumenName,
 		surat.DokumenPDF,
@@ -26,10 +26,17 @@ func (tr *TURepoImpl) CreateSPPD(ctx context.Context, tx *sql.Tx, surat entity.S
 	)
 
 	if err != nil {
-		return surat, errors.New("can't create sppd")
+		return surat, err
 	} else {
 		return surat, nil
 	}
+}
+
+// SetNULLStatus implements TURepo.
+func (tr *TURepoImpl) SetNULLStatus(ctx context.Context, tx *sql.Tx, suratId int) error {
+	SQL := "UPDATE `approved` SET user_id=3, status_ttd=0, message_ttd=0 , status_ttd_created_at=NOW() WHERE surat_tugas_id=?"
+	_, err := tx.ExecContext(ctx, SQL, suratId)
+	return err
 }
 
 // ListSurat implements TURepo.
@@ -59,6 +66,7 @@ func (tr *TURepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) ([]entity.Surat
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 		surats = append(surats, surat)
 	}
 	if err != nil {
@@ -91,9 +99,9 @@ func (tr *TURepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Context, tx 
 }
 
 // GetSuratTugasById implements TURepo.
-func (tr *TURepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
-	surat := entity.SuratTugasJOINApprovedUserParticipan{}
+func (tr *TURepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINDoubleApprovedUserParticipan, error) {
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `approved`.status_ttd , `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.id= ?;"
+	surat := entity.SuratTugasJOINDoubleApprovedUserParticipan{}
 	row := tx.QueryRowContext(ctx, SQL, suratId)
 	err := row.Scan(
 		&surat.Id,
@@ -109,6 +117,7 @@ func (tr *TURepoImpl) GetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId
 		&surat.TglAkhir,
 		&surat.CreateAt,
 		&surat.Status,
+		&surat.OtherStatus,
 		&surat.UserNIP,
 		&surat.UserName,
 		&surat.UserNoTelp,

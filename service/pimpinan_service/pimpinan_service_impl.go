@@ -7,6 +7,7 @@ import (
 	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	approvedreqres "github.com/fzialam/workAway/model/req_res/approved_req_res"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
@@ -116,7 +117,7 @@ func (ps *PimpinanServiceImpl) PermohonanGetSuratTugasById(ctx context.Context, 
 }
 
 // PermohonanSetApproved implements PimpinanService.
-func (ps *PimpinanServiceImpl) PermohonanSetApproved(ctx context.Context, request izinreqres.IzinRequest) izinreqres.IzinResponse {
+func (ps *PimpinanServiceImpl) PermohonanSetApproved(ctx context.Context, request izinreqres.IzinRequest) approvedreqres.ApprovedResponse {
 	err := ps.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -149,19 +150,21 @@ func (ps *PimpinanServiceImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.
 }
 
 // SPPDGetSuratTugasById implements PimpinanService.
-func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasResponse {
+func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINRincianResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
 	result, err := ps.PimpinanRepo.SPPDGetSuratTugasById(ctx, tx, suratId)
 	helper.PanicIfError(err)
+	rincian := ps.PimpinanRepo.GetRincianBiayaBySuratId(ctx, tx, result.Id)
+	result.Rincian = rincian
 
-	return helper.ToSuratTugasResponse(result)
+	return helper.ToSuratTugasJOINRincianResponse(result)
 }
 
 // SPPDSetApproved implements PimpinanService.
-func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) izinreqres.IzinResponse {
+func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) approvedreqres.ApprovedResponse {
 	err := ps.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -170,6 +173,7 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 	defer helper.CommitOrRollback(tx)
 
 	izin := entity.Approved{
+		Id:           request.RincianId,
 		SuratTugasId: request.SuratTugasId,
 		StatusTTD:    request.Status,
 		MessageTTD:   request.Message,
@@ -177,16 +181,20 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 
 	izin = ps.PimpinanRepo.SPPDSetApproved(ctx, tx, izin)
 
+	err = ps.PimpinanRepo.RincianSetApproved(ctx, tx, izin)
+	helper.PanicIfError(err)
+
 	if izin.StatusTTD == "1" {
 		err = ps.PimpinanRepo.UploadSPPDApproved(ctx, tx, request)
 		helper.PanicIfError(err)
+
 	}
 
 	return helper.ToIzinResponses(izin)
 }
 
 // LaporanGetAllSPPD implements PimpinanService.
-func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINLaporanApprovedResponse {
+func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -200,7 +208,7 @@ func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattug
 		laporan.Status = statusLaporan.Status
 		surat[i].Laporan = laporan
 	}
-	return helper.ToSuratTugasJOINLaporanApprovedResponses(surat)
+	return helper.ToSuratTugasJOINUserLaporanApprovedResponses(surat)
 }
 
 // LaporanSPPDById implements PimpinanService.
@@ -243,16 +251,16 @@ func (ps *PimpinanServiceImpl) SetApprovedLaporan(ctx context.Context, request l
 	defer helper.CommitOrRollback(tx)
 
 	laporan := entity.ApprovedLaporan{
-		LaporanId: request.LaporanId,
+		LaporanId: request.Id,
 		UserId:    request.UserId,
 		Status:    request.Status,
 		Message:   request.Message,
 	}
 
-	laporan = ps.PimpinanRepo.SetApprovedLaporan(ctx, tx, laporan)
+	laporan = ps.PimpinanRepo.ApprovedLaporan(ctx, tx, laporan)
 
 	return laporanreqres.ApprovedLaporanResponse{
 		Status:  laporan.Status,
-		Message: "Success",
+		Message: laporan.Message,
 	}
 }

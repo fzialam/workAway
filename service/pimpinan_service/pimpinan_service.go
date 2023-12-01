@@ -3,6 +3,7 @@ package pimpinanservice
 import (
 	"context"
 
+	approvedreqres "github.com/fzialam/workAway/model/req_res/approved_req_res"
 	izinreqres "github.com/fzialam/workAway/model/req_res/izin_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	penugasanreqres "github.com/fzialam/workAway/model/req_res/penugasan_req_res"
@@ -15,15 +16,15 @@ type PimpinanService interface {
 	CreatePenugasan(ctx context.Context, request penugasanreqres.PenugasanRequest) penugasanreqres.PenugasanResponse
 	GetAllUserId(ctx context.Context) []userreqres.UserResponse
 
-	PermohonanSetApproved(ctx context.Context, request izinreqres.IzinRequest) izinreqres.IzinResponse
 	PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
 	PermohonanGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse
+	PermohonanSetApproved(ctx context.Context, request izinreqres.IzinRequest) approvedreqres.ApprovedResponse
 
-	SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) izinreqres.IzinResponse
 	SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
-	SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasResponse
+	SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINRincianResponse
+	SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) approvedreqres.ApprovedResponse
 
-	LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINLaporanApprovedResponse
+	LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse
 	LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse
 	SetApprovedLaporan(ctx context.Context, request laporanreqres.ApprovedLaporanRequest) laporanreqres.ApprovedLaporanResponse
 }

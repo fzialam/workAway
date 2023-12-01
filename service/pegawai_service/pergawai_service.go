@@ -3,6 +3,7 @@ package pegawaiservice
 import (
 	"context"
 
+	dokumenreqres "github.com/fzialam/workAway/model/req_res/dokumen_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
@@ -17,12 +18,16 @@ type PegawaiService interface {
 
 	// Mobile
 	PresensiFoto(ctx context.Context, request presensireqres.PresensiFotoRequest) presensireqres.PresensiFotoResponse
-	GetSurat(ctx context.Context, request presensireqres.GetSuratForPresensiRequest) []surattugasreqres.SuratTugasJOINApprovedResponse
+	GetSurat(ctx context.Context, request surattugasreqres.GetSuratRequest) []surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse
 
+	GetSuratById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserParticipanResponse
 	// Laporan
 	LaporanGetAllSPPDByUserId(ctx context.Context, userId int) []surattugasreqres.SuratTugasJOINApprovedLaporanResponse
-	LaporanGetSPPDById(ctx context.Context, request laporanreqres.LaporanGetSPPDByIdRequest) surattugasreqres.SuratTugasJOINUserParticipanLaporanResponse
+	LaporanGetSPPDById(ctx context.Context, request laporanreqres.LaporanGetSPPDByIdRequest) surattugasreqres.SuratTugasJOINUserParticipanLaporanJOINApprovedResponse
 
-	UploadLapAktivitas(ctx context.Context, request laporanreqres.UploadLaporanRequest) laporanreqres.UploadLaporanResponse
-	UploadLapAnggaran(ctx context.Context, request laporanreqres.UploadLaporanRequest) laporanreqres.UploadLaporanResponse
+	UploadLapAktivitas(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
+	UploadLapAnggaran(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
+
+	SetLapAktivitas(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
+	SetLapAnggaran(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
 }

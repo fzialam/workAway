@@ -3,14 +3,17 @@ package app
 import (
 	"database/sql"
 
+	keuangancontroller "github.com/fzialam/workAway/controller/keuangan_controller"
 	pegawaicontroller "github.com/fzialam/workAway/controller/pegawai_controller"
 	pimpinancontroller "github.com/fzialam/workAway/controller/pimpinan_controller"
 	tucontroller "github.com/fzialam/workAway/controller/tu_controller"
 	usercontroller "github.com/fzialam/workAway/controller/user_controller"
+	keuanganrepository "github.com/fzialam/workAway/repository/keuangan_repository"
 	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
 	pimpinanrepository "github.com/fzialam/workAway/repository/pimpinan_repository"
 	turepository "github.com/fzialam/workAway/repository/tu_repository"
 	userrepository "github.com/fzialam/workAway/repository/user_repository"
+	keuanganservice "github.com/fzialam/workAway/service/keuangan_service"
 	pegawaiservice "github.com/fzialam/workAway/service/pegawai_service"
 	pimpinanservice "github.com/fzialam/workAway/service/pimpinan_service"
 	tuservice "github.com/fzialam/workAway/service/tu_service"
@@ -48,4 +51,12 @@ func InitializedPegawai(db *sql.DB, validate *validator.Validate) pegawaicontrol
 	pc := pegawaicontroller.NewPegawaiController(ps)
 
 	return pc
+}
+
+func InitializedKeuangan(db *sql.DB, validate *validator.Validate) keuangancontroller.KeuanganController {
+	kr := keuanganrepository.NewKeuanganRepo()
+	ks := keuanganservice.NewKeuanganService(kr, db, *validate)
+	kc := keuangancontroller.NewKeuanganController(ks)
+
+	return kc
 }
