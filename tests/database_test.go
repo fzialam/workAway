@@ -6,9 +6,8 @@ import (
 	"testing"
 
 	"github.com/fzialam/workAway/app"
-	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
-	pegawaiservice "github.com/fzialam/workAway/service/pegawai_service"
-	"github.com/go-playground/validator/v10"
+	"github.com/fzialam/workAway/helper"
+	adminrepository "github.com/fzialam/workAway/repository/admin_repository"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,18 +15,17 @@ func TestDB(t *testing.T) {
 	db := app.NewDB()
 	ctx := context.Background()
 
-	// tx, err := db.Begin()
-	// helper.PanicIfError(err)
+	tx, err := db.Begin()
+	helper.PanicIfError(err)
 
-	// defer helper.CommitOrRollback(tx)
+	defer helper.CommitOrRollback(tx)
 
-	pr := pegawairepository.NewPegawaiRepo()
-	ps := pegawaiservice.NewPegawaiService(pr, db, validator.New())
+	pr, err := adminrepository.NewAdminRepo().UserGET(ctx, tx)
+	helper.PanicIfError(err)
 
-	hasil := ps.LaporanGetAllSPPDByUserId(ctx, 1)
-
-	for _, x := range hasil {
-		fmt.Printf("x.Message: %v\n", x.Message)
-		fmt.Printf("x.Message: %v\n", len(x.Message))
+	// fmt.Printf("pr: %v\n", pr)
+	for i, stj := range pr {
+		fmt.Printf("i: %v\n", i)
+		fmt.Printf("stj.Id: %v\n", stj.Id)
 	}
 }

@@ -9,6 +9,7 @@ type PegawaiController interface {
 
 	Presensi(w http.ResponseWriter, r *http.Request)
 	GetSurat(w http.ResponseWriter, r *http.Request)
+	GetSuratPresensi(w http.ResponseWriter, r *http.Request)
 
 	IndexSPPD(w http.ResponseWriter, r *http.Request)
 
@@ -18,4 +19,6 @@ type PegawaiController interface {
 
 	SetLapAktivitas(w http.ResponseWriter, r *http.Request)
 	SetLapAnggaran(w http.ResponseWriter, r *http.Request)
+
+	Profile(w http.ResponseWriter, r *http.Request)
 }

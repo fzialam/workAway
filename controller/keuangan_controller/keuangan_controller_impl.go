@@ -24,6 +24,26 @@ func NewKeuanganController(keuanganService keuanganservice.KeuanganService) Keua
 	}
 }
 
+// Index implements KeuanganController.
+func (kc *KeuanganControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
+
+	index, err := kc.KeuanganService.Index(r.Context())
+	helper.PanicIfError(err)
+
+	data := map[string]interface{}{
+		"index": index,
+		"menu":  "permohonan",
+	}
+
+	temp, err := template.ParseFiles("./view/keuangan.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
+}
+
 // IndexKeuangan implements KeuanganController.
 func (kc *KeuanganControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -168,4 +188,28 @@ func (kc *KeuanganControllerImpl) SetApprovedLaporan(w http.ResponseWriter, r *h
 	}
 
 	helper.WriteToResponseBody(w, response)
+}
+
+// Profile implements KeuanganController.
+func (kc *KeuanganControllerImpl) Profile(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("userId")
+	helper.PanicIfError(err)
+
+	id, err := strconv.Atoi(c.Value)
+	helper.PanicIfError(err)
+
+	userResponse := kc.KeuanganService.Profile(r.Context(), id)
+
+	data := map[string]interface{}{
+		"user": userResponse,
+		"menu": "profile",
+	}
+
+	temp, err := template.ParseFiles("./view/keuangan.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
 }

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="/static/css/utilities.css"> -->
+</head>
+<body>
+    <div class="container">
+      <div class="row justify-content-center mt-3">
+        <div class="col-md-6">
+          <div class="">
+            <div class="card-header-tabs text-center">
+              <img style="max-width: 60%;" src="/static/img/WORKAWAY.png" alt="">
+            </div>
+            <div class="card-body">
+              <h1 style="color: #1AACAC;font-weight: bold; font-size: 50px;" class="card-title text-center mb-4">
+                Login
+              </h1>
+              <h5 style="color: blue; font-weight: normal;" class="card-subtitle text-center mb-4">
+                Sign in to continue
+              </h5>
+              <form method="post">
+                  <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="text" class="form-control form-text" name="email" id="email" placeholder="Enter your email" autocomplete="off" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="password" class="form-label">Password</label>
+                      <input type="password" class="form-control form-text" name="password" id="password" placeholder="Enter your password" autocomplete="off" required>
+                  </div>
+                  <div class="d-grid">
+                      <button type="submit" class="btn btn-primary">Login</button>
+                  </div>
+                </form>
+              </div>
+              <div class="card-footer text-center ">
+                <span class="text-black-50">
+                  Tidak punya akun?
+                  <a href="/register" class="link-primary text-decoration-none">
+                    Sign up
+                  </a>
+                </span>
+                
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <script>
+        "{{if eq .success 0 }}"
+        alert('{{.message}}');
+        "{{else if eq .success 1}}"
+        alert('Success');
+        window.location.href = '{{.redirect}}'
+        "{{end}}"
+    </script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

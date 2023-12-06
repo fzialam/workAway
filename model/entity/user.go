@@ -10,8 +10,9 @@ type User struct {
 	NoTelp   string `json:"no_telp"`
 	TglLahir string `json:"tgl_lahir"`
 	Status   string `json:"status"`
-	Gender   string `json:"gender"`
+	Gender   int    `json:"gender"`
 	Alamat   string `json:"alamat"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Gambar   string `json:"gambar"`
 }

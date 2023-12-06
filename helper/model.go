@@ -12,6 +12,16 @@ import (
 )
 
 // User Section
+func ToLoginResponse(user entity.User, token string) userreqres.LoginResponse {
+	return userreqres.LoginResponse{
+		Id:    user.Id,
+		Name:  user.Name,
+		Email: user.Email,
+		Rank:  user.Rank,
+		Token: token,
+	}
+}
+
 func ToUserResponse(user entity.User) userreqres.UserResponse {
 	return userreqres.UserResponse{
 		Id:       user.Id,
@@ -26,6 +36,7 @@ func ToUserResponse(user entity.User) userreqres.UserResponse {
 		Gender:   user.Gender,
 		Alamat:   user.Alamat,
 		Email:    user.Email,
+		Gambar:   user.Gambar,
 	}
 }
 
@@ -35,6 +46,35 @@ func ToUserResponses(users []entity.User) []userreqres.UserResponse {
 		userResponses = append(userResponses, ToUserResponse(user))
 	}
 	return userResponses
+}
+
+func ToSuratTugasJoinUserResponse(surat entity.SuratTugasJOINUser) surattugasreqres.SuratTugasJOINUserResponse {
+	return surattugasreqres.SuratTugasJOINUserResponse{
+		Id:               surat.Id,
+		Tipe:             surat.Tipe,
+		UserId:           surat.UserId,
+		LokasiTujuan:     surat.LokasiTujuan,
+		JenisProgram:     surat.JenisProgram,
+		DokumenName:      surat.DokumenName,
+		DokumenPDF:       surat.DokumenPDF,
+		DokPendukungName: surat.DokPendukungName,
+		DokPendukungPdf:  surat.DokPendukungPdf,
+		TglAwal:          surat.TglAwal,
+		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
+		UserNIP:          surat.UserNIP,
+		UserName:         surat.UserName,
+		UserNoTelp:       surat.UserNoTelp,
+		UserEmail:        surat.UserEmail,
+	}
+}
+
+func ToSuratTugasJoinUserResponses(users []entity.SuratTugasJOINUser) []surattugasreqres.SuratTugasJOINUserResponse {
+	var responses []surattugasreqres.SuratTugasJOINUserResponse
+	for _, user := range users {
+		responses = append(responses, ToSuratTugasJoinUserResponse(user))
+	}
+	return responses
 }
 
 // Izin Section
@@ -59,7 +99,19 @@ func ToSuratTugasResponse(surat entity.SuratTugas) surattugasreqres.SuratTugasRe
 		DokPendukungPdf:  surat.DokPendukungPdf,
 		TglAwal:          surat.TglAwal,
 		TglAkhir:         surat.TglAkhir,
+		CreateAt:         surat.CreateAt,
 	}
+}
+
+func ToSuratTugasResponses(surats []entity.SuratTugas) []surattugasreqres.SuratTugasResponse {
+	var responses []surattugasreqres.SuratTugasResponse
+
+	for _, surat := range surats {
+		responses = append(responses, ToSuratTugasResponse(surat))
+	}
+
+	return responses
+
 }
 
 func ToSuratTugasJOINRincianResponse(surat entity.SuratTugasJOINRincian) surattugasreqres.SuratTugasJOINRincianResponse {
@@ -163,6 +215,7 @@ func ToSuratTugasJOINUserParticipanResponse(req entity.SuratTugasJOINUserPartici
 func ToSuratTugasJOINDoubleApprovedUserParticipanResponse(req entity.SuratTugasJOINDoubleApprovedUserParticipan) surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse {
 	return surattugasreqres.SuratTugasJOINDoubleApprovedUserParticipanResponse{
 		Id:               req.Id,
+		Tipe:             req.Tipe,
 		UserId:           req.UserId,
 		LokasiTujuan:     req.LokasiTujuan,
 		JenisProgram:     req.JenisProgram,
@@ -174,6 +227,7 @@ func ToSuratTugasJOINDoubleApprovedUserParticipanResponse(req entity.SuratTugasJ
 		TglAkhir:         req.TglAkhir,
 		CreateAt:         req.CreateAt,
 		Status:           req.Status,
+		OtherStatus:      req.OtherStatus,
 		UserNIP:          req.UserNIP,
 		UserName:         req.UserName,
 		UserNoTelp:       req.UserNoTelp,
@@ -255,6 +309,29 @@ func ToSuratTugasJOINSPPDApprovedAnggaranResponses(surats []entity.SuratTugasJOI
 	var suratResponses []surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse
 	for _, surat := range surats {
 		suratResponses = append(suratResponses, ToSuratTugasJOINSPPDApprovedAnggaranResponse(surat))
+	}
+	return suratResponses
+}
+
+func ToSuratTugasJOINPresensiResponse(surat entity.SuratTugasJOINPresensi) surattugasreqres.SuratTugasJOINPresensiResponse {
+	return surattugasreqres.SuratTugasJOINPresensiResponse{
+		Id:           surat.Id,
+		LokasiSurat:  surat.LokasiSurat,
+		JenisProgram: surat.JenisProgram,
+		TglAwal:      surat.TglAwal,
+		TglAkhir:     surat.TglAkhir,
+		GambarId:     surat.GambarId,
+		NameGambar:   surat.NameGambar,
+		Gambar:       surat.Gambar,
+		Lokasi:       surat.Lokasi,
+		Koordinat:    surat.Koordinat,
+	}
+}
+
+func ToSuratTugasJOINPresensiResponses(surats []entity.SuratTugasJOINPresensi) []surattugasreqres.SuratTugasJOINPresensiResponse {
+	var suratResponses []surattugasreqres.SuratTugasJOINPresensiResponse
+	for _, surat := range surats {
+		suratResponses = append(suratResponses, ToSuratTugasJOINPresensiResponse(surat))
 	}
 	return suratResponses
 }

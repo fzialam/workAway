@@ -9,6 +9,7 @@ import (
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
+	pegawaireqres "github.com/fzialam/workAway/model/req_res/pegawai_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 )
 
@@ -17,6 +18,91 @@ type PegawaiRepoImpl struct {
 
 func NewPegawaiRepo() PegawaiRepo {
 	return &PegawaiRepoImpl{}
+}
+
+// Index implements PegawaiRepo.
+func (pr *PegawaiRepoImpl) Index(ctx context.Context, tx *sql.Tx, userId int) (pegawaireqres.IndexPegawai, error) {
+	var index pegawaireqres.IndexPegawai
+
+	SQL := "SELECT "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_0 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_1 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_2 != 0 THEN 1 ELSE 0 END) "
+	SQL += "FROM ( SELECT DISTINCT "
+	SQL += "(CASE WHEN `approved`.status = '0' AND `approved`.status_ttd = '0' THEN `s`.id ELSE 0 END) AS `s_0` ,  "
+	SQL += "(CASE WHEN `approved`.status = '1' AND `approved`.status_ttd = '0' THEN `s`.id ELSE 0 END) AS `s_1`, "
+	SQL += "(CASE WHEN `approved`.status = '2' AND `approved`.status_ttd = '0' THEN `s`.id ELSE 0 END) AS `s_2` "
+	SQL += "FROM `surat_tugas` `s`"
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "LEFT JOIN `user` `u` on `u`.id =`s`.user_id "
+	SQL += "LEFT JOIN `approved` ON `s`.id = `approved`.surat_tugas_id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE()) AND "
+	SQL += "(`s`.user_id = ? OR `p`.user_id = ?) AND `s`.tipe=0 "
+	SQL += ") AS sub_quer;"
+
+	row := tx.QueryRowContext(ctx, SQL, userId, userId)
+	err := row.Scan(&index.Permohonan.Belum, &index.Permohonan.Approved, &index.Permohonan.Reject)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_0 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_1 != 0 THEN 1 ELSE 0 END) "
+	SQL += "FROM ( SELECT DISTINCT "
+	SQL += "(CASE WHEN `approved`.status_ttd = '1'AND `s`.tgl_awal < NOW() THEN `s`.id ELSE 0 END) AS `s_0`, "
+	SQL += "(CASE WHEN `approved`.status_ttd = '1'AND `s`.tgl_awal > NOW() THEN `s`.id ELSE 0 END) AS `s_1` "
+	SQL += "FROM `surat_tugas` `s` "
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "LEFT JOIN `user` `u` on `u`.id =`s`.user_id "
+	SQL += "LEFT JOIN `approved` ON `s`.id = `approved`.surat_tugas_id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE()) AND "
+	SQL += "(`s`.user_id = ? OR `p`.user_id = ?) AND `s`.tipe=1 "
+	SQL += ") AS sub_quer;"
+
+	row = tx.QueryRowContext(ctx, SQL, userId, userId)
+	err = row.Scan(&index.Penugasan.Belum, &index.Penugasan.Sudah)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_0 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_1 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_2 != 0 THEN 1 ELSE 0 END) "
+	SQL += "FROM ( SELECT DISTINCT "
+	SQL += "(CASE WHEN `approved_lap_ak`.status= '0' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_0` , "
+	SQL += "(CASE WHEN `approved_lap_ak`.status= '1' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_1` , "
+	SQL += "(CASE WHEN `approved_lap_ak`.status= '2' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_2`  "
+	SQL += "FROM `surat_tugas` `s` "
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "LEFT JOIN `laporan_aktivitas` ON `s`.id = `laporan_aktivitas`.surat_tugas_id "
+	SQL += "LEFT JOIN `approved_lap_ak` ON `laporan_aktivitas`.id = `approved_lap_ak`.laporan_id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE()) AND "
+	SQL += "(`s`.user_id = ? OR `p`.user_id = ?)"
+	SQL += ") AS sub_quer; "
+
+	row = tx.QueryRowContext(ctx, SQL, userId, userId)
+	err = row.Scan(&index.Aktivitas.Belum, &index.Aktivitas.Approved, &index.Aktivitas.Reject)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_0 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_1 != 0 THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `sub_quer`.s_2 != 0 THEN 1 ELSE 0 END) "
+	SQL += "FROM ( SELECT DISTINCT "
+	SQL += "(CASE WHEN `approved_lap_angg`.status= '0' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_0` , "
+	SQL += "(CASE WHEN `approved_lap_angg`.status= '1' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_1` , "
+	SQL += "(CASE WHEN `approved_lap_angg`.status= '2' AND `s`.dokumen_name != '-' AND `s`.tgl_akhir > NOW() THEN `s`.id ELSE 0 END) AS `s_2`  "
+	SQL += "FROM `surat_tugas` `s` "
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "LEFT JOIN `laporan_anggaran` ON `s`.id = `laporan_anggaran`.surat_tugas_id "
+	SQL += "LEFT JOIN `approved_lap_angg` ON `laporan_anggaran`.id = `approved_lap_angg`.laporan_id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE()) AND "
+	SQL += "(`s`.user_id = ? OR `p`.user_id = ?)"
+	SQL += ") AS sub_quer; "
+
+	row = tx.QueryRowContext(ctx, SQL, userId, userId)
+	err = row.Scan(&index.Anggaran.Belum, &index.Anggaran.Approved, &index.Anggaran.Reject)
+	helper.PanicIfError(err)
+
+	return index, nil
 }
 
 // CreatePermohonan implements PegawaiRepo.
@@ -103,7 +189,7 @@ func (pr *PegawaiRepoImpl) Set0Approved(ctx context.Context, tx *sql.Tx, suratId
 }
 
 // GetSuratById implements PegawaiRepo.
-func (*PegawaiRepoImpl) GetSuratById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserParticipan, error) {
+func (pr *PegawaiRepoImpl) GetSuratById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserParticipan, error) {
 	SQL := "SELECT `surat_tugas`.*, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
@@ -147,6 +233,9 @@ func (pr *PegawaiRepoImpl) GetAllParticipanBySPPDId(ctx context.Context, tx *sql
 	participans := []entity.ParticipanJoinUser{}
 	rows, err := tx.QueryContext(ctx, SQL, suratId)
 	helper.PanicIfError(err)
+
+	defer rows.Close()
+
 	for rows.Next() {
 		participan := entity.ParticipanJoinUser{}
 		rows.Scan(
@@ -182,14 +271,16 @@ func (pr *PegawaiRepoImpl) PresensiFoto(ctx context.Context, tx *sql.Tx, presens
 // GetSurat implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request surattugasreqres.GetSuratRequest) ([]entity.SuratTugasJOINSPPDApprovedAnggaran, error) {
 	if request.Tipe == "permohonan" {
-		SQL := "SELECT surat_tugas.*, approved.status "
+		SQL := "SELECT `surat_tugas`.*, `approved`.status "
 		SQL += "FROM `surat_tugas` "
 		SQL += "INNER JOIN `approved` ON `approved`.surat_tugas_id = `surat_tugas`.id "
-		SQL += "WHERE `surat_tugas`.tgl_awal >= NOW() AND `surat_tugas`.tipe=0"
+		SQL += "WHERE `surat_tugas`.tgl_awal >= NOW() AND `surat_tugas`.tipe=0 AND "
 		SQL += "`surat_tugas`.user_id = ?;"
 		surats := []entity.SuratTugasJOINSPPDApprovedAnggaran{}
 		rows, err := tx.QueryContext(ctx, SQL, request.UserId)
 		helper.PanicIfError(err)
+
+		defer rows.Close()
 		for rows.Next() {
 			surat := entity.SuratTugasJOINSPPDApprovedAnggaran{}
 			rows.Scan(
@@ -226,6 +317,9 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 		surats := []entity.SuratTugasJOINSPPDApprovedAnggaran{}
 		rows, err := tx.QueryContext(ctx, SQL, request.UserId, request.UserId)
 		helper.PanicIfError(err)
+
+		defer rows.Close()
+
 		for rows.Next() {
 			surat := entity.SuratTugasJOINSPPDApprovedAnggaran{}
 			rows.Scan(
@@ -244,15 +338,8 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 			)
 			surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 			surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
-			ok := 0
-			for i := 0; i < len(surats); i++ {
-				if surat.Id == surats[i].Id {
-					ok += 1
-				}
-			}
-			if ok == 0 {
-				surats = append(surats, surat)
-			}
+
+			surats = append(surats, surat)
 		}
 		if err != nil {
 			return surats, errors.New("tidak ada surat tugas")
@@ -280,6 +367,9 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 		surats := []entity.SuratTugasJOINSPPDApprovedAnggaran{}
 		rows, err := tx.QueryContext(ctx, SQL, request.UserId)
 		helper.PanicIfError(err)
+
+		defer rows.Close()
+
 		for rows.Next() {
 			surat := entity.SuratTugasJOINSPPDApprovedAnggaran{}
 			rows.Scan(
@@ -316,6 +406,51 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 		return surats, nil
 	}
 }
+func (pr *PegawaiRepoImpl) GetSuratPresensi(ctx context.Context, tx *sql.Tx, userId int) []entity.SuratTugasJOINPresensi {
+	SQL := "SELECT `s`.id, `s`.lokasi_tujuan, `s`.jenis_program, `s`.tgl_awal, `s`.tgl_akhir "
+	SQL += "FROM `surat_tugas` `s` "
+	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
+	SQL += "LEFT JOIN `user` `u` on `u`.id =`s`.user_id "
+	SQL += "LEFT JOIN `approved` `a` on `s`.id = `a`.surat_tugas_id "
+	SQL += "WHERE (`s`.user_id = ? OR `p`.user_id = ?) AND `a`.status_ttd = '1' AND `s`.tgl_akhir > NOW();"
+
+	var hasil []entity.SuratTugasJOINPresensi
+
+	rows, err := tx.QueryContext(ctx, SQL, userId, userId)
+	helper.PanicIfError(err)
+
+	defer rows.Close()
+
+	for rows.Next() {
+		surat := entity.SuratTugasJOINPresensi{}
+		rows.Scan(
+			&surat.Id,
+			&surat.LokasiSurat,
+			&surat.JenisProgram,
+			&surat.TglAwal,
+			&surat.TglAkhir,
+		)
+
+		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
+		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
+
+		hasil = append(hasil, surat)
+	}
+
+	SQL = "SELECT id, name, gambar, lokasi, koordinat FROM presensi WHERE user_id=? AND surat_tugas_id=?"
+	for i := 0; i < len(hasil); i++ {
+		tx.QueryRowContext(ctx, SQL, userId, hasil[i].Id).Scan(
+			&hasil[i].GambarId,
+			&hasil[i].NameGambar,
+			&hasil[i].Gambar,
+			&hasil[i].Lokasi,
+			&hasil[i].Koordinat,
+		)
+	}
+
+	return hasil
+
+}
 
 // LaporanGetAllSPPDByUserId implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) LaporanGetAllSPPDByUserId(ctx context.Context, tx *sql.Tx, userId int) ([]entity.SuratTugasJOINApprovedLaporan, error) {
@@ -332,6 +467,7 @@ func (pr *PegawaiRepoImpl) LaporanGetAllSPPDByUserId(ctx context.Context, tx *sq
 	if err != nil {
 		return surats, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		surat := entity.SuratTugasJOINApprovedLaporan{}
@@ -352,15 +488,8 @@ func (pr *PegawaiRepoImpl) LaporanGetAllSPPDByUserId(ctx context.Context, tx *sq
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
 		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
-		ok := 0
-		for i := 0; i < len(surats); i++ {
-			if surat.Id == surats[i].Id {
-				ok += 1
-			}
-		}
-		if ok == 0 {
-			surats = append(surats, surat)
-		}
+
+		surats = append(surats, surat)
 	}
 	return surats, nil
 }
@@ -594,4 +723,33 @@ func (pr *PegawaiRepoImpl) SetLaporanAngg(ctx context.Context, tx *sql.Tx, lapor
 	helper.PanicIfError(err)
 
 	return laporan, nil
+}
+
+// Profile implements PegawaiRepo.
+func (pr *PegawaiRepoImpl) Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User {
+	SQL := "select * from `user` where id = ?"
+	row := tx.QueryRowContext(ctx, SQL, userId)
+
+	var user entity.User
+	err := row.Scan(
+		&user.Id,
+		&user.NIK,
+		&user.NPWP,
+		&user.NIP,
+		&user.Name,
+		&user.Rank,
+		&user.NoTelp,
+		&user.TglLahir,
+		&user.Status,
+		&user.Gender,
+		&user.Alamat,
+		&user.Email,
+		&user.Password,
+		&user.Gambar,
+	)
+
+	user.TglLahir = helper.ConvertSQLTimeToHTML(user.TglLahir)
+
+	helper.PanicIfError(err)
+	return user
 }

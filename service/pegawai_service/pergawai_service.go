@@ -5,6 +5,7 @@ import (
 
 	dokumenreqres "github.com/fzialam/workAway/model/req_res/dokumen_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
+	pegawaireqres "github.com/fzialam/workAway/model/req_res/pegawai_req_res"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
@@ -12,6 +13,7 @@ import (
 )
 
 type PegawaiService interface {
+	Index(ctx context.Context, userId int) (pegawaireqres.IndexPegawai, error)
 	// Create Permohonan
 	CreatePermohonan(ctx context.Context, request permohonanreqres.PermohonanRequest) permohonanreqres.PermohonanResponse
 	GetAllUserId(ctx context.Context, userId int) []userreqres.UserResponse
@@ -19,6 +21,7 @@ type PegawaiService interface {
 	// Mobile
 	PresensiFoto(ctx context.Context, request presensireqres.PresensiFotoRequest) presensireqres.PresensiFotoResponse
 	GetSurat(ctx context.Context, request surattugasreqres.GetSuratRequest) []surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse
+	GetSuratPresensi(ctx context.Context, userId int) []surattugasreqres.SuratTugasJOINPresensiResponse
 
 	GetSuratById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserParticipanResponse
 	// Laporan
@@ -30,4 +33,5 @@ type PegawaiService interface {
 
 	SetLapAktivitas(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
 	SetLapAnggaran(ctx context.Context, request laporanreqres.UploadLaporanRequest) dokumenreqres.UploadDokumenResponse
+	Profile(ctx context.Context, userId int) userreqres.UserResponse
 }

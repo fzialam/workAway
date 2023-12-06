@@ -6,10 +6,13 @@ import (
 
 	"github.com/fzialam/workAway/model/entity"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
+	pegawaireqres "github.com/fzialam/workAway/model/req_res/pegawai_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 )
 
 type PegawaiRepo interface {
+	Index(ctx context.Context, tx *sql.Tx, userId int) (pegawaireqres.IndexPegawai, error)
+
 	// Permohonan
 	CreateSurat(ctx context.Context, tx *sql.Tx, surat entity.SuratTugas) (entity.SuratTugas, error)
 	GetAllUserID(ctx context.Context, tx *sql.Tx, userId int) []entity.User
@@ -19,6 +22,7 @@ type PegawaiRepo interface {
 	// Presensi
 	PresensiFoto(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) (entity.Presensi, error)
 	GetSurat(ctx context.Context, tx *sql.Tx, request surattugasreqres.GetSuratRequest) ([]entity.SuratTugasJOINSPPDApprovedAnggaran, error)
+	GetSuratPresensi(ctx context.Context, tx *sql.Tx, userId int) []entity.SuratTugasJOINPresensi
 
 	GetSuratById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINUserParticipan, error)
 
@@ -39,4 +43,6 @@ type PegawaiRepo interface {
 
 	SetLaporanAct(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
 	SetLaporanAngg(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) (entity.Laporan, error)
+
+	Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User
 }

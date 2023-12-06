@@ -5,9 +5,12 @@ import (
 	"database/sql"
 
 	"github.com/fzialam/workAway/model/entity"
+	keuanganreqres "github.com/fzialam/workAway/model/req_res/keuangan_req_res"
 )
 
 type KeuanganRepo interface {
+	Index(ctx context.Context, tx *sql.Tx) (keuanganreqres.IndexKeuangan, error)
+
 	// List Permohonan
 	ListSurat(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINApprovedUser
 
@@ -45,4 +48,5 @@ type KeuanganRepo interface {
 	SetApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan
 
 	// =======================================
+	Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User
 }

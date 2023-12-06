@@ -27,3 +27,20 @@ type SuratTugasJOINApprovedUserOtherIdResponse struct {
 	UserEmail        string `json:"user_email"`
 	OtherId          int    `json:"other_id"`
 }
+
+type SPPDRincian struct {
+	IsCreated int `json:"iscreated"`
+	Approved  int `json:"approved"`
+	Reject    int `json:"reject"`
+}
+
+type Laporan struct {
+	Belum    int `json:"belum"`
+	Approved int `json:"approved"`
+	Reject   int `json:"reject"`
+}
+
+type IndexKeuangan struct {
+	SPPDRincian SPPDRincian `json:"sppd_rincian"`
+	Laporan     Laporan     `json:"laporan"`
+}

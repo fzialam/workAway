@@ -18,12 +18,12 @@ func NewUserRepo() UserRepo {
 
 // Login implements UserRepo.
 func (ur *UserRepoImpl) Login(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
-	SQL := "SELECT `id`, `nip`, `rank`, `email`, `password` FROM `user` WHERE email=?"
+	SQL := "SELECT `id`, `name`, `rank`, `email`, `password` FROM `user` WHERE email=?"
 	row := tx.QueryRowContext(ctx, SQL, user.Email)
 
 	newUser := entity.User{}
 
-	err := row.Scan(&newUser.Id, &newUser.NIP, &newUser.Rank, &newUser.Email, &newUser.Password)
+	err := row.Scan(&newUser.Id, &newUser.Name, &newUser.Rank, &newUser.Email, &newUser.Password)
 	if err != nil {
 		return newUser, errors.New("email atau password salah")
 	} else {
@@ -49,7 +49,7 @@ func (ur *UserRepoImpl) Register(ctx context.Context, tx *sql.Tx, user entity.Us
 		user.Password,
 	)
 	if err != nil {
-		return user, errors.New("can't insert new user")
+		return user, err
 	} else {
 		id, err := result.LastInsertId()
 		helper.PanicIfError(err)
@@ -65,8 +65,7 @@ func (ur *UserRepoImpl) CheckEmail(ctx context.Context, tx *sql.Tx, user entity.
 	SQL := "SELECT * FROM `user` WHERE email=?"
 	query := tx.QueryRowContext(ctx, SQL, user.Email)
 
-	err := query.Scan(&exists)
-	helper.PanicIfError(err)
+	query.Scan(&exists)
 
 	if exists {
 		return user, errors.New("email telah terdaftar")
@@ -81,8 +80,7 @@ func (ur *UserRepoImpl) CheckNIP(ctx context.Context, tx *sql.Tx, user entity.Us
 	SQL := "SELECT * FROM `user` WHERE nip=?"
 	query := tx.QueryRowContext(ctx, SQL, user.NIP)
 
-	err := query.Scan(&exists)
-	helper.PanicIfError(err)
+	query.Scan(&exists)
 
 	if exists {
 		return user, errors.New("nip telah terdaftar")
@@ -97,8 +95,7 @@ func (ur *UserRepoImpl) CheckNIK(ctx context.Context, tx *sql.Tx, user entity.Us
 	SQL := "SELECT * FROM `user` WHERE nik=?"
 	query := tx.QueryRowContext(ctx, SQL, user.NIK)
 
-	err := query.Scan(&exists)
-	helper.PanicIfError(err)
+	query.Scan(&exists)
 
 	if exists {
 		return user, errors.New("nik telah terdaftar")
@@ -113,8 +110,7 @@ func (ur *UserRepoImpl) CheckNPWP(ctx context.Context, tx *sql.Tx, user entity.U
 	SQL := "SELECT * FROM `user` WHERE npwp=?"
 	query := tx.QueryRowContext(ctx, SQL, user.NPWP)
 
-	err := query.Scan(&exists)
-	helper.PanicIfError(err)
+	query.Scan(&exists)
 
 	if exists {
 		return user, errors.New("npwp telah terdaftar")
@@ -212,4 +208,76 @@ func (ur *UserRepoImpl) FindByNIP(ctx context.Context, tx *sql.Tx, nip string) (
 	} else {
 		return user, errors.New("user is not found")
 	}
+}
+
+// ChangePassword implements UserRepo.
+func (ur *UserRepoImpl) ChangePassword(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
+	SQL := "UPDATE `user` SET password=? WHERE id=?"
+
+	_, err := tx.ExecContext(ctx, SQL, user.Password, user.Id)
+
+	helper.PanicIfError(err)
+
+	return user, nil
+}
+
+// Profile implements KeuanganRepo.
+func (ur *UserRepoImpl) Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User {
+	SQL := "select * from `user` where id = ?"
+	row := tx.QueryRowContext(ctx, SQL, userId)
+
+	var user entity.User
+	err := row.Scan(
+		&user.Id,
+		&user.NIK,
+		&user.NPWP,
+		&user.NIP,
+		&user.Name,
+		&user.Rank,
+		&user.NoTelp,
+		&user.TglLahir,
+		&user.Status,
+		&user.Gender,
+		&user.Alamat,
+		&user.Email,
+		&user.Password,
+	)
+
+	user.TglLahir = helper.ConvertSQLTimeToHTML(user.TglLahir)
+
+	helper.PanicIfError(err)
+	return user
+}
+
+// UpdateProfile implements KeuanganRepo.
+func (ur *UserRepoImpl) UpdateProfile(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
+	SQL := "UPDATE `user` SET nip=?, nik=?, npwp=?, name=?, email=?, "
+	SQL += "no_telp=?, tgl_lahir=?, alamat=?, gambar=? WHERE id=?"
+	_, err := tx.ExecContext(ctx, SQL,
+		user.NIP,
+		user.NIK,
+		user.NPWP,
+		user.Name,
+		user.Email,
+		user.NoTelp,
+		user.TglLahir,
+		user.Alamat,
+		user.Gambar,
+		user.Id,
+	)
+	helper.PanicIfError(err)
+
+	return user, nil
+}
+
+// ChangeImage implements UserRepo.
+func (*UserRepoImpl) ChangeImage(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
+	SQL := "UPDATE `user` SET gambar=? WHERE id=?"
+	_, err := tx.ExecContext(ctx, SQL,
+		user.Gambar,
+		user.Id,
+	)
+	helper.PanicIfError(err)
+
+	return user, nil
 }

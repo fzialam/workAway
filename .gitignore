@@ -49,9 +49,6 @@ mobile/android/app/release
 # keuangan_req_res
 # keuangan_test.go
 
-view
 test
-
-middleware
 
 TODO.md

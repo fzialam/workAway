@@ -47,7 +47,7 @@ func truncateTsble(db *sql.DB, tableName string) {
 
 func ImageToBase64() string {
 	// Read the entire file into a byte slice
-	bytes, err := os.ReadFile("./erd_workaway.png")
+	bytes, err := os.ReadFile("./user_avatar_profile.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,5 +68,6 @@ func ImageToBase64() string {
 		base64Encoding = "data:image/png;base64," + encodBase64
 	}
 	// Print the full base64 representation of the image
+
 	return base64Encoding
 }

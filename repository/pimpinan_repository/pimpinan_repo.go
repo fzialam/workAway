@@ -9,6 +9,9 @@ import (
 )
 
 type PimpinanRepo interface {
+	Index(ctx context.Context, tx *sql.Tx) (pimpinanreqres.IndexPimpinan, error)
+	IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugas, error)
+
 	// Penugasan
 	GetAllUserId(ctx context.Context, tx *sql.Tx) []entity.User
 	CreateSurat(ctx context.Context, tx *sql.Tx, surat entity.SuratTugas) (entity.SuratTugas, error)
@@ -22,7 +25,7 @@ type PimpinanRepo interface {
 
 	// SPPD
 	SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
-	SPPDGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINRincian, error)
+	SPPDGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINSPPDApprovedAnggaran, error)
 	SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved
 
 	RincianSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) error
@@ -43,4 +46,6 @@ type PimpinanRepo interface {
 	GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto
 	GetAllFotoParticipanById(ctx context.Context, tx *sql.Tx, participan entity.ParticipanJoinUser) entity.ParticipanJoinUserFoto
 	ApprovedLaporan(ctx context.Context, tx *sql.Tx, laporan entity.ApprovedLaporan) entity.ApprovedLaporan
+
+	Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User
 }

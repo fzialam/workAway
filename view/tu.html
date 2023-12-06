@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Penugasan</title>
+      <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/css/sidebar.css">
+      <link rel="stylesheet" href="/static/css/utilities.css">
+  </head>
+  <body>
+    <nav class=" sidebar h-100">
+      <header class="position-relative">
+        <div class="image-text">
+            <a href="/wt/home" class="image">
+              <img id="gambar" src="/static/img/WORKAWAY.png" alt="logo">
+            </a>
+        </div>
+      </header>
+      <div class="menu-bar">
+        <div class="menu">
+            <div class="menu-links">
+                <li class="nav-items mt-4 align-items-center">
+                    <a href="/wt/home" class="w-100 h-100 text-decoration-none align-items-center">
+                        <span class="text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-items mt-4 align-items-center">
+                    <a href="/wt/sppd" class="w-100 h-100 text-decoration-none align-items-center">
+                        <span class="text">SPPD</span>
+                    </a>
+                </li>
+            </div>
+        </div>
+        <div class="bottom-content">
+            <li class="mt-4 align-items-center dropdown open">
+                <a href="/wt/profile" class="w-100 h-100 text-decoration-none align-items-center">
+                    <span class="text">Profile</span>
+                </a>
+            </li>
+            <li class="mt-4 align-items-center">
+                <a href="/logout" class="w-100 h-100 text-decoration-none align-items-center">
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </div>
+      </div>
+    </nav>
+    <main class="container" style="margin-bottom: 250px;">
+      <div class="container mt-5">
+        {{if eq .menu "home"}}
+        <section id="home">
+          <h1 class="fw-bold">Dashboard</h1>
+          <div class="container mt-5">
+            <div class="home alert alert-info d-flex justify-content-between align-items-center" role="alert">
+                <h4 class="alert-heading fw-bold">Buat SPPD</h4>
+                <span class="badge badge-pill bg-primary">{{.index.Iscreated}}</span>
+            </div>
+            <div class="home alert alert-warning d-flex justify-content-between align-items-center mt-3" role="alert">
+                <h4 class="alert-heading fw-bold">SPPD Disetujui</h4>
+                <span class="badge badge-pill bg-warning">{{.index.Approved}}</span>
+            </div>
+            <div class="home alert alert-danger d-flex justify-content-between align-items-center mt-3" role="alert">
+                <h4 class="alert-heading fw-bold">SPPD perlu direvisi</h4>
+                <span class="badge badge-pill bg-danger">{{.index.Reject}}</span>
+            </div>
+        </div>
+        </section>
+        {{else if eq .menu "sppd"}}
+        <section id="sppd" class="">
+          <h1 style="font-weight: bold;">SPPD</h1>
+          <table class="table table-hover text-center">
+            <thead>
+              <tr>
+                <th scope="col">No</th>
+                <th scope="col">Id</th>
+                <th scope="col">Ketua Kelompok</th>
+                <th scope="col">Jenis Program</th>
+                <th scope="col">Tujuan Lokasi</th>
+                <th scope="col">Tanggal Mulai</th>
+                <th scope="col">Tanggal Akhir</th>
+                <th scope="col">SPPD</th>
+                <th scope="col">Status TTD</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range $index, $data := .surats}}
+              {{if eq $data.DokumenName "-"}}
+              <tr style="background-color: rgba(255, 107, 107, 0.749);">
+              {{else}}
+              <tr>
+              {{end}}
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>
+                  <a href="/wt/{{$data.Id}}/sppd?v=true" class="btn btn-warning">Lihat</a>
+                </td>
+                <td>
+                  {{if ne $data.DokumenName "-"}}
+                  {{if eq $data.Status "0"}}
+                  Belum Dikonfirmasi
+                  {{else if eq $data.Status "1"}}
+                  Sudah TTD
+                  {{else if eq $data.Status "2"}}
+                  Revisi SPPD
+                  {{else}}
+                  Status Tidak Dikenali 
+                  {{end}}
+                  {{else if eq $data.DokumenName "-"}}
+                  Buat SPPD
+                  {{end}}
+                </td>
+              </tr>        
+              {{end}}
+            </tbody>
+          </table>
+        </section>
+        {{else if eq .menu "sppdView"}}
+        <a href="/wt/sppd" class="btn btn-dark">Back</a>
+        <div class="popup-overlay"></div>
+        <div class="container mt-3" id="overlay">
+          <h2>Data Surat Perjalanan Dinas</h2>
+          <div class="flex justify-content-center">
+            {{if gt .lenP 0}}
+            <div class="">
+              <h4>Data Ketua Kelompok</h4>
+            </div>
+            {{else}}
+            <div class="">
+              <h4>Data Pemohon</h4>
+            </div>
+            {{end}}
+          </div>
+          <div class="flex justify-content-between">
+            <div id="ketua">
+              <div>
+                <label class="form-label">Nama Lengkap: </label>
+                <input class="form-control form-text" value="{{.surat.UserName}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">NIP: </label>
+                <input class="form-control form-text" value="{{.surat.UserNIP}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">Email: </label>
+                <input class="form-control form-text" value="{{.surat.UserEmail}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">No Telepon: </label>
+                <input class="form-control form-text" value="{{.surat.UserNoTelp}}" readonly/>
+              </div>
+            </div>
+            {{if gt .lenP 0}}
+            <div id="participans" class="my-4">
+              <h2>Anggota</h2>
+              <table class="table table-hover table-responsive table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama Lengkap</th>
+                    <th scope="col">NIP</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">No Telepon</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{range $index, $data := .surat.Participans}}
+                  <tr>
+                      <th scope="row">{{index $index}}</th>
+                      <td>{{$data.Name}}</td>
+                      <td>{{$data.NIP}}</td>
+                      <td>{{$data.Email}}</td>
+                      <td>{{$data.NoTelp}}</td>
+                  </tr>
+                  {{end}}
+                </tbody>
+              </table>
+            </div>
+            {{end}}
+          </div>
+          <br>
+          <div class="">
+            <h4>Detail Permohonan</h4>
+          </div>
+          <div id="detail" class="border border-1 w-75">
+            <div>
+              <label class="form-label">Lokasi Tujuan: </label>
+              <input class="form-control form-text input" value="{{.surat.LokasiTujuan}}" readonly/>
+              <label class="form-label">Jenis Program: </label>
+              <input class="form-control form-text input" value="{{.surat.JenisProgram}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Mulai: </label>
+              <input class="form-control form-text " type="date" value="{{.surat.TglAwal}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Selesai: </label>
+              <input class="form-control form-text " type="date" value="{{.surat.TglAkhir}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Permohonan: </label>
+              <input class="form-control form-text " type="text" value="{{.surat.CreateAt}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Dokumen Pendukung: </label>
+              <a class="form-control form-text" href="data:application/pdf;base64,{{.surat.DokPendukungPdf}}" download="{{.surat.DokPendukungName}}" target="_blank" rel="noopener noreferrer">dokumen_pendukung.pdf</a>
+              <!-- <input disabled class="text-black-50 " type="text" value="{{.surat.CreateAt}}" /> -->
+            </div>
+            {{if and (ne .surat.DokumenPDF "-") }}
+            <div>
+              <label class="form-label">Dokumen SPPD: </label>
+              <a class="form-control form-text" href="data:application/pdf;base64,{{.surat.DokumenPDF}}" download="{{.surat.DokumenName}}" target="_blank" rel="noopener noreferrer">{{.surat.DokumenName}}</a>
+              <!-- <input disabled class="text-black-50 " type="text" value="{{.surat.CreateAt}}" /> -->
+            </div>
+            {{end}}
+          </div>
+          <br>
+          <!-- Status := approved.status_ttd  -->
+          <!-- OtherStatus := approved.message_ttd  -->
+          {{if or (eq .surat.Status "0") (eq .surat.Status "2")}}
+          <div id="action" class="flex justify-content-end">
+            <a href="#popup" id="active" class="btn btn-group btn-primary px-3 mx-3" >Upload SPPD</a>
+            {{if eq .surat.Status "2"}}
+            <span class="text-danger">{{.surat.OtherStatus}}</span>
+            {{end}}
+          </div>
+        </div>
+        {{end}}
+        <div id="popup" class="border border-success">
+          <div class="m-4">
+            <h2>Upload File</h2>
+          </div>
+          <div id="form">
+            <form class="form" method="post" enctype="multipart/form-data">
+              <div class="inFile">
+                <input type="file" class="form-control form-control-file" name="file" id="file" accept=".pdf"/>
+              </div>
+              <div id="butt-container" class="d-flex justify-content-around mt-2">
+                <button type="button" id="submit-file" class="btn btn-primary">SUBMIT</button>
+                <button type="button" id="close" class="btn btn-danger">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {{else if eq .menu "profile"}}
+        <section id="profile">
+          <h1>Profile</h1>
+          <div class="d-flex justify-content-end">
+              <button class="btn btn-warning mx-5" type="button" id="changePass">Ganti Password</button>
+          </div>
+          <div id="change-form" class="d-none">
+              <form id="changeForm" class="px-5">
+                  <div class="d-flex flex-column px-5" style="margin: 0px 250px;">
+                      <div class="mb-3">
+                          <label for="passwordLama" class="form-label">Password Lama:</label>
+                          <input type="password" class="form-control form-text" name="passwordLama" id="passwordLama" autocomplete="off" placeholder="Password lama" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="passwordBaru" class="form-label">Password Baru:</label>
+                          <input type="password" class="form-control form-text" name="passwordBaru" id="passwordBaru" autocomplete="off" placeholder="Password baru" required>
+                      </div>
+                      <div class="d-grid">
+                          <button id="change" type="button" class="btn btn-primary" >Submit</button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+          <div id="edit-form" class="">
+              <form class="px-5">
+                <div>
+                  <div class="d-grid mb-2">
+                    <img id="userImage" class="img-thumbnail rounded float-start" src="{{ .user.Gambar }}" height="80px" width="80px" alt="" />
+                  </div>
+                  <div id="ganCon">
+                    <button id="gantiImage" class=" btn btn-outline-primary" type="button">Ganti Foto</button>
+                    <button id="saveImage" class="d-none btn btn-outline-warning" type="button">Save</button>
+                  </div>
+
+                  <input type="file" id="fileInput" style="display:none;" accept="image/*" onchange="displaySelectedImage()">
+                </div>
+                <div class="d-flex justify-content-between px-5">
+                      <div style="min-width: 400px;">
+                          <div class="mb-3">
+                              <label for="name" class="form-label">Nama Lengkap:</label>
+                              <input type="text" class="form-control form-text" name="name" id="name" autocomplete="off" value="{{.user.Name}}" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="nik" class="form-label">NIK:</label>
+                              <input type="text" class="form-control form-text" name="nik" id="nik" autocomplete="off" value="{{.user.NIK}}" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="nip" class="form-label">NIP:</label>
+                              <input type="text" class="form-control form-text" name="nip" id="nip" autocomplete="off" value="{{.user.NIP}}" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="npwp" class="form-label">NPWP:</label>
+                              <input type="text" class="form-control form-text" name="npwp" id="npwp" autocomplete="off" value="{{.user.NPWP}}" readonly required>
+                          </div>
+                          
+                      </div>
+                      <div style="min-width: 400px;">
+                          <div class="mb-3">
+                              <label for="noTelp" class="form-label">Nomer Telepon:</label>
+                              <input type="text" class="form-control form-text" name="noTelp" id="noTelp" autocomplete="off" value="{{.user.NoTelp}}" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="email" class="form-label">Email:</label>
+                              <input type="email" class="form-control form-text" name="email" id="email" autocomplete="off" value="{{.user.Email}}" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="lahir" class="form-label">Tanggal Lahir:</label>
+                              <input type="date" class="form-control form-text" name="lahir" id="lahir" value="{{.user.TglLahir}}" autocomplete="off" readonly required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="alamat" class="form-label">Alamat:</label>
+                              <textarea style="min-height: 100px;" class="text-start form-control form-text" name="alamat" id="alamat" value="" autocomplete="off" readonly required>{{.user.Alamat}}</textarea>
+                          </div>
+                          
+                      </div>
+                  </div>
+                  <div class="d-flex w-100 justify-content-center">
+                      <button type="button" id="edit" class="btn btn-danger w-25 p-2">Edit Profile</button>
+                  </div>
+              </form>
+          </div>
+        </section>
+        {{else}}
+        <h1 style="font-weight: 700;">
+          404 Page NotFound
+        </h1>
+        {{end}}
+      </div>
+    </main>
+    {{if ne .menu ""}}
+    <script src="/static/js/utilities.js"></script>
+    <script src="/static/js/tu/tu.js"></script>
+    {{else if ne .menu "profile"}}
+    <script src="/static/js/profile.js"></script>
+    {{end}}
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

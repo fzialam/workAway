@@ -3,6 +3,7 @@ package pegawaicontroller
 import (
 	"html/template"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/fzialam/workAway/helper"
@@ -28,10 +29,18 @@ func NewPegawaiController(pegawaiService pegawaiservice.PegawaiService) PegawaiC
 // Index implements PegawaiController.
 func (pc *PegawaiControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
 
-	data := map[string]interface{}{
-		"menu": "home",
-	}
+	vars := mux.Vars(r)
+	idS := vars["userId"]
+	id, _ := strconv.Atoi(idS)
 
+	index, err := pc.PegawaiService.Index(r.Context(), id)
+	helper.PanicIfError(err)
+
+	data := map[string]interface{}{
+		"menu":   "home",
+		"userId": id,
+		"index":  index,
+	}
 	temp, err := template.ParseFiles("./view/pegawai.html")
 	helper.PanicIfError(err)
 
@@ -53,8 +62,9 @@ func (pc *PegawaiControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.
 	if create == "true" {
 		allUserResponse := pc.PegawaiService.GetAllUserId(r.Context(), id)
 		data = map[string]interface{}{
-			"menu": "newPermohonan",
-			"data": allUserResponse,
+			"menu":   "newPermohonan",
+			"userId": id,
+			"data":   allUserResponse,
 		}
 		temp, err := template.ParseFiles("./view/pegawai.html")
 		helper.PanicIfError(err)
@@ -62,13 +72,14 @@ func (pc *PegawaiControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.
 		err = temp.Execute(w, data)
 		helper.PanicIfError(err)
 	} else if view != "" {
-		id, err := strconv.Atoi(view)
+		idSurat, err := strconv.Atoi(view)
 		helper.PanicIfError(err)
 
-		respons := pc.PegawaiService.GetSuratById(r.Context(), id)
+		respons := pc.PegawaiService.GetSuratById(r.Context(), idSurat)
 
 		data = map[string]interface{}{
 			"menu":       "viewPermohonan",
+			"userId":     id,
 			"permohonan": respons,
 			"lenP":       len(respons.Participans),
 		}
@@ -86,9 +97,21 @@ func (pc *PegawaiControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.
 
 		permohonan := pc.PegawaiService.GetSurat(r.Context(), request)
 
+		suratIds := ""
+
+		for i, v := range permohonan {
+			if i+1 == len(permohonan) {
+				suratIds += strconv.Itoa(v.Id)
+			} else {
+				suratIds += strconv.Itoa(v.Id) + ","
+			}
+		}
+
 		data = map[string]interface{}{
 			"menu":       "permohonan",
 			"permohonan": permohonan,
+			"userId":     id,
+			"suratIds":   suratIds,
 		}
 		temp, err := template.ParseFiles("./view/pegawai.html")
 		helper.PanicIfError(err)
@@ -132,14 +155,21 @@ func (pc *PegawaiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request
 	}
 	helper.ReadFromRequestBody(r, &presensiRequest)
 
-	presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   presensiResponse,
-	}
+	f, err := os.Create("base64.log")
+	helper.PanicIfError(err)
 
-	helper.WriteToResponseBody(w, response)
+	_, err = f.WriteString(presensiRequest.Gambar)
+
+	helper.PanicIfError(err)
+
+	// presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
+	// response := model.Response{
+	// 	Code:   200,
+	// 	Status: "OK",
+	// 	Data:   presensiResponse,
+	// }
+
+	// helper.WriteToResponseBody(w, response)
 }
 
 // GetSurat implements PegawaiController.
@@ -164,6 +194,18 @@ func (pc *PegawaiControllerImpl) GetSurat(w http.ResponseWriter, r *http.Request
 	helper.WriteToResponseBody(w, response)
 }
 
+// GetSuratPresensi implements PegawaiController.
+func (pc *PegawaiControllerImpl) GetSuratPresensi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
+	helper.PanicIfError(err)
+
+	getSuratResponse := pc.PegawaiService.GetSuratPresensi(r.Context(), userId)
+
+	helper.WriteToResponseBody(w, getSuratResponse)
+}
+
 // IndexSPPD implements PegawaiController.
 func (pc *PegawaiControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -178,8 +220,9 @@ func (pc *PegawaiControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Reques
 	sppds := pc.PegawaiService.GetSurat(r.Context(), getSuratReq)
 
 	data := map[string]interface{}{
-		"menu":  "sppd",
-		"sppds": sppds,
+		"menu":   "sppd",
+		"sppds":  sppds,
+		"userId": userId,
 	}
 	temp, err := template.ParseFiles("./view/pegawai.html")
 	helper.PanicIfError(err)
@@ -210,10 +253,11 @@ func (pc *PegawaiControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Req
 		})
 
 		data = map[string]interface{}{
-			"menu": "uploadLap",
-			"sppd": sppd,
-			"id":   SPPDIdS,
-			"lenP": len(sppd.Participans),
+			"menu":   "uploadLap",
+			"sppd":   sppd,
+			"id":     SPPDIdS,
+			"userId": userId,
+			"lenP":   len(sppd.Participans),
 		}
 	} else if SPPDIdS == "" {
 		surats := pc.PegawaiService.LaporanGetAllSPPDByUserId(r.Context(), userId)
@@ -232,6 +276,7 @@ func (pc *PegawaiControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Req
 			"menu":     "laporan",
 			"surats":   surats,
 			"id":       SPPDIdS,
+			"userId":   userId,
 			"suratIds": suratIds,
 		}
 
@@ -359,4 +404,27 @@ func (pc *PegawaiControllerImpl) SetLapAnggaran(w http.ResponseWriter, r *http.R
 	}
 
 	helper.WriteToResponseBody(w, response)
+}
+
+// Profile implements PegawaiController.
+func (pc *PegawaiControllerImpl) Profile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIdS := vars["userId"]
+	userId, err := strconv.Atoi(userIdS)
+	helper.PanicIfError(err)
+
+	userResponse := pc.PegawaiService.Profile(r.Context(), userId)
+
+	data := map[string]interface{}{
+		"user":   userResponse,
+		"menu":   "profile",
+		"userId": userId,
+	}
+	temp, err := template.ParseFiles("./view/pegawai.html")
+	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
+	err = temp.Execute(w, data)
+	helper.PanicIfError(err)
 }

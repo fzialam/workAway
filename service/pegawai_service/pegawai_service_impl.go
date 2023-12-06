@@ -9,6 +9,7 @@ import (
 	"github.com/fzialam/workAway/model/entity"
 	dokumenreqres "github.com/fzialam/workAway/model/req_res/dokumen_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
+	pegawaireqres "github.com/fzialam/workAway/model/req_res/pegawai_req_res"
 	permohonanreqres "github.com/fzialam/workAway/model/req_res/permohonan_req_res"
 	presensireqres "github.com/fzialam/workAway/model/req_res/presensi_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
@@ -29,6 +30,18 @@ func NewPegawaiService(pegawaiRepo pegawairepository.PegawaiRepo, db *sql.DB, va
 		DB:          db,
 		Validate:    validate,
 	}
+}
+
+// Index implements PegawaiService.
+func (ps *PegawaiServiceImpl) Index(ctx context.Context, userId int) (pegawaireqres.IndexPegawai, error) {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := ps.PegawaiRepo.Index(ctx, tx, userId)
+	helper.PanicIfError(err)
+
+	return index, nil
 }
 
 // CreatePermohonan implements PegawaiService.
@@ -114,6 +127,20 @@ func (ps *PegawaiServiceImpl) GetSurat(ctx context.Context, request surattugasre
 	}
 
 	return helper.ToSuratTugasJOINSPPDApprovedAnggaranResponses(surat)
+}
+
+func (ps *PegawaiServiceImpl) GetSuratPresensi(ctx context.Context, userId int) []surattugasreqres.SuratTugasJOINPresensiResponse {
+
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	surat := ps.PegawaiRepo.GetSuratPresensi(ctx, tx, userId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToSuratTugasJOINPresensiResponses(surat)
 }
 
 // GetSuratById implements PegawaiService.
@@ -297,4 +324,15 @@ func (ps *PegawaiServiceImpl) SetLapAnggaran(ctx context.Context, request lapora
 		Message:        "Success",
 	}
 
+}
+
+// Profile implements PegawaiService.
+func (ps *PegawaiServiceImpl) Profile(ctx context.Context, userId int) userreqres.UserResponse {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	user := ps.PegawaiRepo.Profile(ctx, tx, userId)
+
+	return helper.ToUserResponse(user)
 }

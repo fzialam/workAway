@@ -32,6 +32,30 @@ func NewPimpinanService(pimpinanRepo pimpinanrepository.PimpinanRepo, db *sql.DB
 	}
 }
 
+// Index implements PimpinanService.
+func (ps *PimpinanServiceImpl) Index(ctx context.Context) (pimpinanreqres.IndexPimpinan, error) {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := ps.PimpinanRepo.Index(ctx, tx)
+	helper.PanicIfError(err)
+
+	return index, nil
+}
+
+// IndexPenugasan implements PimpinanService.
+func (ps *PimpinanServiceImpl) IndexPenugasan(ctx context.Context) ([]surattugasreqres.SuratTugasResponse, error) {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := ps.PimpinanRepo.IndexPenugasan(ctx, tx)
+	helper.PanicIfError(err)
+
+	return helper.ToSuratTugasResponses(index), nil
+}
+
 // CreatePenugasan implements PimpinanService.
 func (ps *PimpinanServiceImpl) CreatePenugasan(ctx context.Context, request penugasanreqres.PenugasanRequest) penugasanreqres.PenugasanResponse {
 	err := ps.Validate.Struct(request)
@@ -150,7 +174,7 @@ func (ps *PimpinanServiceImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.
 }
 
 // SPPDGetSuratTugasById implements PimpinanService.
-func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINRincianResponse {
+func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -160,7 +184,7 @@ func (ps *PimpinanServiceImpl) SPPDGetSuratTugasById(ctx context.Context, suratI
 	rincian := ps.PimpinanRepo.GetRincianBiayaBySuratId(ctx, tx, result.Id)
 	result.Rincian = rincian
 
-	return helper.ToSuratTugasJOINRincianResponse(result)
+	return helper.ToSuratTugasJOINSPPDApprovedAnggaranResponse(result)
 }
 
 // SPPDSetApproved implements PimpinanService.
@@ -263,4 +287,15 @@ func (ps *PimpinanServiceImpl) SetApprovedLaporan(ctx context.Context, request l
 		Status:  laporan.Status,
 		Message: laporan.Message,
 	}
+}
+
+// Profile implements PimpinanService.
+func (ps *PimpinanServiceImpl) Profile(ctx context.Context, userId int) userreqres.UserResponse {
+	tx, err := ps.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	user := ps.PimpinanRepo.Profile(ctx, tx, userId)
+
+	return helper.ToUserResponse(user)
 }

@@ -24,7 +24,7 @@ func NewUserController(userService userservice.UserService) UserController {
 
 // IndexL implements UserController.
 func (uc *UserControllerImpl) IndexL(w http.ResponseWriter, r *http.Request) {
-	temp, err := template.ParseFiles("./view/login.html")
+	temp, err := template.ParseFiles("view/login.html")
 	helper.PanicIfError(err)
 
 	err = temp.Execute(w, nil)
@@ -33,7 +33,7 @@ func (uc *UserControllerImpl) IndexL(w http.ResponseWriter, r *http.Request) {
 
 // IndexR implements UserController.
 func (uc *UserControllerImpl) IndexR(w http.ResponseWriter, r *http.Request) {
-	temp, err := template.ParseFiles("./view/register.html")
+	temp, err := template.ParseFiles("view/register.html")
 	helper.PanicIfError(err)
 
 	err = temp.Execute(w, nil)
@@ -42,23 +42,143 @@ func (uc *UserControllerImpl) IndexR(w http.ResponseWriter, r *http.Request) {
 
 // Login implements UserController.
 func (uc *UserControllerImpl) Login(w http.ResponseWriter, r *http.Request) {
-	userLoginRequest := userreqes.UserLoginRequest{}
-	helper.ReadFromRequestBody(r, &userLoginRequest)
 
-	userResponse := uc.UserService.Login(r.Context(), userLoginRequest)
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   userResponse,
+	userLoginRequest := userreqes.UserLoginRequest{}
+	isMobbile := r.URL.Query().Get("m")
+	if isMobbile != "" {
+		helper.ReadFromRequestBody(r, &userLoginRequest)
+
+		userResponse, err := uc.UserService.Login(r.Context(), userLoginRequest)
+		helper.PanicIfError(err)
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "jwt-workaway",
+			Value:    userResponse.Token,
+			HttpOnly: true,
+			Path:     "/",
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "userId",
+			Value:    strconv.Itoa(userResponse.Id),
+			HttpOnly: true,
+			Path:     "/",
+		})
+
+		helper.WriteToResponseBody(w, userResponse)
+	} else {
+		err := r.ParseForm()
+		helper.PanicIfError(err)
+		var data map[string]interface{}
+
+		userLoginRequest = userreqes.UserLoginRequest{
+			Email:    r.Form.Get("email"),
+			Password: r.Form.Get("password"),
+		}
+		userResponse, err := uc.UserService.Login(r.Context(), userLoginRequest)
+		if err != nil {
+			data = map[string]interface{}{
+				"success": 0,
+				"message": err,
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+			return
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "jwt-workaway",
+			Value:    userResponse.Token,
+			HttpOnly: true,
+			Path:     "/",
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "userId",
+			Value:    strconv.Itoa(userResponse.Id),
+			HttpOnly: true,
+			Path:     "/",
+		})
+
+		if userResponse.Rank == 0 {
+			data = map[string]interface{}{
+				"success":  1,
+				"redirect": "/wp/" + strconv.Itoa(userResponse.Id) + "/home",
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+		} else if userResponse.Rank == 1 {
+			data = map[string]interface{}{
+				"success":  1,
+				"redirect": "/wpp/home",
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+		} else if userResponse.Rank == 2 {
+			data = map[string]interface{}{
+				"success":  1,
+				"redirect": "/wt/home",
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+		} else if userResponse.Rank == 3 {
+			data = map[string]interface{}{
+				"success":  1,
+				"redirect": "/wk/home",
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+		} else if userResponse.Rank == 4 {
+			data = map[string]interface{}{
+				"success":  1,
+				"redirect": "/wa/home",
+			}
+			temp, err := template.ParseFiles("view/login.html")
+			helper.PanicIfError(err)
+
+			err = temp.Execute(w, data)
+			helper.PanicIfError(err)
+		}
 	}
 
-	helper.WriteToResponseBody(w, response)
 }
 
 // Register implements UserController.
 func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request) {
-	userRegisterRequest := userreqes.UserRegisterRequest{}
-	helper.ReadFromRequestBody(r, &userRegisterRequest)
+	err := r.ParseForm()
+	helper.PanicIfError(err)
+
+	s := r.Form.Get("gender")
+
+	gender, err := strconv.Atoi(s)
+	helper.PanicIfError(err)
+
+	userRegisterRequest := userreqes.UserRegisterRequest{
+		NIP:      r.Form.Get("nip"),
+		NIK:      r.Form.Get("nik"),
+		NPWP:     r.Form.Get("npwp"),
+		Name:     r.Form.Get("fullname"),
+		NoTelp:   r.Form.Get("noTelp"),
+		TglLahir: r.Form.Get("lahir"),
+		Status:   "1",
+		Gender:   gender,
+		Alamat:   r.Form.Get("alamat"),
+		Email:    r.Form.Get("email"),
+		Password: r.Form.Get("password"),
+	}
 
 	userResponse := uc.UserService.Register(r.Context(), userRegisterRequest)
 	response := model.Response{
@@ -67,42 +187,29 @@ func (uc *UserControllerImpl) Register(w http.ResponseWriter, r *http.Request) {
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(w, response)
+	t, err := template.ParseFiles("view/success.html")
+	helper.PanicIfError(err)
+
+	t.Execute(w, response)
 }
 
 // Logout implements UserController.
-func (*UserControllerImpl) Logout(w http.ResponseWriter, r *http.Request) {
+func (uc *UserControllerImpl) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session",
+		Name:   "jwt-workaway",
 		Value:  "",
-		Path:   "/",
 		MaxAge: -1,
+		Path:   "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:   "userId",
+		Value:  "",
+		MaxAge: -1,
+		Path:   "/",
 	})
 
 	// Redirect to the login page
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-}
-
-// Update implements UserController.
-func (uc *UserControllerImpl) Update(w http.ResponseWriter, r *http.Request) {
-	userUpdateRequest := userreqes.UserUpdateRequest{}
-	helper.ReadFromRequestBody(r, &userUpdateRequest)
-
-	vars := mux.Vars(r)
-	userIdS := vars["userId"]
-	userId, err := strconv.Atoi(userIdS)
-	helper.PanicIfError(err)
-
-	userUpdateRequest.Id = userId
-
-	userResponse := uc.UserService.Update(r.Context(), userUpdateRequest)
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   userResponse,
-	}
-
-	helper.WriteToResponseBody(w, response)
 }
 
 // Delete implements UserController.
@@ -163,4 +270,79 @@ func (uc *UserControllerImpl) FindByNIP(w http.ResponseWriter, r *http.Request) 
 
 	helper.WriteToResponseBody(w, response)
 	panic("unimplemented")
+}
+
+// ChangePassword implements UserController.
+func (uc *UserControllerImpl) ChangePassword(w http.ResponseWriter, r *http.Request) {
+
+	c, err := r.Cookie("userId")
+	helper.PanicIfError(err)
+
+	id, err := strconv.Atoi(c.Value)
+	helper.PanicIfError(err)
+
+	changePassReq := userreqes.ChangePasswordReq{
+		Id: id,
+	}
+	helper.ReadFromRequestBody(r, &changePassReq)
+
+	userResponse := uc.UserService.ChangePassword(r.Context(), changePassReq)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   userResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
+}
+
+// UpdateProfile implements UserController.
+func (uc *UserControllerImpl) UpdateProfile(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("userId")
+	helper.PanicIfError(err)
+
+	id, err := strconv.Atoi(c.Value)
+	helper.PanicIfError(err)
+
+	userUpdateRequest := userreqes.UserUpdateRequest{
+		Id: id,
+	}
+
+	helper.ReadFromRequestBody(r, &userUpdateRequest)
+
+	userResponse := uc.UserService.UpdateProfile(r.Context(), userUpdateRequest)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   userResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
+}
+
+// ChangeImage implements UserController.
+func (uc *UserControllerImpl) ChangeImage(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("userId")
+	helper.PanicIfError(err)
+
+	id, err := strconv.Atoi(c.Value)
+	helper.PanicIfError(err)
+
+	changeImageRequest := userreqes.ChangeImageReq{
+		Id: id,
+	}
+
+	helper.ReadFromRequestBody(r, &changeImageRequest)
+
+	userResponse := uc.UserService.ChangeImage(r.Context(), changeImageRequest)
+
+	response := model.Response{
+		Code:   200,
+		Status: "OK",
+		Data:   userResponse,
+	}
+
+	helper.WriteToResponseBody(w, response)
 }

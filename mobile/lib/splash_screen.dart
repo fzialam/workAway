@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile/login_page.dart';
+import 'package:geolocator/geolocator.dart';
+// import 'package:mobile/login_page.dart';
+import 'package:mobile/model/user.dart';
+import 'package:mobile/listSurat.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,13 +18,20 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    askPermissionLocation();
 
     Future.delayed(
       const Duration(seconds: 3),
       () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
+            builder: (_) => GetSurat(User(
+                id: 1,
+                name: "name",
+                rank: 1,
+                email: "email",
+                token: "token",
+                password: '')),
           ),
         );
       },
@@ -33,6 +43,20 @@ class _SplashScreenState extends State<SplashScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.dispose();
+  }
+
+  Future<void> askPermissionLocation() async {
+    var servicePermission = Geolocator.isLocationServiceEnabled();
+    if (await servicePermission) {
+      debugPrint("Service Disabled");
+    }
+
+    var permission = Geolocator.checkPermission();
+    // ignore: unrelated_type_equality_checks
+    if (permission == LocationPermission.denied) {
+      permission =
+          (await Geolocator.requestPermission()) as Future<LocationPermission>;
+    }
   }
 
   @override

@@ -33,6 +33,19 @@ type SuratTugasJOINRincian struct {
 	Rincian          RincianAnggaran `json:"rincian"`
 }
 
+type SuratTugasJOINPresensi struct {
+	Id           int    `json:"id"`
+	LokasiSurat  string `json:"lokasi_tujuan"`
+	JenisProgram string `json:"jenis_program"`
+	TglAwal      string `json:"tgl_awal"`
+	TglAkhir     string `json:"tgl_akhir"`
+	GambarId     int    `json:"gambar_id"`
+	NameGambar   string `json:"name_gambar"`
+	Gambar       string `json:"gambar"`
+	Lokasi       string `json:"lokasi"`
+	Koordinat    string `json:"koordinat"`
+}
+
 type SuratTugasJOINUserLaporanApproved struct {
 	Id               int                 `json:"id"`
 	Tipe             int                 `json:"tipe"`
@@ -52,25 +65,22 @@ type SuratTugasJOINUserLaporanApproved struct {
 }
 
 type SuratTugasJOINUser struct {
-	Id                int    `json:"id"`
-	Tipe              int    `json:"tipe"`
-	UserId            int    `json:"user_id"`
-	LokasiTujuan      string `json:"lokasi_tujuan"`
-	JenisProgram      string `json:"jenis_program"`
-	DokumenName       string `json:"dokumen_name"`
-	DokumenPDF        string `json:"dokumen_pdf"`
-	DokPendukungName  string `json:"dok_pendukung_name"`
-	DokPendukungPdf   string `json:"dok_pendukung_pdf"`
-	TglAwal           string `json:"tgl_awal"`
-	TglAkhir          string `json:"tgl_akhir"`
-	CreateAt          string `json:"create_at"`
-	Status            string `json:"status"`
-	StatusTTD         string `json:"status_ttd"`
-	StatusTTDCreateAt string `json:"status_ttd_create_at"`
-	UserNIP           string `json:"user_nip"`
-	UserName          string `json:"user_name"`
-	UserNoTelp        string `json:"user_no_telp"`
-	UserEmail         string `json:"user_email"`
+	Id               int    `json:"id"`
+	Tipe             int    `json:"tipe"`
+	UserId           int    `json:"user_id"`
+	LokasiTujuan     string `json:"lokasi_tujuan"`
+	JenisProgram     string `json:"jenis_program"`
+	DokumenName      string `json:"dokumen_name"`
+	DokumenPDF       string `json:"dokumen_pdf"`
+	DokPendukungName string `json:"dok_pendukung_name"`
+	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
+	TglAwal          string `json:"tgl_awal"`
+	TglAkhir         string `json:"tgl_akhir"`
+	CreateAt         string `json:"create_at"`
+	UserNIP          string `json:"user_nip"`
+	UserName         string `json:"user_name"`
+	UserNoTelp       string `json:"user_no_telp"`
+	UserEmail        string `json:"user_email"`
 }
 
 type SuratTugasJOINUserFoto struct {
@@ -279,6 +289,7 @@ type ParticipanJoinUserFoto struct {
 	Email        string `json:"email"`
 	NameGambar   string `json:"name_gambar"`
 	Gambar       string `json:"gambar"`
+	CreateAt     string `json:"create_at"`
 	Lokasi       string `json:"lokasi"`
 	Koordinat    string `json:"koordinat"`
 }

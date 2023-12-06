@@ -3,7 +3,6 @@ package keuanganservice
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
@@ -12,6 +11,7 @@ import (
 	keuanganreqres "github.com/fzialam/workAway/model/req_res/keuangan_req_res"
 	laporanreqres "github.com/fzialam/workAway/model/req_res/laporan_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
+	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	keuanganrepository "github.com/fzialam/workAway/repository/keuangan_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -19,15 +19,27 @@ import (
 type KeuanganServiceImpl struct {
 	KeuanganRepo keuanganrepository.KeuanganRepo
 	DB           *sql.DB
-	Validate     validator.Validate
+	Validate     *validator.Validate
 }
 
-func NewKeuanganService(keuanganRepo keuanganrepository.KeuanganRepo, db *sql.DB, validate validator.Validate) KeuanganService {
+func NewKeuanganService(keuanganRepo keuanganrepository.KeuanganRepo, db *sql.DB, validate *validator.Validate) KeuanganService {
 	return &KeuanganServiceImpl{
 		KeuanganRepo: keuanganRepo,
 		DB:           db,
 		Validate:     validate,
 	}
+}
+
+// Index implements KeuanganService.
+func (ks *KeuanganServiceImpl) Index(ctx context.Context) (keuanganreqres.IndexKeuangan, error) {
+	tx, err := ks.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := ks.KeuanganRepo.Index(ctx, tx)
+	helper.PanicIfError(err)
+
+	return index, nil
 }
 
 // ListPermohonanApproved implements KeuanganService.
@@ -180,12 +192,21 @@ func (ks *KeuanganServiceImpl) SetApprovedLaporan(ctx context.Context, request l
 		Message:   request.Message,
 	}
 
-	log.Println(laporan)
-
 	laporan = ks.KeuanganRepo.SetApprovedLaporan(ctx, tx, laporan)
 
 	return laporanreqres.ApprovedLaporanResponse{
 		Status:  laporan.Status,
 		Message: "Success",
 	}
+}
+
+// Profile implements KeuanganService.
+func (ks *KeuanganServiceImpl) Profile(ctx context.Context, userId int) userreqres.UserResponse {
+	tx, err := ks.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	user := ks.KeuanganRepo.Profile(ctx, tx, userId)
+
+	return helper.ToUserResponse(user)
 }

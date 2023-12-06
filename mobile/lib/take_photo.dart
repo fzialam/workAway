@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile/config.dart';
-
-import 'package:mobile/user.dart';
+import 'package:path/path.dart';
 
 class TakePhoto extends StatefulWidget {
-  final User user;
-  const TakePhoto(this.user, {super.key});
+  TakePhoto(int userId, int suratId);
 
   @override
   State<TakePhoto> createState() => _TakePhotoState();
@@ -18,116 +17,133 @@ class TakePhoto extends StatefulWidget {
 
 class _TakePhotoState extends State<TakePhoto> {
   File? image;
-  bool dataAvailable = false;
-  late final http.Response response;
+  bool isLoading = false;
+  Future pickImage() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
 
-  Future fetchData() async {
-    final url = Uri.parse('$URL/wp/${widget.user.id}/mobile');
-    response = await http.get(url);
+      if (image == null) return;
 
-    if (response.statusCode == 200) {
-      // Successful response with a status code of 200
+      final imageTemporary = File(image.path);
       setState(() {
-        null;
+        this.image = imageTemporary;
       });
-    } else {
-      // Handle errors if the request was not successful
-      debugPrint("No Data");
-      showErrorDialog(response);
-      null;
+      String imageExtension = extension(image.path);
+      print('Jenis gambar: $imageExtension');
+      int imageSizeInBytes = this.image!.lengthSync();
+
+      double imageSizeInMB = imageSizeInBytes / (1024 * 1024);
+      print('Ukuran gambar: $imageSizeInMB MB');
+    } on PlatformException catch (e) {
+      debugPrint('failed pick image: $e');
     }
   }
 
-  Future refresh() async {
-    fetchData();
-    if (dataAvailable == true) {
-      cameraScreen();
-    }
-  }
-
-  Future<void> cameraScreen() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
-
-    if (image == null) {
-      showErrorDialog(response);
-    } else {
-      var imageTemp = File(image.path);
+  Future<void> postImageToServer(File imageFile) async {
+    try {
       setState(() {
-        this.image = imageTemp;
+        isLoading = true; // Menandai bahwa proses pengiriman dimulai
+      });
+      // Membuka file gambar sebagai byte stream
+      List<int> imageBytes = imageFile.readAsBytesSync();
+
+      // Mengonversi byte stream gambar ke base64
+      String base64Image = base64Encode(imageBytes);
+
+      // Membuat objek JSON dengan data gambar dalam format base64
+      Map<String, dynamic> jsonData = {
+        'gambar': base64Image,
+        'lokasi': 'disini',
+        'surat_tugas_id': 1,
+      };
+
+      // Membuat permintaan HTTP POST
+      var uri = Uri.parse('$URL/1/mobile'); // Ganti URL server sesuai kebutuhan
+      var headers = {'Content-Type': 'application/json'};
+      var body = jsonEncode(jsonData);
+
+      // Menjalankan permintaan dan mendapatkan respons
+      var response = await http.post(uri, headers: headers, body: body);
+      // Cek kode status respons
+      if (response.statusCode == 200) {
+        print('Gambar berhasil diunggah');
+      } else {
+        print('Gagal mengunggah gambar. Kode status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        isLoading = false; // Menandai bahwa proses pengiriman telah selesai
       });
     }
-    dataAvailable = false;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData(); // Panggil fetchData saat halaman diinisialisasi
-    if (dataAvailable == true) {
-      cameraScreen();
-    }
-  }
-
-  void showErrorDialog(http.Response response) {
-    final responseData = json.decode(response.body);
-    final String message =
-        "ERROR ${response.statusCode}: Terjadi kesalahan ${responseData['message']}";
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'ERROR',
-            style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w900,
-                fontFamily: "HeadlandOne"),
-          ),
-          icon: const Icon(Icons.error_sharp),
-          content: Text(
-            message,
-            style: const TextStyle(
-                color: Color.fromARGB(255, 158, 158, 158),
-                fontWeight: FontWeight.bold,
-                fontFamily: "HeadlandOne"),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'OK',
-                style: TextStyle(
-                  color: Color.fromARGB(186, 244, 67, 54),
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "HeadlandOne",
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Jika data tidak tersedia, tampilkan "Take Photo" dan tombol refresh
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Take Photo'),
-      ),
-      body: Center(
+      backgroundColor: Colors.amber.shade300,
+      body: Container(
+        padding: EdgeInsets.all(32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Data tidak tersedia'),
-            ElevatedButton(
-              onPressed: refresh, // Panggil fetchData saat tombol ditekan
-              child: const Text('Refresh'),
+          children: [
+            const Spacer(),
+            image != null
+                ? Image.file(
+                    image!,
+                    width: 160,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  )
+                : const FlutterLogo(size: 160),
+            const SizedBox(height: 24),
+            const Text(
+              'Image Picker',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                textStyle: const TextStyle(fontSize: 20),
+                minimumSize: const Size.fromHeight(56),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.camera_alt_outlined, size: 28),
+                  SizedBox(width: 16),
+                  Text('Pick Camera'),
+                ],
+              ),
+              onPressed: () {
+                pickImage();
+              },
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      debugPrint('clicked');
+                      postImageToServer(image!);
+                    },
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.check,
+                    size: 28,
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Text('Send')
+                ],
+              ),
+            ),
+            isLoading ? const CircularProgressIndicator() : Container(),
           ],
         ),
       ),

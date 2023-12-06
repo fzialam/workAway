@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      {{if eq .menu "home"}}
+      <title>WorkAway</title>
+      {{else if eq .menu "Penugasan"}}
+      <title>Penugasan | WorkAway</title>
+      {{else if eq .menu "newPenugasan"}}
+      <title>Buat Penugasan | WorkAway</title>
+      {{else if eq .menu "permohonan"}}
+      <title>Permohonan | WorkAway</title>
+      {{else if or (eq .menu "sppd") (eq .menu "sppdView") }}
+      <title>SPPD | WorkAway</title>
+      {{else if eq .menu "permohonanView"}}
+      <title>Detail Permohonan | WorkAway</title>
+      {{else if eq .menu "laporan"}}
+      <title>Laporan | WorkAway</title>
+      {{else if eq .menu "viewLap"}}
+      <title>Detail Laporan | WorkAway</title>
+      {{else if eq .menu "profile"}}
+      <title>Profile | WorkAway</title>
+      {{else}}
+      <title>Pimpinan | WorkAway</title>
+      {{end}}
+      <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/css/utilities.css">
+      <link rel="stylesheet" href="/static/css/sidebar.css">
+
+  </head>
+  <body>
+    <nav class=" sidebar h-100">
+      <header class="position-relative">
+          <div class="image-text">
+              <a href="/wpp/home" class="image">
+                  <img id="gambar" src="/static/img/WORKAWAY.png" alt="logo">
+              </a>
+          </div>
+      </header>
+      <div class="menu-bar">
+          <div class="menu">
+              <div class="menu-links">
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wpp/home" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Home</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wpp/permohonan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Permohonan</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wpp/penugasan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Penugasan</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wpp/sppd" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">SPPD</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wpp/laporan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Laporan</span>
+                      </a>
+                  </li>
+              </div>
+          </div>
+          <div class="bottom-content">
+              <li class="mt-4 align-items-center dropdown open">
+                  <a href="/wpp/profile" class="w-100 h-100 text-decoration-none align-items-center">
+                      <span class="text">Profile</span>
+                  </a>
+              </li>
+              <li class="mt-4 align-items-center">
+                  <a href="/logout" class="w-100 h-100 text-decoration-none align-items-center">
+                      <span class="text">Logout</span>
+                  </a>
+              </li>
+          </div>
+      </div>
+  </nav>
+    <main class="container">
+      {{if eq .menu "home"}}
+      <section id="home">
+          <h1 class="fw-bold">Dashboard</h1>
+          <div class="container mt-5">
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                      <a class="home card text-black-50 text-decoration-none" href="/wpp/permohonan">
+                          <div class="card-body">
+                              <h5 class="card-title fw-bold">Permohonan</h5>
+                              <ul class="list-group">
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Permohonan.Belum}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Disetujui<span class="badge bg-success badge-pill">{{.index.Permohonan.Approved}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Ditolak<span class="badge bg-danger badge-pill">{{.index.Permohonan.Reject}}</span>
+                                  </li>
+                              </ul>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                      <a class="home card text-black-50 text-decoration-none" href="/wpp/sppd">
+                          <div class="card-body ">
+                              <h5 class="card-title fw-bold">Penugasan</h5>
+                              <ul class="list-group">
+                                  <li class="alert-heading list-group-item d-flex justify-content-between align-items-center">
+                                      Belum Terlaksana<span class="badge bg-primary badge-pill">{{.index.Penugasan.Belum}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Sudah Terlaksana<span class="badge bg-success badge-pill">{{.index.Penugasan.Sudah}}</span>
+                                  </li>
+                              </ul>
+                          </div>
+                      </a>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                    <a class="home card text-black-50 text-decoration-none" href="/wpp/sppd">
+                      <div class="card-body">
+                          <h5 class="card-title fw-bold">SPPD</h5>
+                          <ul class="list-group">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Belum Dikonfirmasi<span class="badge bg-primary badge-pill">1</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Disetujui<span class="badge bg-success badge-pill">3</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Ditolak<span class="badge bg-danger badge-pill">0</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </a>
+                    
+                  </div>
+          
+                  <div class="col-md-6 mb-4">
+                    <a class="home card text-black-50 text-decoration-none" href="/wpp/laporan">
+                      <div class="card-body">
+                          <h5 class="card-title fw-bold">Laporan</h5>
+                          <ul class="list-group">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Laporan.Belum}}</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Disetujui<span class="badge bg-success badge-pill">{{.index.Laporan.Approved}}</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Ditolak<span class="badge bg-danger badge-pill">{{.index.Laporan.Reject}}</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </a>
+                  </div>
+              </div>
+          </div>
+      </section>
+      {{else if eq .menu "permohonan"}}
+      <section id="permohonan" class="m-5">
+        <h1 style="font-weight: 600;"">List Permohonan</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Id</th>
+              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Waktu Pengajuan</th>
+              <th scope="col">Permohonan</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .permohonan}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.CreateAt}}</td>
+              <td>
+                <a href="/wpp/{{$data.Id}}/permohonan?v=true" class="btn btn-warning">Lihat</a>
+              </td>
+              <td>
+                {{if eq $data.Status "0"}}
+                Belum Dikonfirmasi
+                {{else if eq $data.Status "1"}}
+                Sudah TTD
+                {{else if eq $data.Status "2"}}
+                Ditolak
+                {{else}}
+                Status Tidak Dikenali 
+                {{end}}
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>
+      </section>
+      {{else if eq .menu "permohonanView"}}
+      <section id="permohonanView" class="mt-5">
+        <a href="/wpp/permohonan" class="btn btn-dark">Back</a>
+      <div class="container mt-3" id="detail">
+        <h2>Data Permohonan Perjalanan Dinas</h2>
+        <div class="flex justify-content-center">
+          {{if gt .lenP 0}}
+          <div class="">
+            <h4>Data Ketua Kelompok</h4>
+          </div>
+          {{else}}
+          <div class="">
+            <h4>Data Pemohon</h4>
+          </div>
+          {{end}}
+        </div>
+        <div class="flex justify-content-between">
+          <div id="ketua">
+            <div>
+              <label class="form-label">Nama Lengkap: </label>
+              <input class="form-control form-text" value="{{.permohonan.UserName}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">NIP: </label>
+              <input class="form-control form-text" value="{{.permohonan.UserNIP}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Email: </label>
+              <input class="form-control form-text" value="{{.permohonan.UserEmail}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">No Telepon: </label>
+              <input class="form-control form-text" value="{{.permohonan.UserNoTelp}}" readonly/>
+            </div>
+          </div>
+          <br>
+          <div id="participans" class="my-4">
+            <h2>Anggota</h2>
+            <table class="table table-hover table-responsive table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Nama Lengkap</th>
+                  <th scope="col">NIP</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">No Telepon</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $index, $data := .permohonan.Participans}}
+                <tr>
+                    <th scope="row">{{index $index}}</th>
+                    <td>{{$data.Name}}</td>
+                    <td>{{$data.NIP}}</td>
+                    <td>{{$data.Email}}</td>
+                    <td>{{$data.NoTelp}}</td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br>
+        <div class="">
+          <h4>Detail Permohonan</h4>
+        </div>
+        <div id="detail" class="border border-1 w-75">
+          <div>
+            <label class="form-label">Lokasi Tujuan: </label>
+            <input class="form-control form-text input" value="{{.permohonan.LokasiTujuan}}" readonly/>
+            <label class="form-label">Jenis Program: </label>
+            <input class="form-control form-text input" value="{{.permohonan.JenisProgram}}" readonly/>
+          </div>
+          <div>
+            <label class="form-label">Tanggal Mulai: </label>
+            <input class="form-control form-text " type="date" value="{{.permohonan.TglAwal}}" readonly/>
+          </div>
+          <div>
+            <label class="form-label">Tanggal Selesai: </label>
+            <input class="form-control form-text " type="date" value="{{.permohonan.TglAkhir}}" readonly/>
+          </div>
+          <div>
+            <label class="form-label">Tanggal Permohonan: </label>
+            <input class="form-control form-text " type="text" value="{{.permohonan.CreateAt}}" readonly/>
+          </div>
+          <div>
+            <label class="form-label">Dokumen Pendukung: </label>
+            <a class="form-control form-text " href="data:application/pdf;base64,{{.permohonan.DokPendukungPdf}}" download="{{.permohonan.DokPendukungName}}" target="_blank" rel="noopener noreferrer">dokumen.pdf</a>
+            <!-- <input disabled class="text-black-50 " type="text" value="{{.permohonan.CreateAt}}" /> -->
+          </div>
+        </div>
+        <br>
+      {{if or (eq .permohonan.Status "") (eq .permohonan.Status "0")}}
+        <div id="action" class="flex justify-content-end">
+          <button id="s" value="1" class="btn btn-group btn-warning px-3 m-3" type="button">Setuju</button>
+          <button id="t" value="2" class="btn btn-group btn-danger px-3 m-3" type="button">Tolak</button>
+        </div>6,7
+        {{end}}
+      </div>
+      </section>
+      {{else if eq .menu "penugasan"}}
+      <section id="penugasan" class="m-5">
+        <h1 style="font-weight: 600;">List Penugasan</h1>
+        <div class="d-flex  justify-content-end">
+          <a href="/wpp/sppd?c=true" class="btn btn-info">Buat</a>
+        </div>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Id</th>
+              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Tanggal Mulai</th>
+              <th scope="col">Tanggal Akhir</th>
+              <th scope="col">SPPD</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .index}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>
+                {{if eq $data.DokumenName "-"}}
+                <a href="#" class="btn btn-danger disabled">Belum dibuat</a>
+                {{else}}
+                <a href="data:application/pdf;base64,{{$data.DokumenPDF}}" class="btn btn-warning">Lihat</a>
+                {{end}}
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>   
+      </section> 
+      {{else if eq .menu "sppd"}}
+      <section id="sppd" class="m-5">
+        <h1 style="font-weight: 600;">SPPD</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Id</th>
+              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Tanggal Mulai</th>
+              <th scope="col">Tanggal Akhir</th>
+              <th scope="col">SPPD</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .sppds}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>
+                {{if ne $data.DokumenName ""}}
+                <a href="/wpp/{{$data.Id}}/sppd?v=true" class="btn btn-warning">Lihat</a>
+                {{else}}
+                <a href="#" class="btn btn-danger disabled">-</a>
+                {{end}}
+              </td>
+              <td>
+                {{if and (or (eq $data.Status "") (eq $data.Status "0")) (ne $data.DokumenName "") }}
+                Belum Dikonfirmasi
+                {{else if and (eq $data.Status "1") (ne $data.DokumenName "") }}
+                Sudah TTD
+                {{else if eq $data.Status "2"}}
+                Perlu Revisi
+                {{else}}
+                Belum Upload Dokumen
+                {{end}}
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>   
+      </section> 
+      {{else if eq .menu "sppdView"}}
+      <section id="sppdView" class="p-5 ">
+        <a href="/wpp/sppd" class="btn btn-dark">Back</a>
+        <div class="popup-overlay"></div>
+        <div class="text-center" id="overlay">
+          <h1 class="fw-bold">SPPD</h1>
+          <div class="custom-file">
+            <embed id="pdfViewer-sppd" src="data:application/pdf;base64,{{.surat.DokumenPDF}}" type="application/pdf" width="80%" height="600px" /> 
+            <input type="hidden" id="file-sppd" value="{{.surat.DokumenName}}">
+          </div>
+          <br>
+          <h1 class="fw-bold">Rincian Anggaran</h1>
+          <div class="custom-file">
+            <embed id="pdfViewer-anggaran" src="data:application/pdf;base64,{{.surat.Rincian.DokPDF}}" type="application/pdf" width="80%" height="600px" /> 
+            <input type="hidden" id="file-rincian" value="{{.surat.Rincian.DokName}}">
+            <input type="hidden" id="rincianId" value="{{.surat.Rincian.Id}}">
+          </div>
+          {{if or (eq .surat.Status "") (eq .surat.Status "0")}}
+          <div class="d-flex">
+            <div class="mx-2">
+              <a href="#popup" id="active" class="p-2 px-3 btn btn-primary">Setuju</a>
+            </div>
+            <div class="mx-2">
+              <button id="tolak" class="p-2 btn btn-danger" type="button">Tolak</button>
+            </div>
+          </div>
+          {{end}}
+        </div>
+        <div id="popup" style="left: 55%;" class="card border border-success">
+          <div class="m-4">
+            <div class=" card-header">
+              <h1 class="card-title fw-bold">Upload SPPD</h1>
+              <h3 class="card-subtitle fw-normal text-info">(ber-Tanda Tangan)</h3>
+            </div>
+          </div>
+          <div id="form" class="card-body">
+            <form class="form" method="post" enctype="multipart/form-data">
+              <div class="inFile">
+                <input type="file" class="form-control form-control-file" name="file" id="file" accept=".pdf"/>
+              </div>
+              <div id="butt-container" class="d-flex justify-content-around mt-2">
+                <button type="button" id="submit-file" class="btn btn-primary">SUBMIT</button>
+                <a href="#" type="button" id="close" class="btn btn-danger">Close</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+      {{else if eq .menu "newPenugasan"}}
+      <div class="w-100 m-5" style="margin-right: 300px;">
+        <a href="/wpp/sppd" class="btn btn-dark">Back</a>
+        <h1 style="font-weight: 600;" class="my-3">Penugasan</h1>
+        <form class="form nav-justified" method="post" enctype="multipart/form-data">
+          <div class="row px-5">
+            <div id="surat" class="col row w-auto">
+              <div class="form-group mb-3 row">
+                <label class="col-sm-4 col-form-label" for="lokasi">Lokasi Tujuan</label>
+                <div class="col-sm-5 w-50">
+                  <input class="form-text form-control" type="text" name="lokasi" id="lokasi" autocomplete="off" required>
+                </div>
+              </div>
+              <div class="form-group mb-3 row">
+                <label class="col-sm-4 col-form-label" for="jenis">Jenis Program</label>
+                <div class="col-sm-5 w-50">
+                  <input class="form-text form-control" name="jenis" id="jenis" required />
+                </div>
+              </div>
+              <div class="form-group mb-3 row">
+                <label class="col-sm-4 col-form-label" for="awal">Tanggal Awal</label>
+                <div class="col-sm-5 w-50">
+                  <input type="date" class="form-control" name="awal" id="awal" required>
+                </div>
+              </div>
+              <div class="form-group mb-3 row">
+                <label class="col-sm-4 col-form-label" for="akhir">Tanggal Akhir</label>
+                <div class="col-sm-5 w-50">
+                  <input type="date" class="form-control" name="akhir" id="akhir" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="person" class="mx-5">
+            <div class="d-flex">
+              <div class="form-check mx-4">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="solo">
+                <label class="form-check-label" for="solo">
+                  Perorangan
+                </label>
+              </div>
+              <div class="form-check mx-4">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="group">
+              <label class="form-check-label" for="group">
+                Kelompok
+              </label>
+              </div>
+            </div>
+            <div class="my-2 w-100">
+              <div id="participan-container" class="row g-4 form-group col"></div>
+            </div>
+            <div id="partcipan-list" class="block"></div>
+          </div>
+          <div id="submit-container" class="my-4 d-flex w-100 justify-content-center">
+            <button id="submit" class="btn btn-block btn-primary shadow-sm w-50" disabled type="button">Submit</button>
+          </div>
+        </form>
+      </div>
+      {{else if eq .menu "laporan"}}
+      <section id="laporan" class="m-5">
+        <h1 style="font-weight: 600;">Laporan</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Id</th>
+              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Tanggal Mulai</th>
+              <th scope="col">Tanggal Akhir</th>
+              <th scope="col">SPPD</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .sppds}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>
+                {{if ne $data.Laporan.DokName ""}}
+                <a href="/wpp/{{$data.Id}}/laporan?v=true" class="btn btn-warning">Lihat</a>
+                {{else}}
+                <a href="#" class="btn btn-danger disabled">-</a>
+                {{end}}
+              </td>
+              <td>
+                {{if and (or (eq $data.Laporan.Status "") (eq $data.Laporan.Status "0")) (ne $data.Laporan.DokName "") }}
+                Belum Dikonfirmasi
+                {{else if and (eq $data.Laporan.Status "1") (ne $data.Laporan.DokName "") }}
+                Sudah TTD
+                {{else if eq $data.Laporan.Status "2"}}
+                Perlu Revisi
+                {{else}}
+                Belum Upload Dokumen
+                {{end}}
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>   
+      </section> 
+      {{else if eq .menu "viewLap"}}
+      <section id="viewLap">
+        <div class="container mt-5" id="detail">
+          <a href="/wpp/laporan" class="btn btn-dark">Back</a>
+          <h2>Data Laporan Perjalanan Dinas</h2>
+          <div class="flex justify-content-center">
+            {{if gt .lenP 0}}
+            <div class="">
+              <h4>Data Ketua Kelompok</h4>
+            </div>
+            {{else}}
+            <div class="">
+              <h4>Data Pelaksana</h4>
+            </div>
+            {{end}}
+          </div>
+          <div class="flex justify-content-between">
+            <div id="ketua">
+              <div>
+                <label class="form-label">Nama Lengkap: </label>
+                <input class="form-control form-text" value="{{.sppd.UserName}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">NIP: </label>
+                <input class="form-control form-text" value="{{.sppd.UserNIP}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">Email: </label>
+                <input class="form-control form-text" value="{{.sppd.UserEmail}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">No Telepon: </label>
+                <input class="form-control form-text" value="{{.sppd.UserNoTelp}}" readonly/>
+              </div>
+              <div>
+                <label class="form-label">Bukti Foto: </label>
+                <div class="d-flex w-50">
+                  {{if eq .sppd.Gambar ""}}
+                  <input class="form-control form-text h-25" value="-" readonly/>
+                  <img src="" alt="foto-ketua.png" width="100px" height="100px"sizes="">
+                  {{else}}
+                  <input class="form-control form-text h-25" value="{{.sppd.Lokasi}}" readonly/>
+                  <img class="img-thumbnail" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px"sizes="">
+                  {{end}}
+                </div>
+              </div>
+            </div>
+            {{if gt .lenP 0}}
+            <div id="participans" class="my-4">
+              <h2>Anggota</h2>
+              <table class="table table-hover table-responsive table-bordered table-striped text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama Lengkap</th>
+                    <th scope="col">NIP</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">No Telepon</th>
+                    <th scope="col">Foto</th>
+                    <th scope="col">Lokasi Foto</th>
+                  </tr>
+                </thead>
+                <tbody class="justify-content-center">
+                  {{range $index, $data := .sppd.Participans}}
+                  <tr>
+                      <th scope="row">{{index $index}}</th>
+                      <td>{{$data.Name}}</td>
+                      <td>{{$data.NIP}}</td>
+                      <td>{{$data.Email}}</td>
+                      <td>{{$data.NoTelp}}</td>
+                      {{if eq $data.Lokasi ""}}
+                      <td>-</td>
+                      <td>-</td>
+                      {{else}}
+                      <td>
+                        <img class="img-thumbnail" src="{{$data.Gambar}}" width="80px" height="80px" alt="gambar{{$index}}">
+                      </td>
+                      <td>{{$data.Lokasi}}</td>
+                      {{end}}
+                  </tr>
+                  {{end}}
+                </tbody>
+              </table>
+            </div>
+            {{end}}
+          </div>
+          <br>
+          <div class="">
+            <h4>Detail SPPD</h4>
+          </div>
+          <div id="detail" class="border border-1 w-75">
+            <div>
+              <label class="form-label">Lokasi Tujuan: </label>
+              <input class="form-control form-text input" value="{{.sppd.LokasiTujuan}}" readonly/>
+              <label class="form-label">Jenis Program: </label>
+              <input class="form-control form-text input" value="{{.sppd.JenisProgram}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Mulai: </label>
+              <input class="form-control form-text " type="date" value="{{.sppd.TglAwal}}" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Selesai: </label>
+              <input class="form-control form-text " type="date" value="{{.sppd.TglAkhir}}" readonly/>
+            </div>
+              <label class="form-label">Laporan SPPD: </label>
+              <input type="hidden" id="laporanId" value="{{.sppd.LaporanId}}" />
+              <a class="form-control form-text text-decoration-none link-primary" href="data:application/pdf;base64,{{.sppd.LaporanDokPDF}}" download="{{.sppd.LaporanDokName}}" target="_blank" rel="noopener noreferrer">{{.sppd.LaporanDokName}}</a>
+              <input type="hidden" id="laporanStatus" value="{{.sppd.Status}}" />
+            </div>
+          </div>
+        </div>
+        <br>
+        {{if and (ne .sppd.Status "1") (ne .sppd.Status "2")}}
+        <div id="action" class="flex justify-content-end">
+          <button id="s" value="1" class="btn btn-group btn-warning px-3 m-3" type="button">Setuju</button>
+          <button id="t" value="2" class="btn btn-group btn-danger px-3 m-3" type="button">Tolak</button>
+        </div>
+        {{end}}
+        </div>
+      </section>
+      {{else if eq .menu "profile"}}
+      <section id="profile">
+        <h1>Profile</h1>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-warning mx-5" type="button" id="changePass">Ganti Password</button>
+        </div>
+        <div id="change-form" class="d-none">
+            <form id="changeForm" class="px-5">
+                <div class="d-flex flex-column px-5" style="margin: 0px 250px;">
+                    <div class="mb-3">
+                        <label for="passwordLama" class="form-label">Password Lama:</label>
+                        <input type="password" class="form-control form-text" name="passwordLama" id="passwordLama" autocomplete="off" placeholder="Password lama" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordBaru" class="form-label">Password Baru:</label>
+                        <input type="password" class="form-control form-text" name="passwordBaru" id="passwordBaru" autocomplete="off" placeholder="Password baru" required>
+                    </div>
+                    <div class="d-grid">
+                        <button id="change" type="button" class="btn btn-primary" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="edit-form" class="">
+            <form class="px-5">
+              <div>
+                <div class="d-grid mb-2">
+                  <img id="userImage" class="img-thumbnail rounded float-start" src="{{ .user.Gambar }}" height="80px" width="80px" alt="" />
+                </div>
+                <div id="ganCon">
+                  <button id="gantiImage" class=" btn btn-outline-primary" type="button">Ganti Foto</button>
+                  <button id="saveImage" class="d-none btn btn-outline-warning" type="button">Save</button>
+                </div>
+
+                <input type="file" id="fileInput" style="display:none;" accept="image/*" onchange="displaySelectedImage()">
+              </div>
+              <div class="d-flex justify-content-between px-5">
+                    <div style="min-width: 400px;">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nama Lengkap:</label>
+                            <input type="text" class="form-control form-text" name="name" id="name" autocomplete="off" value="{{.user.Name}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nik" class="form-label">NIK:</label>
+                            <input type="text" class="form-control form-text" name="nik" id="nik" autocomplete="off" value="{{.user.NIK}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nip" class="form-label">NIP:</label>
+                            <input type="text" class="form-control form-text" name="nip" id="nip" autocomplete="off" value="{{.user.NIP}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="npwp" class="form-label">NPWP:</label>
+                            <input type="text" class="form-control form-text" name="npwp" id="npwp" autocomplete="off" value="{{.user.NPWP}}" readonly required>
+                        </div>
+                        
+                    </div>
+                    <div style="min-width: 400px;">
+                        <div class="mb-3">
+                            <label for="noTelp" class="form-label">Nomer Telepon:</label>
+                            <input type="text" class="form-control form-text" name="noTelp" id="noTelp" autocomplete="off" value="{{.user.NoTelp}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control form-text" name="email" id="email" autocomplete="off" value="{{.user.Email}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lahir" class="form-label">Tanggal Lahir:</label>
+                            <input type="date" class="form-control form-text" name="lahir" id="lahir" value="{{.user.TglLahir}}" autocomplete="off" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="alamat" class="form-label">Alamat:</label>
+                            <textarea style="min-height: 100px;" class="text-start form-control form-text" name="alamat" id="alamat" value="" autocomplete="off" readonly required>{{.user.Alamat}}</textarea>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="d-flex w-100 justify-content-center">
+                    <button type="button" id="edit" class="btn btn-danger w-25 p-2">Edit Profile</button>
+                </div>
+            </form>
+        </div>
+      </section>
+      {{else}}
+      <h1 style="font-weight: 700;">
+        404 Page NotFound
+      </h1>
+      {{end}}
+    </main>
+    <script>
+        '{{if eq .menu "newPenugasan"}}'
+        const dataGOId = []
+        const dataGOName = []
+          '{{range .user}}'
+          dataGOId.push('{{.Id}}')
+          dataGOName.push('{{.Name}}')
+          '{{end}}'
+        
+        '{{else if eq .menu "true"}}'
+        const pdfViewer = document.getElementById('pdfViewer');
+        const pdfName = '{{.surat.DokumenName}}';
+        const pdfBase64 = '{{.surat.DokumenPDF}}';
+        document.addEventListener('DOMContentLoaded', function() {
+          // Set the source of the iframe with the base64 data
+          pdfViewer.src = 'data:application/pdf;base64,'+ pdfBase64;
+        });
+        '{{end}}'
+    </script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    {{if eq .menu "newPenugasan"}}
+    <script src="/static/js/pimpinan/penugasan-form.js"></script>
+    {{else if and (eq .menu "permohonanView") }}
+    <script src="/static/js/pimpinan/pimpinan-permohonan.js"></script>
+    {{else if eq .menu "sppd"}}
+    {{else if eq .menu "sppdView"}}
+    <script src="/static/js/utilities.js"></script>
+    <script src="/static/js/pimpinan/pimpinan-sppd.js"></script>
+    {{else if and  (eq .menu "viewLap") (or (eq .sppd.Status "") (eq .sppd.Status "0")) }}
+    <script src="/static/js/pimpinan/pimpinan-laporan.js"></script>
+    {{else if eq .menu "profile"}}
+    <script src="/static/js/profile.js"></script>
+    {{end}}
+  </body>
+</html>

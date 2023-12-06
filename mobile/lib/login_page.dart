@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobile/config.dart';
-import 'package:mobile/take_photo.dart';
-import 'package:mobile/user.dart';
+import 'package:mobile/listSurat.dart';
+import 'package:mobile/model/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,31 +25,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> sendDataToServer(String email, password) async {
-    final url = Uri.parse('$URL/login');
+  Future<void> loginToServer(String email, password) async {
+    final user = User(
+        id: 0, name: "", rank: 0, email: email, password: password, token: "");
 
-    final Map<String, dynamic> data = {
-      'email': email,
-      'password': password,
-    };
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type':
-            'application/json', // Set header Content-Type ke application/json
-      },
-      body: jsonEncode(data), // Mengonversi data ke JSON
-    );
+    final response = await user.login(user);
 
     if (response.statusCode == 200) {
       debugPrint('Data berhasil dikirim ke server');
-      final userData = json.decode(response.body)['data'];
+      final userData = jsonDecode(response.body);
       final user = User.fromJson(userData);
+
       // ignore: use_build_context_synchronously
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => TakePhoto(user)),
+        MaterialPageRoute(builder: (_) => GetSurat(user)),
       );
     } else {
       debugPrint(
@@ -171,15 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               filled: true,
                               fillColor: Colors.white,
                               labelText: "Email",
-                              hintText: 'your-email@domain.com',
+                              hintText: 'ucup@unesa.ac.id',
                               labelStyle: TextStyle(color: Colors.purple),
-                              suffixIcon: IconButton(
-                                onPressed: null,
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.purple,
-                                ),
-                              ),
                             ),
                           ),
                         ),
@@ -238,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 //     left: 120, right: 120, top: 20, bottom: 20),
                                 ),
                             onPressed: () {
-                              sendDataToServer(email.text, password.text);
+                              loginToServer(email.text, password.text);
                             },
                             child: const Text(
                               'Log In',

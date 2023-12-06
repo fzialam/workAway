@@ -108,6 +108,7 @@ func TestAddSurat(t *testing.T) {
 		&su.TglAkhir,
 		&su.CreateAt)
 	helper.PanicIfError(err)
-	log.Println(su)
+
+	log.Println(x)
 
 }

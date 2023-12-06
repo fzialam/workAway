@@ -6,6 +6,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	keuanganreqres "github.com/fzialam/workAway/model/req_res/keuangan_req_res"
 )
 
 type KeuanganRepoImpl struct {
@@ -13,6 +14,40 @@ type KeuanganRepoImpl struct {
 
 func NewKeuanganRepo() KeuanganRepo {
 	return &KeuanganRepoImpl{}
+}
+
+// Index implements KeuanganRepo.
+func (kr *KeuanganRepoImpl) Index(ctx context.Context, tx *sql.Tx) (keuanganreqres.IndexKeuangan, error) {
+	SQL := "SELECT "
+	SQL += "SUM(CASE WHEN `approved_rincian_anggaran`.status = '0' AND `surat_tugas`.dokumen_name = '-' THEN 1 ELSE 0 END) , "
+	SQL += "SUM(CASE WHEN `approved_rincian_anggaran`.status = '1' AND `surat_tugas`.dokumen_name != '-' THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `approved_rincian_anggaran`.status = '2' AND `surat_tugas`.dokumen_name != '-' THEN 1 ELSE 0 END) "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `approved_rincian_anggaran` ON `rincian_anggaran`.id = `approved_rincian_anggaran`.rincian_id "
+	SQL += "INNER JOIN `rincian_anggaran` ON `rincian_anggaran`.surat_tugas_id = `surat_tugas`.id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE());"
+
+	row := tx.QueryRowContext(ctx, SQL)
+
+	var index keuanganreqres.IndexKeuangan
+
+	err := row.Scan(&index.SPPDRincian.IsCreated, &index.SPPDRincian.Approved, &index.SPPDRincian.Reject)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT "
+	SQL += "SUM(CASE WHEN `approved_lap_angg`.status= '0' AND `surat_tugas`.tgl_akhir > NOW() THEN 1 ELSE 0 END) , "
+	SQL += "SUM(CASE WHEN `approved_lap_angg`.status= '1' AND `surat_tugas`.tgl_akhir > NOW() THEN 1 ELSE 0 END) , "
+	SQL += "SUM(CASE WHEN `approved_lap_angg`.status= '2' AND `surat_tugas`.tgl_akhir > NOW() THEN 1 ELSE 0 END)  "
+	SQL += "FROM `surat_tugas` "
+	SQL += "LEFT JOIN `laporan_anggaran` ON `surat_tugas`.id = `laporan_anggaran`.surat_tugas_id "
+	SQL += "LEFT JOIN `approved_lap_angg` ON `laporan_anggaran`.id = `approved_lap_angg`.laporan_id "
+	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE());"
+
+	row = tx.QueryRowContext(ctx, SQL)
+	err = row.Scan(&index.Laporan.Belum, &index.Laporan.Approved, &index.Laporan.Reject)
+	helper.PanicIfError(err)
+
+	return index, nil
 }
 
 // ListSurat implements KeuanganRepo.
@@ -25,6 +60,8 @@ func (kr *KeuanganRepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) []entity.
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
+	defer rows.Close()
+
 	for rows.Next() {
 		surat := entity.SuratTugasJOINApprovedUser{}
 		rows.Scan(
@@ -118,6 +155,8 @@ func (*KeuanganRepoImpl) GetAllParticipanJOINUserBySuratId(ctx context.Context, 
 
 	rows, err := tx.QueryContext(ctx, SQL, suratId)
 	helper.PanicIfError(err)
+
+	defer rows.Close()
 
 	for rows.Next() {
 		participan := entity.ParticipanJoinUser{}
@@ -225,6 +264,8 @@ func (kr *KeuanganRepoImpl) ListSPPDIsApproved(ctx context.Context, tx *sql.Tx) 
 	surats := []entity.SuratTugasJOINApprovedUserOtherId{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
+	defer rows.Close()
+
 	for rows.Next() {
 		surat := entity.SuratTugasJOINApprovedUserOtherId{}
 		rows.Scan(
@@ -281,6 +322,8 @@ func (kr *KeuanganRepoImpl) ListLaporanSPPD(ctx context.Context, tx *sql.Tx) []e
 	surats := []entity.SuratTugasJOINUserLaporanApproved{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
+	defer rows.Close()
+
 	for rows.Next() {
 		surat := entity.SuratTugasJOINUserLaporanApproved{}
 		rows.Scan(
@@ -350,4 +393,33 @@ func (kr *KeuanganRepoImpl) SetApprovedLaporan(ctx context.Context, tx *sql.Tx, 
 	_, err := tx.ExecContext(ctx, SQL, laporan.Status, laporan.Message, laporan.LaporanId)
 	helper.PanicIfError(err)
 	return laporan
+}
+
+// Profile implements KeuanganRepo.
+func (kr *KeuanganRepoImpl) Profile(ctx context.Context, tx *sql.Tx, userId int) entity.User {
+	SQL := "select * from `user` where id = ?"
+	row := tx.QueryRowContext(ctx, SQL, userId)
+
+	var user entity.User
+	err := row.Scan(
+		&user.Id,
+		&user.NIK,
+		&user.NPWP,
+		&user.NIP,
+		&user.Name,
+		&user.Rank,
+		&user.NoTelp,
+		&user.TglLahir,
+		&user.Status,
+		&user.Gender,
+		&user.Alamat,
+		&user.Email,
+		&user.Password,
+		&user.Gambar,
+	)
+
+	user.TglLahir = helper.ConvertSQLTimeToHTML(user.TglLahir)
+
+	helper.PanicIfError(err)
+	return user
 }

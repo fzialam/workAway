@@ -1,35 +1,26 @@
 package tests
 
 import (
+	"context"
 	"fmt"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/fzialam/workAway/app"
+	"github.com/fzialam/workAway/helper"
+	turepository "github.com/fzialam/workAway/repository/tu_repository"
 )
 
 func TestDetailSurat(t *testing.T) {
 	db := app.NewDB()
-	router := setupRouter(db)
 
-	reqBody := strings.NewReader(`{
-		"dokumen_name" : "NAMA DOkumen",
-		"dokumen_pdf" : "PDF DOKUMEN"
-	}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/32/sppd", reqBody)
-	request.Header.Add("Content-Type", "application/json")
+	tx, err := db.Begin()
+	helper.PanicIfError(err)
 
-	recorder := httptest.NewRecorder()
+	stjaup, err := turepository.NewTURepo().GetSuratTugasById(context.Background(), tx, 32)
+	helper.PanicIfError(err)
 
-	router.ServeHTTP(recorder, request)
-
-	response := recorder.Result()
-
-	bd, _ := io.ReadAll(response.Body)
-
-	fmt.Println(string(bd))
+	fmt.Printf("stjaup.Id: %v\n", stjaup.Id)
+	fmt.Printf("stjaup.Status: %v\n", stjaup.Status)
+	fmt.Printf("stjaup.OtherStatus: %v\n", stjaup.OtherStatus)
 
 }

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      {{if eq .menu "home"}}
+      <title>WorkAway</title>
+      {{else if eq .menu "permohonan"}}
+      <title>Permohonan | WorkAway</title>
+      {{else if eq .menu "penugasan"}}
+      <title>Penugasan | WorkAway</title>
+      {{else if eq .menu "laporanAKK"}}
+      <title>Laporan Aktivitas | WorkAway</title>
+      {{else if eq .menu "laporanAGG"}}
+      <title>Laporan Anggaraan | WorkAway</title>
+      {{else if or (eq .menu "users") (eq .menu "userById")}}
+      <title>User | WorkAway</title>
+      {{else if eq .menu "profile"}}
+      <title>Profile | WorkAway</title>
+      {{else}}
+      <title>Admin | WorkAway</title>
+
+      {{end}}
+      <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/static/css/utilities.css">
+      <link rel="stylesheet" href="/static/css/sidebar.css">
+
+  </head>
+  <body>
+    <nav class=" sidebar h-100">
+      <header class="position-relative">
+          <div class="image-text">
+              <a href="/wa/home" class="image">
+                  <img id="gambar" src="/static/img/WORKAWAY.png" alt="logo">
+              </a>
+          </div>
+      </header>
+      <div class="menu-bar">
+          <div class="menu">
+              <div class="menu-links">
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/home" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Home</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/permohonan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Permohonan</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/penugasan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Penugasan</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/laporan-ak" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Laporan Aktivitas</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/laporan-ag" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Laporan Anggaran</span>
+                      </a>
+                  </li>
+                  <li class="nav-items mt-4 align-items-center">
+                      <a href="/wa/user" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Users</span>
+                      </a>
+                  </li>
+              </div>
+          </div>
+          <div class="bottom-content">
+              <li class="mt-4 align-items-center dropdown open">
+                  <a href="/wa/profile" class="w-100 h-100 text-decoration-none align-items-center">
+                      <span class="text">Profile</span>
+                  </a>
+              </li>
+              <li class="mt-4 align-items-center">
+                  <a href="/logout" class="w-100 h-100 text-decoration-none align-items-center">
+                      <span class="text">Logout</span>
+                  </a>
+              </li>
+          </div>
+      </div>
+  </nav>
+    <main class="container">
+      {{if eq .menu "home"}}
+      <section id="home">
+          <h1 class="fw-bold">Dashboard</h1>
+          <!-- <div class="container mt-5">
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                      <a class="home card text-black-50 text-decoration-none" href="/wa/permohonan">
+                          <div class="card-body">
+                              <h5 class="card-title fw-bold">Permohonan</h5>
+                              <ul class="list-group">
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Permohonan.Belum}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Disetujui<span class="badge bg-success badge-pill">{{.index.Permohonan.Approved}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Ditolak<span class="badge bg-danger badge-pill">{{.index.Permohonan.Reject}}</span>
+                                  </li>
+                              </ul>
+                          </div>
+                      </a>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                      <a class="home card text-black-50 text-decoration-none" href="/wa/sppd">
+                          <div class="card-body ">
+                              <h5 class="card-title fw-bold">Penugasan</h5>
+                              <ul class="list-group">
+                                  <li class="alert-heading list-group-item d-flex justify-content-between align-items-center">
+                                      Belum Terlaksana<span class="badge bg-primary badge-pill">{{.index.Penugasan.Belum}}</span>
+                                  </li>
+                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                      Sudah Terlaksana<span class="badge bg-success badge-pill">{{.index.Penugasan.Sudah}}</span>
+                                  </li>
+                              </ul>
+                          </div>
+                      </a>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                    <a class="home card text-black-50 text-decoration-none" href="/wa/sppd">
+                      <div class="card-body">
+                          <h5 class="card-title fw-bold">SPPD</h5>
+                          <ul class="list-group">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Belum Dikonfirmasi<span class="badge bg-primary badge-pill">1</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Disetujui<span class="badge bg-success badge-pill">3</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Ditolak<span class="badge bg-danger badge-pill">0</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </a>
+                    
+                  </div>
+          
+                  <div class="col-md-6 mb-4">
+                    <a class="home card text-black-50 text-decoration-none" href="/wa/laporan">
+                      <div class="card-body">
+                          <h5 class="card-title fw-bold">Laporan</h5>
+                          <ul class="list-group">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Laporan.Belum}}</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Disetujui<span class="badge bg-success badge-pill">{{.index.Laporan.Approved}}</span>
+                              </li>
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Ditolak<span class="badge bg-danger badge-pill">{{.index.Laporan.Reject}}</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </a>
+                  </div>
+              </div>
+          </div> -->
+        </section>
+      {{else if eq .menu "permohonan"}}
+      <section id="permohonan" class="m-5">
+        <h1 style="font-weight: 600;"">List Permohonan</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">ID</th>
+              <th scope="col">Pemohon</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Tanggal Mulai</th>
+              <th scope="col">Tanggal Akhir</th>
+              <th scope="col">Waktu Pengajuan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .permohonan}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>{{$data.CreateAt}}</td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>
+      </section>
+      {{else if eq .menu "penugasan"}}
+      <section id="penugasan" class="mt-5">
+        <h1 style="font-weight: 600;"">List Penugasan</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">ID</th>
+              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Jenis Program</th>
+              <th scope="col">Tujuan Lokasi</th>
+              <th scope="col">Tanggal Mulai</th>
+              <th scope="col">Tanggal Akhir</th>
+              <th scope="col">Dokumen SPPD</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .penugasan}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.UserName}}</td>
+              <td>{{$data.JenisProgram}}</td>
+              <td>{{$data.LokasiTujuan}}</td>
+              <td>{{$data.TglAwal}}</td>
+              <td>{{$data.TglAkhir}}</td>
+              <td>
+                {{if eq $data.DokumenName "-"}}
+                <a href="#" class="btn btn-danger disabled">Belum dibuat</a>
+                {{else}}
+                <a href="data:application/pdf;base64,{{$data.DokumenPDF}}" class="btn btn-warning" download="{{$data.DokumenName}}" target="_blank" rel="noopener noreferrer">
+                  Lihat
+                </a>
+                {{end}}
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>
+      </section>
+      {{else if eq .menu "laporanAKK"}}
+      <section id="laporanAKK" class="mt-5">
+        <h1 style="font-weight: 600;"">List Laporan Aktivitas</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">ID Laporan</th>
+              <th scope="col">ID Penugasan</th>
+              <th scope="col">Nama Dokumen Laporan</th>
+              <th scope="col">Dokumen Laporan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .laporan}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.SuratTugasId}}</td>
+              {{if eq $data.DokLaporanName "-"}}
+              <td>
+                Belum dibuat
+              </td>
+              <td>
+                <a href="#" class="btn btn-danger disabled">Belum dibuat</a>
+              </td>
+              {{else}}
+              <td>
+                {{$data.DokLaporanName}}
+              </td>
+              <td>
+                <a href="data:application/pdf;base64,{{$data.DokLaporanPDF}}" class="btn btn-warning" download="{{$data.DokLaporanName}}" target="_blank" rel="noopener noreferrer">
+                  Lihat
+                </a>
+              </td>
+              {{end}}
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>
+      </section>
+      {{else if eq .menu "laporanAGG"}}
+      <section id="laporanAGG" class="mt-5">
+        <h1 style="font-weight: 600;">List Laporan Anggaraan</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">ID Laporan</th>
+              <th scope="col">ID Penugasan</th>
+              <th scope="col">Nama Dokumen Laporan</th>
+              <th scope="col">Dokumen Laporan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .laporan}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.SuratTugasId}}</td>
+              {{if eq $data.DokLaporanName "-"}}
+              <td>
+                Belum dibuat
+              </td>
+              <td>
+                <a href="#" class="btn btn-danger disabled">Belum dibuat</a>
+              </td>
+              {{else}}
+              <td>
+                {{$data.DokLaporanName}}
+              </td>
+              <td>
+                <a href="data:application/pdf;base64,{{$data.DokLaporanPDF}}" class="btn btn-warning" download="{{$data.DokLaporanName}}" target="_blank" rel="noopener noreferrer">
+                  Lihat
+                </a>
+              </td>
+              {{end}}
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>  
+      </section> 
+      {{else if eq .menu "users"}}
+      <section id="sppdView" class="p-5 ">
+        <h1 style="font-weight: 600;">List User</h1>
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">ID</th>
+              <th scope="col">Nama</th>
+              <th scope="col">Email</th>
+              <th scope="col">Nomor Telepon</th>
+              <th scope="col">Role</th>
+              <th scope="col">Status</th>
+              <th scope="col">Gender</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range $index, $data := .users}}
+            <tr>
+              <th scope="row">{{index $index}}</th>
+              <td>{{$data.Id}}</td>
+              <td>{{$data.Name}}</td>
+              <td>{{$data.Email}}</td>
+              <td>{{$data.NoTelp}}</td>
+              <td>
+                {{if eq $data.Rank 0}}
+                Pegawai
+                {{else if eq $data.Rank 1}}
+                Pimpinan
+                {{else if eq $data.Rank 2}}
+                Tata Usaha
+                {{else if eq $data.Rank 3}}
+                Bagian Keuangan
+                {{end}}
+              </td>
+              <td>
+                {{if eq $data.Status "1"}}
+                Akun Aktif
+                {{else if eq $data.Status "0"}}
+                Akun Mati
+                {{end}}
+              </td>
+              <td>
+                {{if eq $data.Gender 0}}
+                Laki-Laki
+                {{else}}
+                Perempuan
+                {{end}}
+              </td>
+              <td>
+                <a href="/wa/{{$data.Id}}/user" class="btn btn-danger">
+                  Lihat
+                </a>
+              </td>
+            </tr>        
+            {{end}}
+          </tbody>
+        </table>
+      </section>
+      {{else if eq .menu "userById"}}
+      <div class="w-100 m-5" style="margin-right: 300px;">
+        <a href="/wa/user" class="btn btn-dark">Back</a>
+        <h1 style="font-weight: 600;" class="my-3">{{.user.Name}}</h1>
+        <div id="edit-form" class="">
+            <form class="px-5">
+              <div>
+                <div class="d-grid mb-2">
+                  <img id="userImage" class="img-thumbnail rounded float-start" src="{{ .user.Gambar }}" height="80px" width="80px" alt="" />
+                </div>
+              </div>
+              <div class="d-flex justify-content-between px-5">
+                    <div style="min-width: 400px;">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nama Lengkap:</label>
+                            <input type="text" class="form-control form-text" name="name" id="name" autocomplete="off" value="{{.user.Name}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nik" class="form-label">NIK:</label>
+                            <input type="text" class="form-control form-text" name="nik" id="nik" autocomplete="off" value="{{.user.NIK}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nip" class="form-label">NIP:</label>
+                            <input type="text" class="form-control form-text" name="nip" id="nip" autocomplete="off" value="{{.user.NIP}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="npwp" class="form-label">NPWP:</label>
+                            <input type="text" class="form-control form-text" name="npwp" id="npwp" autocomplete="off" value="{{.user.NPWP}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rank" class="form-label">Rank:</label>
+                            <select name="rank" id="rank" class="form-control form-select" disabled>
+                              {{if eq .user.Rank 0}}
+                              <option value="0" selected>Pegawai</option>
+                              <option value="1">Pimpinan</option>
+                              <option value="2" >Tata Usaha</option>
+                              <option value="3">Keuangan</option>
+                              {{else if eq .user.Rank 1}}
+                              <option value="0">Pegawai</option>
+                              <option value="1" selected>Pimpinan</option>
+                              <option value="2" >Tata Usaha</option>
+                              <option value="3">Keuangan</option>
+                              {{else if eq .user.Rank 2}}
+                              <option value="0" >Pegawai</option>
+                              <option value="1">Pimpinan</option>
+                              <option value="2"selected>Tata Usaha</option>
+                              <option value="3">Keuangan</option>
+                              {{else if eq .user.Rank 3}}
+                              <option value="0">Pegawai</option>
+                              <option value="1">Pimpinan</option>
+                              <option value="2">Tata Usaha</option>
+                              <option value="3" selected>Keuangan</option>
+                              {{end}}
+                            </select>
+                        </div>
+                        <div id="ganCon">
+                          <button id="gantiRank" class="btn btn-outline-primary" type="button">Ganti Role</button>
+                          <button id="saveImage" class="mx-2 d-none btn btn-outline-warning" type="button" disabled>Save</button>
+                        </div>
+                    </div>
+                    <div style="min-width: 400px;">
+                      <div class="mb-3">
+                          <label for="gender" class="form-label">Jenis Kelamin:</label>
+                          {{if eq .user.Gender 0}}
+                          <input type="text" class="form-control form-text" name="gender" id="gender" autocomplete="off" value="Perempuan" readonly required>
+                          {{else}}
+                          <input type="text" class="form-control form-text" name="gender" id="gender" autocomplete="off" value="Laki-laki" readonly required>
+                          {{end}}
+                      </div>
+                      <div class="mb-3">
+                          <label for="noTelp" class="form-label">Nomer Telepon:</label>
+                          <input type="text" class="form-control form-text" name="noTelp" id="noTelp" autocomplete="off" value="{{.user.NoTelp}}" readonly required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="email" class="form-label">Email:</label>
+                          <input type="email" class="form-control form-text" name="email" id="email" autocomplete="off" value="{{.user.Email}}" readonly required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="lahir" class="form-label">Tanggal Lahir:</label>
+                          <input type="date" class="form-control form-text" name="lahir" id="lahir" value="{{.user.TglLahir}}" autocomplete="off" readonly required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="alamat" class="form-label">Alamat:</label>
+                          <textarea style="min-height: 100px;" class="text-start form-control form-text" name="alamat" id="alamat" value="" autocomplete="off" readonly required>{{.user.Alamat}}</textarea>
+                      </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+      {{else if eq .menu "profile"}}
+      <section id="profile">
+        <h1>Profile</h1>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-warning mx-5" type="button" id="changePass">Ganti Password</button>
+        </div>
+        <div id="change-form" class="d-none">
+            <form id="changeForm" class="px-5">
+                <div class="d-flex flex-column px-5" style="margin: 0px 250px;">
+                    <div class="mb-3">
+                        <label for="passwordLama" class="form-label">Password Lama:</label>
+                        <input type="password" class="form-control form-text" name="passwordLama" id="passwordLama" autocomplete="off" placeholder="Password lama" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordBaru" class="form-label">Password Baru:</label>
+                        <input type="password" class="form-control form-text" name="passwordBaru" id="passwordBaru" autocomplete="off" placeholder="Password baru" required>
+                    </div>
+                    <div class="d-grid">
+                        <button id="change" type="button" class="btn btn-primary" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="edit-form" class="">
+            <form class="px-5">
+              <div>
+                <div class="d-grid mb-2">
+                  <img id="userImage" class="img-thumbnail rounded float-start" src="{{ .user.Gambar }}" height="80px" width="80px" alt="" />
+                </div>
+                <div id="ganCon">
+                  <button id="gantiImage" class=" btn btn-outline-primary" type="button">Ganti Foto</button>
+                  <button id="saveImage" class="d-none btn btn-outline-warning" type="button">Save</button>
+                </div>
+
+                <input type="file" id="fileInput" style="display:none;" accept="image/*" onchange="displaySelectedImage()">
+              </div>
+              <div class="d-flex justify-content-between px-5">
+                    <div style="min-width: 400px;">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nama Lengkap:</label>
+                            <input type="text" class="form-control form-text" name="name" id="name" autocomplete="off" value="{{.user.Name}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nik" class="form-label">NIK:</label>
+                            <input type="text" class="form-control form-text" name="nik" id="nik" autocomplete="off" value="{{.user.NIK}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nip" class="form-label">NIP:</label>
+                            <input type="text" class="form-control form-text" name="nip" id="nip" autocomplete="off" value="{{.user.NIP}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="npwp" class="form-label">NPWP:</label>
+                            <input type="text" class="form-control form-text" name="npwp" id="npwp" autocomplete="off" value="{{.user.NPWP}}" readonly required>
+                        </div>
+                        
+                    </div>
+                    <div style="min-width: 400px;">
+                        <div class="mb-3">
+                            <label for="noTelp" class="form-label">Nomer Telepon:</label>
+                            <input type="text" class="form-control form-text" name="noTelp" id="noTelp" autocomplete="off" value="{{.user.NoTelp}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control form-text" name="email" id="email" autocomplete="off" value="{{.user.Email}}" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lahir" class="form-label">Tanggal Lahir:</label>
+                            <input type="date" class="form-control form-text" name="lahir" id="lahir" value="{{.user.TglLahir}}" autocomplete="off" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="alamat" class="form-label">Alamat:</label>
+                            <textarea style="min-height: 100px;" class="text-start form-control form-text" name="alamat" id="alamat" value="" autocomplete="off" readonly required>{{.user.Alamat}}</textarea>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="d-flex w-100 justify-content-center">
+                    <button type="button" id="edit" class="btn btn-danger w-25 p-2">Edit Profile</button>
+                </div>
+            </form>
+        </div>
+      </section>
+      {{else}}
+      <h1 style="font-weight: 700;">
+        404 Page NotFound
+      </h1>
+      {{end}}
+    </main>
+    <script>
+        '{{if eq .menu "newPenugasan"}}'
+        const dataGOId = []
+        const dataGOName = []
+          '{{range .user}}'
+          dataGOId.push('{{.Id}}')
+          dataGOName.push('{{.Name}}')
+          '{{end}}'
+        
+        '{{else if eq .menu "true"}}'
+        const pdfViewer = document.getElementById('pdfViewer');
+        const pdfName = '{{.surat.DokumenName}}';
+        const pdfBase64 = '{{.surat.DokumenPDF}}';
+        document.addEventListener('DOMContentLoaded', function() {
+          // Set the source of the iframe with the base64 data
+          pdfViewer.src = 'data:application/pdf;base64,'+ pdfBase64;
+        });
+        '{{end}}'
+    </script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    {{if eq .menu "userById"}}
+    <script src="/static/js/admin/admin-change-rank.js"></script>
+    {{else if eq .menu "profile"}}
+    <script src="/static/js/profile.js"></script>
+    {{end}}
+  </body>
+</html>

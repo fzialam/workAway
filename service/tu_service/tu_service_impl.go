@@ -8,6 +8,7 @@ import (
 	"github.com/fzialam/workAway/model/entity"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	tureqres "github.com/fzialam/workAway/model/req_res/tu_req_res"
+	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	turepository "github.com/fzialam/workAway/repository/tu_repository"
 	"github.com/go-playground/validator/v10"
 )
@@ -24,6 +25,18 @@ func NewTUService(tuRepo turepository.TURepo, db *sql.DB, validate *validator.Va
 		DB:       db,
 		Validate: validate,
 	}
+}
+
+// IndexTU implements TUService.
+func (ts *TUServiceImpl) IndexTU(ctx context.Context) tureqres.IndexTU {
+	tx, err := ts.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := ts.TURepo.Index(ctx, tx)
+	helper.PanicIfError(err)
+
+	return index
 }
 
 // CreateSPPD implements TUService.
@@ -79,4 +92,15 @@ func (ts *TUServiceImpl) GetSuratTugasById(ctx context.Context, suratId int) sur
 	surat.Participans = participan
 
 	return helper.ToSuratTugasJOINDoubleApprovedUserParticipanResponse(surat)
+}
+
+// Profile implements TUService.
+func (ts *TUServiceImpl) Profile(ctx context.Context, userId int) userreqres.UserResponse {
+	tx, err := ts.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	user := ts.TURepo.Profile(ctx, tx, userId)
+
+	return helper.ToUserResponse(user)
 }

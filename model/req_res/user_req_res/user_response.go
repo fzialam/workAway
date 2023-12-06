@@ -10,7 +10,16 @@ type UserResponse struct {
 	NoTelp   string `json:"no_telp"`
 	TglLahir string `json:"tgl_lahir"`
 	Status   string `json:"status"`
-	Gender   string `json:"gender"`
+	Gender   int    `json:"gender"`
 	Alamat   string `json:"alamat"`
 	Email    string `json:"email"`
+	Gambar   string `json:"gambar"`
+}
+
+type LoginResponse struct {
+	Id    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Rank  int    `json:"rank"`
+	Token string `json:"token"`
 }

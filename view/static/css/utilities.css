@@ -1,0 +1,69 @@
+/* *{
+    transition: all 0.1s;
+} */
+.p-5{
+    padding: 5px;
+}
+
+button.bx-s{
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+button.bx-s:hover{
+    transform: translateY(-1px);
+}
+
+#overlay{
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+#popup{
+    display: none;
+    width: 600px;
+    text-align: center;
+    border-radius: 10px;
+    background-color: #fefefe;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0px 30px 30px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+    filter: none;
+    z-index: 2;
+}
+
+#popup h2{
+    font-size: 38px;
+    font-weight: 500;
+}
+
+form #file{
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #afffff;
+}
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #eeeeeed8; /* Warna latar belakang overlay */
+    pointer-events: none;
+    z-index: 1;
+}
+
+.active-popup{
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+.nav-pills li a:hover {
+    background-color: blue;
+}
