@@ -106,6 +106,7 @@ func (ps *PegawaiServiceImpl) PresensiFoto(ctx context.Context, request presensi
 		SuratTugasId: request.SuratTugasId,
 		Gambar:       request.Gambar,
 		Lokasi:       request.Lokasi,
+		Koordinat:    request.Koordinat,
 	}
 
 	presensi, err = ps.PegawaiRepo.PresensiFoto(ctx, tx, presensi)
@@ -213,6 +214,11 @@ func (ps *PegawaiServiceImpl) LaporanGetSPPDById(ctx context.Context, request la
 		UserId:       request.UserId,
 	}
 	var laporans []entity.LaporanJoinApproved
+
+	participan, err := ps.PegawaiRepo.GetAllParticipanBySPPDId(ctx, tx, surat.Id)
+	helper.PanicIfError(err)
+
+	surat.Participans = participan
 
 	laporanAk := ps.PegawaiRepo.GetLaporanAktivitasByUserIdAndSPPDId(ctx, tx, laporan)
 

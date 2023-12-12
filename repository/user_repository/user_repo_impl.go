@@ -33,7 +33,7 @@ func (ur *UserRepoImpl) Login(ctx context.Context, tx *sql.Tx, user entity.User)
 
 // Register implements UserRepo.
 func (ur *UserRepoImpl) Register(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
-	SQL := "INSERT INTO `user`(`nik`, `npwp`, `nip`, `name`, `rank`, `no_telp`, `tgl_lahir`, `status`, `gender`, `alamat`, `email`, `password`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
+	SQL := "INSERT INTO `user`(`nik`, `npwp`, `nip`, `name`, `rank`, `no_telp`, `tgl_lahir`, `status`, `gender`, `alamat`, `email`, `password`, `gambar`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?, ?)"
 	result, err := tx.ExecContext(ctx, SQL,
 		user.NIK,
 		user.NPWP,
@@ -47,6 +47,7 @@ func (ur *UserRepoImpl) Register(ctx context.Context, tx *sql.Tx, user entity.Us
 		user.Alamat,
 		user.Email,
 		user.Password,
+		user.Gambar,
 	)
 	if err != nil {
 		return user, err
@@ -241,6 +242,7 @@ func (ur *UserRepoImpl) Profile(ctx context.Context, tx *sql.Tx, userId int) ent
 		&user.Alamat,
 		&user.Email,
 		&user.Password,
+		&user.Gambar,
 	)
 
 	user.TglLahir = helper.ConvertSQLTimeToHTML(user.TglLahir)
@@ -252,7 +254,7 @@ func (ur *UserRepoImpl) Profile(ctx context.Context, tx *sql.Tx, userId int) ent
 // UpdateProfile implements KeuanganRepo.
 func (ur *UserRepoImpl) UpdateProfile(ctx context.Context, tx *sql.Tx, user entity.User) (entity.User, error) {
 	SQL := "UPDATE `user` SET nip=?, nik=?, npwp=?, name=?, email=?, "
-	SQL += "no_telp=?, tgl_lahir=?, alamat=?, gambar=? WHERE id=?"
+	SQL += "no_telp=?, tgl_lahir=?, alamat=? WHERE id=?"
 	_, err := tx.ExecContext(ctx, SQL,
 		user.NIP,
 		user.NIK,
@@ -262,7 +264,6 @@ func (ur *UserRepoImpl) UpdateProfile(ctx context.Context, tx *sql.Tx, user enti
 		user.NoTelp,
 		user.TglLahir,
 		user.Alamat,
-		user.Gambar,
 		user.Id,
 	)
 	helper.PanicIfError(err)

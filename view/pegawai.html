@@ -15,6 +15,8 @@
       <title>SPPD | WorkAway</title>
       {{else if eq .menu "laporan"}}
       <title>Laporan | WorkAway</title>
+      {{else if eq .menu "uploadLap"}}
+      <title>Laporan | WorkAway</title>
       {{else if eq .menu "profile"}}
       <title>Profile | WorkAway</title>
       {{end}}
@@ -639,6 +641,13 @@
             {{end}}
             {{if eq .sppd.Gambar ""}}
             <h1 class="text-danger">Belum melakukan Presesi Foto</h1>
+            {{else}}
+            <div class="d-flex flex-column w-75 m-4" id="img-bukti">
+                <label class="form-label">Bukti Foto</label>
+                <input class="form-control form-text h-25" value="{{.sppd.Lokasi}}" readonly/>
+                <img class="img-thumbnail" style="cursor: pointer;" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
+                <a class="d-none" target="_blank" href="https://www.google.com/search?q={{.sppd.Koordinat}}"></a>
+            </div>
             {{end}}
             <input type="hidden" id="userId" value="{{.userIdS}}"/>
         </section>

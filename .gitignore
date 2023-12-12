@@ -43,12 +43,8 @@ mobile/android/app/debug
 mobile/android/app/profile
 mobile/android/app/release
 
-# keuangan_controller
-# keuangan_service
-# keuangan_repository
-# keuangan_req_res
-# keuangan_test.go
-
 test
+
+.vscode
 
 TODO.md

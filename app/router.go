@@ -133,7 +133,7 @@ func NewRouter(db *sql.DB, validate *validator.Validate) *mux.Router {
 	wa.HandleFunc("/laporan-ag", admin.LapAGG).Methods("GET")
 	wa.HandleFunc("/user", admin.UserGET).Methods("GET")
 	wa.HandleFunc("/{userId}/user", admin.UserGETById).Methods("GET")
-	wa.HandleFunc("/{userId}/user", admin.UserPOST).Methods("POST")
+	wa.HandleFunc("/{userId}/user", admin.UserPUT).Methods("POST")
 
 	wa.HandleFunc("/profile", admin.Profile).Methods("GET")
 	wa.HandleFunc("/profile", user.UpdateProfile).Methods("POST")

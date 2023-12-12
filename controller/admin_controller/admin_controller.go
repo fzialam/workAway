@@ -10,7 +10,7 @@ type AdminController interface {
 	LapAGG(w http.ResponseWriter, r *http.Request)
 	UserGET(w http.ResponseWriter, r *http.Request)
 	UserGETById(w http.ResponseWriter, r *http.Request)
-	UserPOST(w http.ResponseWriter, r *http.Request)
+	UserPUT(w http.ResponseWriter, r *http.Request)
 
 	Profile(w http.ResponseWriter, r *http.Request)
 }

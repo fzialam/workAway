@@ -151,7 +151,7 @@ func (ac *AdminControllerImpl) UserGETById(w http.ResponseWriter, r *http.Reques
 }
 
 // UserPOST implements AdminController.
-func (ac *AdminControllerImpl) UserPOST(w http.ResponseWriter, r *http.Request) {
+func (ac *AdminControllerImpl) UserPUT(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	idS := vars["userId"]

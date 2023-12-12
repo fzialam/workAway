@@ -591,13 +591,14 @@
               </div>
               <div>
                 <label class="form-label">Bukti Foto: </label>
-                <div class="d-flex w-50">
+                <div class="d-flex w-75" id="img-ketua">
                   {{if eq .sppd.Gambar ""}}
                   <input class="form-control form-text h-25" value="-" readonly/>
                   <img src="" alt="foto-ketua.png" width="100px" height="100px"sizes="">
                   {{else}}
                   <input class="form-control form-text h-25" value="{{.sppd.Lokasi}}" readonly/>
-                  <img class="img-thumbnail" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px"sizes="">
+                  <img class="img-thumbnail" style="cursor: pointer;" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
+                  <a class="d-none" target="_blank" href="https://www.google.com/search?q={{.sppd.Koordinat}}"></a>
                   {{end}}
                 </div>
               </div>
@@ -629,8 +630,9 @@
                       <td>-</td>
                       <td>-</td>
                       {{else}}
-                      <td>
-                        <img class="img-thumbnail" src="{{$data.Gambar}}" width="80px" height="80px" alt="gambar{{$index}}">
+                      <td class="img-click-{{$index}}">
+                        <img class="img-thumbnail" style="cursor: pointer;" title="{{$data.Koordinat}}" src="{{$data.Gambar}}" width="80px" height="80px" alt="gambar{{$index}}" onclick="searchGoogle('{{$index}}')">
+                        <a class="d-none" target="_blank" href="https://www.google.com/search?q={{$data.Koordinat}}"></a>
                       </td>
                       <td>{{$data.Lokasi}}</td>
                       {{end}}
@@ -792,8 +794,10 @@
     {{else if eq .menu "sppdView"}}
     <script src="/static/js/utilities.js"></script>
     <script src="/static/js/pimpinan/pimpinan-sppd.js"></script>
-    {{else if and  (eq .menu "viewLap") (or (eq .sppd.Status "") (eq .sppd.Status "0")) }}
+    {{else if eq .menu "viewLap"}}
+    <script src="/static/js/pimpinan/pimpinan-utilities-laporan.js"></script>
     <script src="/static/js/pimpinan/pimpinan-laporan.js"></script>
+    {{else if and  (eq .menu "viewLap") (or (eq .sppd.Status "") (eq .sppd.Status "0")) }}
     {{else if eq .menu "profile"}}
     <script src="/static/js/profile.js"></script>
     {{end}}

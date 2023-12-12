@@ -25,9 +25,6 @@ const suratId = url.split('id=')[1];
 
 const pathLaporan = '/wp/'+idUser+'/laporan';
 
-const backB = document.getElementById('back');
-backB.setAttribute('href', pathLaporan);
-
 var endPoint = '';
 
 if ((fileAk != undefined) && (buttAk != undefined)) {
@@ -120,3 +117,14 @@ function UploadFile(file, endPoint) {
     };
     fileReader.readAsDataURL(selectedFile);
 };
+
+function searchGoogleKetua() {
+    // Get the <a> element
+    var linkElement = document.querySelector('div#img-bukti a');
+    console.log(linkElement);
+
+    // Update the href attribute with the coordinate value
+    if (linkElement) {
+        linkElement.click();
+    }
+}

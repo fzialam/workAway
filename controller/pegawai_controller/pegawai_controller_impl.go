@@ -162,33 +162,11 @@ func (pc *PegawaiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request
 
 	helper.PanicIfError(err)
 
-	// presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
-	// response := model.Response{
-	// 	Code:   200,
-	// 	Status: "OK",
-	// 	Data:   presensiResponse,
-	// }
-
-	// helper.WriteToResponseBody(w, response)
-}
-
-// GetSurat implements PegawaiController.
-func (pc *PegawaiControllerImpl) GetSurat(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userIdS := vars["userId"]
-	userId, err := strconv.Atoi(userIdS)
-	helper.PanicIfError(err)
-
-	getSuratRequest := surattugasreqres.GetSuratRequest{
-		UserId: userId,
-		Tipe:   "presensi",
-	}
-
-	getSuratResponse := pc.PegawaiService.GetSurat(r.Context(), getSuratRequest)
+	presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
 	response := model.Response{
 		Code:   200,
 		Status: "OK",
-		Data:   getSuratResponse,
+		Data:   presensiResponse,
 	}
 
 	helper.WriteToResponseBody(w, response)
@@ -233,7 +211,6 @@ func (pc *PegawaiControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Reques
 
 // IndexLaporan implements PegawaiController.
 func (pc *PegawaiControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Request) {
-	// panic("unimplemented")
 	vars := mux.Vars(r)
 	userIdS := vars["userId"]
 	userId, err := strconv.Atoi(userIdS)

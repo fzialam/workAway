@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/detail.dart';
-import 'package:mobile/main.dart';
 import 'package:mobile/model/surat.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:mobile/config.dart';
@@ -31,86 +30,35 @@ class _GetSuratState extends State<GetSurat> {
   }
 
   Future<List<SuratPresensi>> fetchSuratPresensiList(int userId) async {
-    // SuratPresensi suratPresensi = SuratPresensi(
-    //   id: 0,
-    //   lokasiTujuan: "",
-    //   jenisProgram: "",
-    //   tglAwal: "",
-    //   tglAkhir: "",
-    //   gambarId: 0,
-    //   nameGambar: "",
-    //   gambar: "",
-    //   lokasi: "",
-    //   koordinat: "",
-    // );
+    SuratPresensi suratPresensi = SuratPresensi(
+      id: 0,
+      lokasiTujuan: "",
+      jenisProgram: "",
+      tglAwal: "",
+      tglAkhir: "",
+      gambarId: 0,
+      nameGambar: "",
+      gambar: "",
+      lokasi: "",
+      koordinat: "",
+    );
 
-    // final response = await suratPresensi.getSuratPresensi(userId);
+    final response = await suratPresensi.getSuratPresensi(userId);
 
-    // if (response.statusCode == 200) {
-    //   return suratPresensiFromJson(response.body);
-    // } else {
-    //   debugPrint("No Data");
-    //   showErrorDialog(response);
-    //   return []; // or return an empty list or throw an exception based on your requirement
-    // }
-    var x = """[
-  {
-    "id": 33,
-    "lokasi_tujuan": "a",
-    "jenis_program": "0",
-    "tgl_awal": "2023-12-12",
-    "tgl_akhir": "2023-12-16",
-    "gambar_id": 0,
-    "name_gambar": "",
-    "gambar": "",
-    "lokasi": "",
-    "koordinat": ""
-  },
-  {
-    "id": 43,
-    "lokasi_tujuan": "AMERIKa",
-    "jenis_program": "Berenang",
-    "tgl_awal": "2023-12-20",
-    "tgl_akhir": "2023-12-09",
-    "gambar_id": 1,
-    "name_gambar": "",
-    "gambar": "",
-    "lokasi": "",
-    "koordinat": ""
-  }
-]""";
-    return suratPresensiFromJson(x);
+    if (response.statusCode == 200) {
+      return suratPresensiFromJson(response.body);
+    } else {
+      debugPrint("No Data");
+      showErrorDialog(response);
+      return [];
+    }
   }
 
   Future<void> _refreshData() async {
     setState(() {
-      // suratPresensiListFuture = fetchSuratPresensiList(widget.user.id);
-      debugPrint("Refresh");
+      suratPresensiListFuture = fetchSuratPresensiList(widget.user.id);
     });
   }
-
-  // Future<void> cameraScreen() async {
-  //   final image = await ImagePicker().pickImage(source: ImageSource.camera);
-  //
-  //   if (image == null) {
-  //     showErrorDialog(response);
-  //   } else {
-  //     var imageTemp = File(image.path);
-  //     setState(() {
-  //       this.image = imageTemp;
-  //     });
-  //   }
-  //   dataAvailable = false;
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchData(); // Panggil fetchData saat halaman diinisialisasi
-  //   if (dataAvailable == true) {
-  //     cameraScreen();
-  //   }
-  // }
 
   void showErrorDialog(http.Response response) {
     final responseData = json.decode(response.body);
@@ -159,9 +107,6 @@ class _GetSuratState extends State<GetSurat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Surat Presensi List'),
-      ),
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: FutureBuilder<List<SuratPresensi>>(
@@ -178,7 +123,7 @@ class _GetSuratState extends State<GetSurat> {
                 itemCount: listSuratPresensi?.length ?? 0,
                 itemBuilder: (context, index) {
                   SuratPresensi suratPresensi = listSuratPresensi![index];
-                  if (suratPresensi.gambarId == 0) {
+                  if (suratPresensi.gambar.isEmpty) {
                     return ListTile(
                         leading: const CircleAvatar(
                           backgroundColor: Colors.red,
@@ -208,17 +153,7 @@ class _GetSuratState extends State<GetSurat> {
                                   ),
                                 ),
                               ),
-                            )
-                        // title: Text("""ID: ${suratPresensi.id} |
-                        //   ${suratPresensi.jenisProgram}
-                        //   ${suratPresensi.tglAwal}
-                        //   ${suratPresensi.tglAkhir}"""),
-                        // onTap: () => Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (_) => const GeolocationApp())),
-                        // // Add other fields you want to display
-                        );
+                            ));
                   } else {
                     return ListTile(
                       leading: const CircleAvatar(
@@ -232,7 +167,7 @@ class _GetSuratState extends State<GetSurat> {
                         ),
                       ),
                       subtitle: Text(
-                        'Lokasi:${suratPresensi.lokasiTujuan}\nSurat${suratPresensi.tglAwal}',
+                        'Lokasi: ${suratPresensi.lokasiTujuan}\nTanggal Mulai: ${suratPresensi.tglAwal}',
                       ),
                       textColor: Colors.black,
                       onTap: () => Navigator.push(
@@ -252,17 +187,6 @@ class _GetSuratState extends State<GetSurat> {
                         ),
                       ),
                     );
-                    // return ListTile(
-                    //   title: Text("""ID: ${suratPresensi.id} |
-                    //     ${suratPresensi.jenisProgram}
-                    //     ${suratPresensi.tglAwal}
-                    //     ${suratPresensi.tglAkhir}"""),
-                    //   onTap: () => Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (_) => const GeolocationApp())),
-                    //   // Add other fields you want to display
-                    // );
                   }
                 },
               );

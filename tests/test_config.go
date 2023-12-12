@@ -26,7 +26,7 @@ func setupRouter(db *sql.DB) http.Handler {
 	tu := app.InitializedTU(db, validate)
 	r := mux.NewRouter()
 	s := r.PathPrefix("/w").Subrouter()
-	s.HandleFunc("/mobile/{userId}", pegawai.GetSurat).Methods("GET")
+	s.HandleFunc("/mobile/{userId}", pegawai.GetSuratPresensi).Methods("GET")
 	s.HandleFunc("/mobile/{userId}", pegawai.Presensi).Methods("POST")
 	s.HandleFunc("/permohonan/{userId}", pegawai.CreatePermohonan).Methods("POST")
 	s.HandleFunc("/pengajuan/{userId}", pegawai.IndexPermohonan).Methods("GET")

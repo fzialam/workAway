@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-// import 'package:mobile/login_page.dart';
-import 'package:mobile/model/user.dart';
-import 'package:mobile/listSurat.dart';
+import 'package:mobile/login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,24 +12,28 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  late LocationPermission permission;
+
+  Future<void> checkLocationPermission() async {
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    askPermissionLocation();
+    checkLocationPermission();
 
     Future.delayed(
       const Duration(seconds: 3),
       () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GetSurat(User(
-                id: 1,
-                name: "name",
-                rank: 1,
-                email: "email",
-                token: "token",
-                password: '')),
+            builder: (_) => const LoginScreen(),
           ),
         );
       },
@@ -43,20 +45,6 @@ class _SplashScreenState extends State<SplashScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.dispose();
-  }
-
-  Future<void> askPermissionLocation() async {
-    var servicePermission = Geolocator.isLocationServiceEnabled();
-    if (await servicePermission) {
-      debugPrint("Service Disabled");
-    }
-
-    var permission = Geolocator.checkPermission();
-    // ignore: unrelated_type_equality_checks
-    if (permission == LocationPermission.denied) {
-      permission =
-          (await Geolocator.requestPermission()) as Future<LocationPermission>;
-    }
   }
 
   @override

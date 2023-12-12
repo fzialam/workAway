@@ -65,7 +65,7 @@ class SuratPresensi {
       };
 
   Future<http.Response> getSuratPresensi(int userId) async {
-    final url = Uri.parse('$URL/wp/$userId/mobile');
+    final url = Uri.parse('$URL/$userId/mobile');
     final response = await http.get(url);
 
     return response;

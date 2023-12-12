@@ -255,8 +255,8 @@ func (pr *PegawaiRepoImpl) GetAllParticipanBySPPDId(ctx context.Context, tx *sql
 
 // PresensiFoto implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) PresensiFoto(ctx context.Context, tx *sql.Tx, presensi entity.Presensi) (entity.Presensi, error) {
-	SQL := "INSERT INTO `presensi`(`user_id`, `surat_tugas_id`, `gambar`, `lokasi`) VALUES (?,?,?,?)"
-	result, err := tx.ExecContext(ctx, SQL, presensi.UserId, presensi.SuratTugasId, presensi.Gambar, presensi.Lokasi)
+	SQL := "INSERT INTO `presensi`(`user_id`, `surat_tugas_id`, `gambar`, `lokasi`, `koordinat`) VALUES (?,?,?,?,?)"
+	result, err := tx.ExecContext(ctx, SQL, presensi.UserId, presensi.SuratTugasId, presensi.Gambar, presensi.Lokasi, presensi.Koordinat)
 	if err != nil {
 		return presensi, errors.New("error upload gambar")
 	} else {
@@ -307,7 +307,7 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 			return surats, errors.New("tidak ada surat tugas")
 		}
 		return surats, nil
-	} else if request.Tipe == "sppd" {
+	} else {
 		SQL := "SELECT `s`.* "
 		SQL += "FROM `surat_tugas` `s` "
 		SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
@@ -357,57 +357,12 @@ func (pr *PegawaiRepoImpl) GetSurat(ctx context.Context, tx *sql.Tx, request sur
 			surats[i].Rincian = rinci
 		}
 		return surats, nil
-	} else {
-		SQL := "SELECT surat_tugas.*  "
-		SQL += "FROM `surat_tugas` "
-		SQL += "INNER JOIN `approved` ON `approved`.surat_tugas_id = `surat_tugas`.id "
-		SQL += "WHERE approved.status_ttd = '1' AND "
-		SQL += "`surat_tugas`.tgl_akhir >= NOW() AND "
-		SQL += "`surat_tugas`.user_id = ?;"
-		surats := []entity.SuratTugasJOINSPPDApprovedAnggaran{}
-		rows, err := tx.QueryContext(ctx, SQL, request.UserId)
-		helper.PanicIfError(err)
-
-		defer rows.Close()
-
-		for rows.Next() {
-			surat := entity.SuratTugasJOINSPPDApprovedAnggaran{}
-			rows.Scan(
-				&surat.Id,
-				&surat.Tipe,
-				&surat.UserId,
-				&surat.LokasiTujuan,
-				&surat.JenisProgram,
-				&surat.DokumenName,
-				&surat.DokumenPDF,
-				&surat.DokPendukungName,
-				&surat.DokPendukungPdf,
-				&surat.TglAwal,
-				&surat.TglAkhir,
-				&surat.CreateAt,
-			)
-			surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
-			surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
-
-			surats = append(surats, surat)
-		}
-		if err != nil {
-			return surats, errors.New("tidak ada surat tugas")
-		}
-
-		SQL = "SELECT name FROM `presensi` WHERE surat_tugas_id=? AND user_id = ?;"
-		for i := 0; i < len(surats); i++ {
-			var foto string
-			tx.QueryRowContext(ctx, SQL, surats[i].Id).Scan(
-				&foto,
-			)
-			surats[i].Status = foto
-		}
-		return surats, nil
 	}
 }
+
+// GetSuratPresensi implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) GetSuratPresensi(ctx context.Context, tx *sql.Tx, userId int) []entity.SuratTugasJOINPresensi {
-	SQL := "SELECT `s`.id, `s`.lokasi_tujuan, `s`.jenis_program, `s`.tgl_awal, `s`.tgl_akhir "
+	SQL := "SELECT DISTINCT `s`.id, `s`.lokasi_tujuan, `s`.jenis_program, `s`.tgl_awal, `s`.tgl_akhir "
 	SQL += "FROM `surat_tugas` `s` "
 	SQL += "LEFT JOIN `participan` `p` on `s`.id = `p`.surat_tugas_id "
 	SQL += "LEFT JOIN `user` `u` on `u`.id =`s`.user_id "
@@ -437,11 +392,10 @@ func (pr *PegawaiRepoImpl) GetSuratPresensi(ctx context.Context, tx *sql.Tx, use
 		hasil = append(hasil, surat)
 	}
 
-	SQL = "SELECT id, name, gambar, lokasi, koordinat FROM presensi WHERE user_id=? AND surat_tugas_id=?"
+	SQL = "SELECT id, gambar, lokasi, koordinat FROM `presensi` WHERE user_id=? AND surat_tugas_id=?"
 	for i := 0; i < len(hasil); i++ {
 		tx.QueryRowContext(ctx, SQL, userId, hasil[i].Id).Scan(
 			&hasil[i].GambarId,
-			&hasil[i].NameGambar,
 			&hasil[i].Gambar,
 			&hasil[i].Lokasi,
 			&hasil[i].Koordinat,
@@ -449,7 +403,6 @@ func (pr *PegawaiRepoImpl) GetSuratPresensi(ctx context.Context, tx *sql.Tx, use
 	}
 
 	return hasil
-
 }
 
 // LaporanGetAllSPPDByUserId implements PegawaiRepo.
@@ -594,10 +547,10 @@ func (pr *PegawaiRepoImpl) GetFotoByUserIdAndSPPDId(ctx context.Context, tx *sql
 
 // GetLaporanAktivitasByUserIdAndSPPDId implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) entity.LaporanJoinApproved {
-	SQL := "SELECT * FROM `laporan_aktivitas` WHERE `surat_tugas_id` =? AND `user_id`=?"
+	SQL := "SELECT * FROM `laporan_aktivitas` WHERE `surat_tugas_id` =?;"
 
 	var laporanJoin entity.LaporanJoinApproved
-	tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId, laporan.UserId).Scan(
+	tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId).Scan(
 		&laporanJoin.Id,
 		&laporanJoin.UserId,
 		&laporanJoin.SuratTugasId,
@@ -617,10 +570,10 @@ func (pr *PegawaiRepoImpl) GetLaporanAktivitasByUserIdAndSPPDId(ctx context.Cont
 
 // GetLaporanAnggaranByUserIdAndSPPDId implements PegawaiRepo.
 func (pr *PegawaiRepoImpl) GetLaporanAnggaranByUserIdAndSPPDId(ctx context.Context, tx *sql.Tx, laporan entity.Laporan) entity.LaporanJoinApproved {
-	SQL := "SELECT * FROM `laporan_anggaran` WHERE `surat_tugas_id` =? AND `user_id`=?"
+	SQL := "SELECT * FROM `laporan_anggaran` WHERE `surat_tugas_id` =?;"
 
 	var laporanJoin entity.LaporanJoinApproved
-	tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId, laporan.UserId).Scan(
+	tx.QueryRowContext(ctx, SQL, laporan.SuratTugasId).Scan(
 		&laporanJoin.Id,
 		&laporanJoin.UserId,
 		&laporanJoin.SuratTugasId,

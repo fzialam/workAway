@@ -8,7 +8,6 @@ type PegawaiController interface {
 	CreatePermohonan(w http.ResponseWriter, r *http.Request)
 
 	Presensi(w http.ResponseWriter, r *http.Request)
-	GetSurat(w http.ResponseWriter, r *http.Request)
 	GetSuratPresensi(w http.ResponseWriter, r *http.Request)
 
 	IndexSPPD(w http.ResponseWriter, r *http.Request)

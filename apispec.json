@@ -7,7 +7,7 @@
     },
     "servers": [
       {
-        "url": "http://localhost:3000/"
+        "url": "http://localhost:8080/"
       }
     ],
     "paths": {
@@ -84,10 +84,28 @@
                 "schema": {
                     "type": "object",
                     "properties": {
+                      "nik": {
+                        "type": "string"
+                      },
+                      "npwp": {
+                        "type": "string"
+                      },
                       "nip": {
                         "type": "string"
                       },
                       "name": {
+                        "type": "string"
+                      },
+                      "no_telp": {
+                        "type": "string"
+                      },
+                      "tgl_lahir": {
+                        "type": "string"
+                      },
+                      "gender": {
+                        "type": "number"
+                      },
+                      "alamat": {
                         "type": "string"
                       },
                       "email": {
@@ -135,11 +153,8 @@
           }
         }
       },
-      "/mobile":{
+      "/{userId}/mobile":{
         "get":{
-          "security": [{
-            "AccAuth" : []
-          }],
           "tags": ["Mobile API"],
           "description": "Get surat tugas",
           "summary": "Get surat tugas",
@@ -293,6 +308,70 @@
             }
           }
         }
+      },
+      "/wp/{userId}/permohonan":{
+        "get":{
+          "tags": ["Pegawai"],
+          "description": "Get list permohonan",
+          "summary": "Get list permohonan",
+          "responses": {
+            "200": {
+              "description": "Success get list permohonan",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "number"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id":{
+                            "type": "number"
+                          },
+                          "surat_judul":{
+                            "type": "string"
+                          },
+                          "tgl_awal":{
+                            "type": "string"
+                          },
+                          "tgl_akhir":{
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404":{
+              "description": "Failed get surat tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500":{
+              "description": "Failed get surat tugas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "components": {
@@ -300,7 +379,7 @@
         "AccAuth" : {
           "type": "apiKey",
           "in" : "cookie",
-          "name": "token",
+          "name": "jwt-workaway",
           "description": "Authentication for WorkAway API"
         }
       },
@@ -320,10 +399,16 @@
                 "id":{
                     "type": "number"
                 },
-                "nip":{
+                "name":{
                     "type": "string"
                 },
-                "email" : {
+                "email":{
+                    "type": "string"
+                },
+                "rank":{
+                    "type": "number"
+                },
+                "token" : {
                     "type": "string"
                 }                        
               }

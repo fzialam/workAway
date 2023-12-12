@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/config.dart';
 
@@ -28,13 +29,13 @@ class User {
       rank: json['rank'],
       name: json['name'],
       email: json['email'],
-      password: json['password'],
+      password: '',
       token: json['token'],
     );
   }
 
   Future<http.Response> login(User user) async {
-    final url = Uri.parse("$URL/login");
+    final url = Uri.parse("$URL/login?m=true");
 
     final response = await http.post(
       url,

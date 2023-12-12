@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +10,8 @@ import (
 	"testing"
 
 	"github.com/fzialam/workAway/app"
+	"github.com/fzialam/workAway/helper"
+	pegawairepository "github.com/fzialam/workAway/repository/pegawai_repository"
 )
 
 func TestPresensiSucces(t *testing.T) {
@@ -64,6 +67,23 @@ func TestPresensiFailed(t *testing.T) {
 	fmt.Println(string(bd))
 }
 
+func TestGetSuratFailed(t *testing.T) {
+	db := app.NewDB()
+	router := setupRouter(db)
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/mobile/1", nil)
+	request.Header.Add("Content-Type", "application/json")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	bd, _ := io.ReadAll(response.Body)
+
+	fmt.Println(string(bd))
+}
+
 func TestGetSuratSucces(t *testing.T) {
 	db := app.NewDB()
 	router := setupRouter(db)
@@ -81,19 +101,18 @@ func TestGetSuratSucces(t *testing.T) {
 	fmt.Println(string(bd))
 }
 
-func TestGetSuratFailed(t *testing.T) {
+func TestGetSuratPresensei(t *testing.T) {
 	db := app.NewDB()
-	router := setupRouter(db)
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/mobile/1", nil)
-	request.Header.Add("Content-Type", "application/json")
 
-	recorder := httptest.NewRecorder()
+	tx, err := db.Begin()
+	helper.PanicIfError(err)
 
-	router.ServeHTTP(recorder, request)
+	defer helper.CommitOrRollback(tx)
 
-	response := recorder.Result()
+	stj := pegawairepository.NewPegawaiRepo().GetSuratPresensi(context.Background(), tx, 7)
 
-	bd, _ := io.ReadAll(response.Body)
-
-	fmt.Println(string(bd))
+	for _, stj2 := range stj {
+		fmt.Printf("stj2.Id: %v\n", stj2.Id)
+		fmt.Printf("stj2.GambarId: %v\n", stj2.GambarId)
+	}
 }

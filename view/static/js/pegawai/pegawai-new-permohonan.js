@@ -50,6 +50,7 @@ const groupRadio = document.querySelector(".checkbox");
 const participanContainer = document.getElementById("participan-container");
 const participanList = document.getElementById("partcipan-list");
 
+
 var selectedOptions = [];
 
 groupRadio.addEventListener("change", function() {
@@ -233,7 +234,7 @@ submitButton.addEventListener("click", (e) => {
       
     
       // Kirim data ke server dalam format JSON
-      await fetch('/wp/'+match[2]+'/permohonan', {
+      await fetch('/wp/'+userId+'/permohonan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -23,8 +23,8 @@ func (kr *KeuanganRepoImpl) Index(ctx context.Context, tx *sql.Tx) (keuanganreqr
 	SQL += "SUM(CASE WHEN `approved_rincian_anggaran`.status = '1' AND `surat_tugas`.dokumen_name != '-' THEN 1 ELSE 0 END), "
 	SQL += "SUM(CASE WHEN `approved_rincian_anggaran`.status = '2' AND `surat_tugas`.dokumen_name != '-' THEN 1 ELSE 0 END) "
 	SQL += "FROM `surat_tugas` "
-	SQL += "INNER JOIN `approved_rincian_anggaran` ON `rincian_anggaran`.id = `approved_rincian_anggaran`.rincian_id "
 	SQL += "INNER JOIN `rincian_anggaran` ON `rincian_anggaran`.surat_tugas_id = `surat_tugas`.id "
+	SQL += "INNER JOIN `approved_rincian_anggaran` ON `rincian_anggaran`.id = `approved_rincian_anggaran`.rincian_id "
 	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE()) AND MONTH(tgl_awal) = MONTH(CURDATE());"
 
 	row := tx.QueryRowContext(ctx, SQL)

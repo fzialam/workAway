@@ -568,12 +568,11 @@ func (pr *PimpinanRepoImpl) ApprovedLaporan(ctx context.Context, tx *sql.Tx, lap
 
 // GetFotoKetuaSPPDById implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) GetFotoKetuaSPPDById(ctx context.Context, tx *sql.Tx, surat entity.SuratTugasJOINUserFoto) entity.SuratTugasJOINUserFoto {
-	SQL := "SELECT name, gambar, lokasi, koordinat FROM `presensi` WHERE user_id=? AND surat_tugas_id=?"
+	SQL := "SELECT gambar, lokasi, koordinat FROM `presensi` WHERE user_id=? AND surat_tugas_id=?"
 
 	row := tx.QueryRowContext(ctx, SQL, surat.UserId, surat.Id)
 
 	row.Scan(
-		&surat.UserNameGambar,
 		&surat.UserGambar,
 		&surat.UserLokasi,
 		&surat.UserKoordinat,
@@ -599,7 +598,6 @@ func (pr *PimpinanRepoImpl) GetAllFotoParticipanById(ctx context.Context, tx *sq
 		&result.Id,
 		&result.UserId,
 		&result.SuratTugasId,
-		&result.NameGambar,
 		&result.Gambar,
 		&result.Lokasi,
 		&result.Koordinat,
