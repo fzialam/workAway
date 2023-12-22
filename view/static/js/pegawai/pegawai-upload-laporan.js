@@ -23,8 +23,6 @@ const url = window.location.href;
 const idUser = url.split('/')[4];
 const suratId = url.split('id=')[1];
 
-const pathLaporan = '/wp/'+idUser+'/laporan';
-
 var endPoint = '';
 
 if ((fileAk != undefined) && (buttAk != undefined)) {
@@ -100,7 +98,6 @@ function UploadFile(file, endPoint) {
                 if (!ok){
                     setTimeout(()=>{
                       window.location.reload();
-                      window.location.href = pathLaporan;
                     },500)
                 }
             }
@@ -109,7 +106,6 @@ function UploadFile(file, endPoint) {
                 if (!ok){
                     setTimeout(()=>{
                         window.location.reload();
-                        window.location.href = pathLaporan;
                     },500)
                 }
             }

@@ -7,6 +7,8 @@
       <title>Pegawai | WorkAway</title>
       {{else if eq .menu "permohonan"}}
       <title>Permohonan | WorkAway</title>
+      {{else if eq .menu "newPermohonan"}}
+      <title>Buat Permohonan | WorkAway</title>
       {{else if eq .menu "viewPermohonan"}}
       <title>Detail Permohonan | WorkAway</title>
       {{else if eq .menu "penugasan"}}
@@ -47,7 +49,7 @@
                     </li>
                     <li class="nav-items mt-4 align-items-center">
                         <a href="/wp/{{.userId}}/sppd" class="w-100 h-100 text-decoration-none align-items-center">
-                            <span class="text">SPPD</span>
+                            <span class="text">Penugasan</span>
                         </a>
                     </li>
                     <li class="nav-items mt-4 align-items-center">
@@ -178,7 +180,11 @@
                     </thead>
                     <tbody>
                         {{range $index, $data := .permohonan}}
+                        {{if eq $data.Status "2"}}
+                        <tr title="{{$data.Rincian.DokName}}" style="background-color: rgba(255, 0, 0, 0.203);">
+                        {{else}}
                         <tr>
+                        {{end}}
                         <th scope="row">{{index $index}}</th>
                         <td>{{$data.Id}}</td>
                         <td>{{$data.JenisProgram}}</td>
@@ -206,7 +212,6 @@
             </div>
             <input type="hidden" name="" id="suratIds" value="{{.suratIds}}">
         </section>
-        
         {{else if eq .menu "newPermohonan"}}
         <section id="newPermohonan">
             <a href="/wp/{{.userid}}/permohonan" id="back" class="btn btn-dark">Back</a>
@@ -216,15 +221,15 @@
                     <div class="row px-5">
                         <div id="surat" class="col row w-auto">
                             <div class="form-group mb-3 row">
-                                <label class="col-sm-4 col-form-label" for="lokasi">Lokasi Tujuan</label>
-                                <div class="col-sm-5 w-50">
-                                    <input class="form-text form-control" type="text" name="lokasi" id="lokasi" autocomplete="off" required />
-                                </div>
-                            </div>
-                            <div class="form-group mb-3 row">
                                 <label class="col-sm-4 col-form-label" for="jenis">Jenis Program</label>
                                 <div class="col-sm-5 w-50">
                                     <input class="form-text form-control" name="jenis" id="jenis" required />
+                                </div>
+                            </div>
+                            <div class="form-group mb-3 row">
+                                <label class="col-sm-4 col-form-label" for="lokasi">Lokasi Tujuan</label>
+                                <div class="col-sm-5 w-50">
+                                    <input class="form-text form-control" type="text" name="lokasi" id="lokasi" autocomplete="off" required />
                                 </div>
                             </div>
                             <div class="form-group mb-3 row">
@@ -236,7 +241,7 @@
                             <div class="form-group mb-3 row">
                                 <label class="col-sm-4 col-form-label" for="akhir">Tanggal Akhir</label>
                                 <div class="col-sm-5 w-50">
-                                    <input type="date" class="form-control" name="akhir" id="akhir" required />
+                                    <input type="date" class="form-control" name="akhir" id="akhir" disabled required />
                                 </div>
                             </div>
                             <div class="form-group mb-3 row">
@@ -355,7 +360,7 @@
         
         {{else if eq .menu "sppd"}}
         <section id="sppd">
-            <h1 class="fw-bold">SPPD</h1>
+            <h1 class="fw-bold">Penugasan</h1>
             <div class="table-container px-5 my-4">
                 <table class="table table-hover text-center">
                     <thead>
@@ -366,7 +371,7 @@
                         <th scope="col">Tujuan Lokasi</th>
                         <th scope="col">Tanggal Mulai</th>
                         <th scope="col">Tanggal Akhir</th>
-                        <th scope="col">SPPD</th>
+                        <th scope="col">Surat Tugas</th>
                         <th scope="col">Anggaran</th>
                         </tr>
                     </thead>
@@ -454,7 +459,7 @@
                                 {{end}}
                             </td>
                             <td>
-                                <h4>
+                                <h5 class="fw-bold font-monospace text-danger">
                                     {{if or (eq $data.Message " ") (eq $data.Message "OK")}}
                                     -
                                     {{else if eq $data.Message ""}}
@@ -462,7 +467,7 @@
                                     {{else}}
                                     {{$data.Message}}
                                     {{end}}
-                                </h4>    
+                                </h5>    
                             </td>
                         </tr>
                         {{end}}
@@ -476,7 +481,7 @@
         <section id="uploadLap">
             <div>
                 <a href="/wp/{{.userId}}/laporan" class="btn btn-dark">Back</a>
-                <h2>Detail SPPD</h2>
+                <h2>Detail Surat Tugas</h2>
             </div>
     
             <div class="d-flex flex-row">
@@ -588,28 +593,28 @@
                 
                 {{if eq $data.Status "2"}}
                 
-                <h5>
-                    {{$data.Message}}
+                <h5 class="text-danger fw-bold font-monospace">
+                    Revisi: {{$data.Message}}
                 </h5>
                 <div>
                     {{if eq $index 0}}
-                <form id="ak-form" method="post">
-                    <input id="file-ak" class="form-control" type="file" accept=".pdf" hidden/>
-                </form>
-                <button id="butt-ak" type="button" class="btn btn-secondary">
-                    <input type="hidden" value="set" />
-                    Ganti File
-                </button>
-                {{else}}
-                <form id="ang-form" method="post">
-                    <input id="file-ang" class="form-control" type="file" accept=".pdf" hidden/>
-                </form>
-                <button id="butt-ang" type="button" class="btn btn-secondary">
-                    <input type="hidden" value="set" />
-                    Ganti File
-                </button>
-                {{end}}
-            </div>
+                    <form id="ak-form" method="post">
+                        <input id="file-ak" class="form-control" type="file" accept=".pdf" hidden/>
+                    </form>
+                    <button id="butt-ak" type="button" class="btn btn-secondary">
+                        <input type="hidden" value="set" />
+                        Ganti File
+                    </button>
+                    {{else}}
+                    <form id="ang-form" method="post">
+                        <input id="file-ang" class="form-control" type="file" accept=".pdf" hidden/>
+                    </form>
+                    <button id="butt-ang" type="button" class="btn btn-secondary">
+                        <input type="hidden" value="set" />
+                        Ganti File
+                    </button>
+                    {{end}}
+                </div>
     
                 {{else if or (eq $data.Status "0") (eq $data.Status "")}}
     
@@ -645,7 +650,7 @@
             <div class="d-flex flex-column w-75 m-4" id="img-bukti">
                 <label class="form-label">Bukti Foto</label>
                 <input class="form-control form-text h-25" value="{{.sppd.Lokasi}}" readonly/>
-                <img class="img-thumbnail" style="cursor: pointer;" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
+                <img class="img-thumbnail" style="cursor: pointer;" src="data:image/jpg;base64,{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
                 <a class="d-none" target="_blank" href="https://www.google.com/search?q={{.sppd.Koordinat}}"></a>
             </div>
             {{end}}

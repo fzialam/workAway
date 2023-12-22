@@ -88,7 +88,7 @@
       {{if eq .menu "home"}}
       <section id="home">
           <h1 class="fw-bold">Dashboard</h1>
-          <!-- <div class="container mt-5">
+          <div class="container mt-5">
               <div class="row">
                   <div class="col-md-6 mb-4">
                       <a class="home card text-black-50 text-decoration-none" href="/wa/permohonan">
@@ -96,13 +96,7 @@
                               <h5 class="card-title fw-bold">Permohonan</h5>
                               <ul class="list-group">
                                   <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                      Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Permohonan.Belum}}</span>
-                                  </li>
-                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                      Disetujui<span class="badge bg-success badge-pill">{{.index.Permohonan.Approved}}</span>
-                                  </li>
-                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                      Ditolak<span class="badge bg-danger badge-pill">{{.index.Permohonan.Reject}}</span>
+                                      Jumlah Permohonan<span class="badge bg-primary badge-pill">{{.index.Permohonan}}</span>
                                   </li>
                               </ul>
                           </div>
@@ -114,10 +108,7 @@
                               <h5 class="card-title fw-bold">Penugasan</h5>
                               <ul class="list-group">
                                   <li class="alert-heading list-group-item d-flex justify-content-between align-items-center">
-                                      Belum Terlaksana<span class="badge bg-primary badge-pill">{{.index.Penugasan.Belum}}</span>
-                                  </li>
-                                  <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                      Sudah Terlaksana<span class="badge bg-success badge-pill">{{.index.Penugasan.Sudah}}</span>
+                                      Jumlah Penugasan<span class="badge bg-primary badge-pill">{{.index.Penugasan}}</span>
                                   </li>
                               </ul>
                           </div>
@@ -126,45 +117,42 @@
               </div>
               <div class="row">
                   <div class="col-md-6 mb-4">
-                    <a class="home card text-black-50 text-decoration-none" href="/wa/sppd">
-                      <div class="card-body">
-                          <h5 class="card-title fw-bold">SPPD</h5>
-                          <ul class="list-group">
-                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Belum Dikonfirmasi<span class="badge bg-primary badge-pill">1</span>
-                              </li>
-                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Disetujui<span class="badge bg-success badge-pill">3</span>
-                              </li>
-                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Ditolak<span class="badge bg-danger badge-pill">0</span>
-                              </li>
-                          </ul>
-                      </div>
-                  </a>
-                    
-                  </div>
-          
-                  <div class="col-md-6 mb-4">
-                    <a class="home card text-black-50 text-decoration-none" href="/wa/laporan">
+                    <div class="home card text-black-50 text-decoration-none">
                       <div class="card-body">
                           <h5 class="card-title fw-bold">Laporan</h5>
                           <ul class="list-group">
+                            <a class="home text-decoration-none" href="/wa/laporan-ak">
                               <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Belum Dikonfirmasi <span class="badge bg-primary badge-pill">{{.index.Laporan.Belum}}</span>
+                                  Jumlah Laporan Aktvitas<span class="badge bg-primary badge-pill">{{.index.LaporanAktivitas}}</span>
+                              </li>
+                            </a>
+                            <a class="home text-decoration-none" href="/wa/laporan-ag">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Jumlah Laporan Anggaran<span class="badge bg-secondary badge-pill">{{.index.LaporanAnggaran}}</span>
+                              </li>
+                            </a>
+                          </ul>
+                      </div>
+                  </div>
+                </div>
+          
+                  <div class="col-md-6 mb-4">
+                    <a class="home card text-black-50 text-decoration-none" href="/wa/user">
+                      <div class="card-body">
+                          <h5 class="card-title fw-bold">User</h5>
+                          <ul class="list-group">
+                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
+                                  Akun Aktif<span class="badge bg-primary badge-pill">{{.index.UserAk}}</span>
                               </li>
                               <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Disetujui<span class="badge bg-success badge-pill">{{.index.Laporan.Approved}}</span>
-                              </li>
-                              <li class="alert-info list-group-item d-flex justify-content-between align-items-center">
-                                  Ditolak<span class="badge bg-danger badge-pill">{{.index.Laporan.Reject}}</span>
+                                  Akun Mati<span class="badge bg-success badge-pill">{{.index.UserOff}}</span>
                               </li>
                           </ul>
                       </div>
                   </a>
                   </div>
               </div>
-          </div> -->
+          </div>
         </section>
       {{else if eq .menu "permohonan"}}
       <section id="permohonan" class="m-5">
@@ -206,12 +194,12 @@
             <tr>
               <th scope="col">No</th>
               <th scope="col">ID</th>
-              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Ketua Pelaksana</th>
               <th scope="col">Jenis Program</th>
               <th scope="col">Tujuan Lokasi</th>
               <th scope="col">Tanggal Mulai</th>
               <th scope="col">Tanggal Akhir</th>
-              <th scope="col">Dokumen SPPD</th>
+              <th scope="col">Dokumen Surat Tugas</th>
             </tr>
           </thead>
           <tbody>

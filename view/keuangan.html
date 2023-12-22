@@ -122,19 +122,19 @@
                 <tr>
                   <th scope="col">No</th>
                   <th scope="col">Id</th>
-                  <th scope="col">Ketua Kelompok</th>
+                  <th scope="col">Ketua Pelaksana</th>
                   <th scope="col">Jenis Program</th>
                   <th scope="col">Tujuan Lokasi</th>
                   <th scope="col">Tanggal Mulai</th>
                   <th scope="col">Tanggal Akhir</th>
-                  <th scope="col">SPPD</th>
+                  <th scope="col">Surat Tugas</th>
                   <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {{range $index, $data := .surats}}
                 {{if eq $data.Status "2"}}
-                <tr style="background-color: rgba(255, 0, 0, 0.383);">
+                <tr style="background-color: rgba(255, 0, 0, 0.262);">
                   <th scope="row">{{index $index}}</th>
                   <td>{{$data.Id}}</td>
                   <td>{{$data.UserName}}</td>
@@ -146,7 +146,9 @@
                     <a href="/wk/{{$data.Id}}/rincian-biaya?v=true" class="btn btn-warning">Lihat</a>
                   </td>
                   <td>
-                    Permohonan ditolak
+                    <h5 class="fw-bold font-monospace text-danger">
+                      Revisi {{$data.UserEmail}}
+                    </h5>
                   </td>
                 </tr>
                 {{else if ne $data.Status ""}}
@@ -170,7 +172,7 @@
                   </td>
                 </tr>
                 {{else if eq $data.Status ""}}
-                <tr style="background-color: rgba(255, 0, 0, 0.383);">
+                <tr style="background-color: rgba(212, 255, 0, 0.219);">
                   <th scope="row">{{index $index}}</th>
                   <td>{{$data.Id}}</td>
                   <td>{{$data.UserName}}</td>
@@ -317,26 +319,26 @@
           </div>
           {{else if eq .menu "sppd" }}
           <section id="sppd">
-            <h1 style="font-weight: bold;">SPPD</h1>
+            <h1 style="font-weight: bold;">Konfirmasi Pencairan Dana Full</h1>
             <table class="table table-hover text-center">
               <thead>
                 <tr>
                   <th scope="col">No</th>
                   <th scope="col">Id</th>
-                  <th scope="col">Ketua Kelompok</th>
+                  <th scope="col">Ketua Pelaksana</th>
                   <th scope="col">Jenis Program</th>
                   <th scope="col">Tujuan Lokasi</th>
                   <th scope="col">Tanggal Mulai</th>
                   <th scope="col">Tanggal Akhir</th>
-                  <th scope="col">Status Laporan SPPD</th>
+                  <th scope="col">Status Laporan Aktivitas</th>
                   <th scope="col">Total Anggaran</th>
                   <th scope="col">Aksi</th>
                 </tr>
               </thead>
               <tbody class="text-center" style="font-weight: 500;">
                 {{range $index, $data := .surats}}
-                {{if or (eq $data.Status "2") (eq $data.Status "0")}}
-                <tr style="background-color: rgba(255, 0, 0, 0.398);">
+                {{if eq $data.Status "2"}}
+                <tr style="background-color: rgba(255, 200, 0, 0.231);">
                   <th scope="row">{{index $index}}</th>
                   <td>{{$data.Id}}</td>
                   <td>{{$data.UserName}}</td>
@@ -373,8 +375,8 @@
                     {{end}}
                   </td>
                   <td>
-                    <span class="btn btn-danger rounded p-1 disabled" style="font-weight: bolder;" >
-                      SPPD Status Tidak Valid
+                    <span class="btn btn-info rounded p-1 disabled" style="font-weight: bolder;" >
+                      Menunggu Revisi Laporan
                     </span>
                   </td>
                 </tr>
@@ -455,7 +457,7 @@
                 <tr>
                   <th scope="col">No</th>
                   <th scope="col">Id</th>
-                  <th scope="col">Ketua Kelompok</th>
+                  <th scope="col">Ketua Pelaksana</th>
                   <th scope="col">Jenis Program</th>
                   <th scope="col">Tujuan Lokasi</th>
                   <th scope="col">Tanggal Mulai</th>
@@ -481,10 +483,10 @@
                       Lihat
                     </a>
                     {{else}}
-                    <span class="text-danger" >Belum Upload Laporan</span>
+                    <span class="text-danger fw-bold" >Belum Upload Laporan</span>
                     {{end}}
                   </td>
-                  <td>
+                  <td class="fw-bold">
                     {{if and (eq $data.Laporan.Status "1") (ne $data.Laporan.DokName "") }}
                     <span class="text-success" >Disetujui</span>
                     {{else if and ( or (eq $data.Laporan.Status "0") (eq $data.Laporan.Status "")) (ne $data.Laporan.DokName "") }}
@@ -497,26 +499,26 @@
                   </td>
                   <td>
                     {{if and (eq $data.Laporan.Status "1") (ne $data.Laporan.DokName "") }}
-                    <button class="btn btn-warning disabled" style="font-weight: bolder;">
+                    <span class="fw-bold bg-warning px-3 py-1 rounded-2">
                       -
-                    </button>
+                    </span>
                     {{else if and ( or (eq $data.Laporan.Status "0") (eq $data.Laporan.Status "") ) (ne $data.Laporan.DokName "") }}
-                    <button class="btn btn-warning konfirmasi" style="font-weight: bolder;">
+                    <button class="fw-bold btn btn-warning konfirmasi">
                       <input type="hidden" value="{{$data.Laporan.Id}}">
                       Approve
                     </button>
-                    <button class="btn btn-danger tolak" style="font-weight: bolder;">
+                    <button class="fw-bold btn btn-danger tolak">
                       <input type="hidden" value="{{$data.Laporan.Id}}">
                       Tolak
                     </button>
                     {{else if and (eq $data.Laporan.Status "2") (ne $data.Laporan.DokName "") }}
-                    <button class="btn btn-info disabled" style="font-weight: bolder;">
+                    <button class="fw-bold btn btn-info disabled">
                       Menunggu Revisi
                     </button>
                     {{else}}
-                    <button class="btn btn-danger disabled" style="font-weight: bolder;">
-                      Status Tidak Dikenali 
-                    </button>
+                    <span class="fw-bold bg-danger px-3 py-1 rounded-2 text-light">
+                      -
+                    </span>
                     {{end}}
                   </td>
                 {{end}}

@@ -68,25 +68,27 @@
         </section>
         {{else if eq .menu "sppd"}}
         <section id="sppd" class="">
-          <h1 style="font-weight: bold;">SPPD</h1>
+          <h1 style="font-weight: bold;">Data Surat Tugas</h1>
           <table class="table table-hover text-center">
             <thead>
               <tr>
                 <th scope="col">No</th>
                 <th scope="col">Id</th>
-                <th scope="col">Ketua Kelompok</th>
+                <th scope="col">Ketua Pelaksana</th>
                 <th scope="col">Jenis Program</th>
                 <th scope="col">Tujuan Lokasi</th>
                 <th scope="col">Tanggal Mulai</th>
                 <th scope="col">Tanggal Akhir</th>
-                <th scope="col">SPPD</th>
+                <th scope="col">Surat Tugas</th>
                 <th scope="col">Status TTD</th>
               </tr>
             </thead>
             <tbody>
               {{range $index, $data := .surats}}
-              {{if eq $data.DokumenName "-"}}
-              <tr style="background-color: rgba(255, 107, 107, 0.749);">
+              {{if eq $data.Status "2"}}
+              <tr style="background-color: rgba(255, 0, 0, 0.264);">
+              {{else if eq $data.DokumenName "-"}}
+              <tr style="background-color: rgba(212, 255, 0, 0.219);">
               {{else}}
               <tr>
               {{end}}
@@ -100,14 +102,14 @@
               <td>
                   <a href="/wt/{{$data.Id}}/sppd?v=true" class="btn btn-warning">Lihat</a>
                 </td>
-                <td>
+                <td class="h5 font-monospace fw-bold">
                   {{if ne $data.DokumenName "-"}}
                   {{if eq $data.Status "0"}}
                   Belum Dikonfirmasi
                   {{else if eq $data.Status "1"}}
-                  Sudah TTD
+                  <span class="text-success">Sudah TTD</span>
                   {{else if eq $data.Status "2"}}
-                  Revisi SPPD
+                  <span class="text-danger">{{$data.UserEmail}}</span>
                   {{else}}
                   Status Tidak Dikenali 
                   {{end}}
@@ -187,7 +189,7 @@
           <div class="">
             <h4>Detail Permohonan</h4>
           </div>
-          <div id="detail" class="border border-1 w-75">
+          <div id="detail" class=" w-75">
             <div>
               <label class="form-label">Lokasi Tujuan: </label>
               <input class="form-control form-text input" value="{{.surat.LokasiTujuan}}" readonly/>
@@ -224,9 +226,9 @@
           <!-- OtherStatus := approved.message_ttd  -->
           {{if or (eq .surat.Status "0") (eq .surat.Status "2")}}
           <div id="action" class="flex justify-content-end">
-            <a href="#popup" id="active" class="btn btn-group btn-primary px-3 mx-3" >Upload SPPD</a>
+            <a href="#popup" id="active" class="btn btn-group btn-primary px-3 mx-3" >Upload Surat Tugas</a>
             {{if eq .surat.Status "2"}}
-            <span class="text-danger">{{.surat.OtherStatus}}</span>
+            <span class="text-danger fw-bold">Dimohon Upload Surat Tugas yang baru "{{.surat.OtherStatus}}"</span>
             {{end}}
           </div>
         </div>

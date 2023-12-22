@@ -17,16 +17,16 @@ type PimpinanService interface {
 	CreatePenugasan(ctx context.Context, request penugasanreqres.PenugasanRequest) penugasanreqres.PenugasanResponse
 	GetAllUserId(ctx context.Context) []userreqres.UserResponse
 
-	PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
+	IndexPermohonan(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
 	PermohonanGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINApprovedUserParticipanResponse
 	PermohonanSetApproved(ctx context.Context, request izinreqres.IzinRequest) approvedreqres.ApprovedResponse
 
-	IndexPenugasan(ctx context.Context) ([]surattugasreqres.SuratTugasResponse, error)
+	IndexPenugasan(ctx context.Context) ([]surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse, error)
 	SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse
 	SPPDGetSuratTugasById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse
 	SPPDSetApproved(ctx context.Context, request pimpinanreqres.UploadSPPDRequest) approvedreqres.ApprovedResponse
 
-	LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse
+	IndexLaporan(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse
 	LaporanSPPDById(ctx context.Context, suratId int) surattugasreqres.SuratTugasJOINUserFotoParticipanFotoLaporanStatusResponse
 	SetApprovedLaporan(ctx context.Context, request laporanreqres.ApprovedLaporanRequest) laporanreqres.ApprovedLaporanResponse
 	Profile(ctx context.Context, userId int) userreqres.UserResponse

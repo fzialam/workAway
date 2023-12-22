@@ -6,4 +6,5 @@ type PresensiFotoRequest struct {
 	Gambar       string `validate:"required" json:"gambar"`
 	Lokasi       string `validate:"required" json:"lokasi"`
 	Koordinat    string `validate:"required" json:"koordinat"`
+	Set          string `validate:"" json:"set"`
 }

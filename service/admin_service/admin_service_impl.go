@@ -6,6 +6,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	adminreqres "github.com/fzialam/workAway/model/req_res/admin_req_res"
 	surattugasreqres "github.com/fzialam/workAway/model/req_res/surat_tugas_req_res"
 	userreqres "github.com/fzialam/workAway/model/req_res/user_req_res"
 	adminrepository "github.com/fzialam/workAway/repository/admin_repository"
@@ -24,6 +25,18 @@ func NewAdminService(adminRepo adminrepository.AdminRepo, db *sql.DB, validate *
 		DB:        db,
 		Validate:  validate,
 	}
+}
+
+// Index implements AdminService.
+func (as *AdminServiceImpl) Index(ctx context.Context) adminreqres.IndexResponse {
+	tx, err := as.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	index, err := as.AdminRepo.Index(ctx, tx)
+	helper.PanicIfError(err)
+
+	return index
 }
 
 // Permohonan implements AdminService.

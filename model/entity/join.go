@@ -39,6 +39,7 @@ type SuratTugasJOINPresensi struct {
 	JenisProgram string `json:"jenis_program"`
 	TglAwal      string `json:"tgl_awal"`
 	TglAkhir     string `json:"tgl_akhir"`
+	CreateAt     string `json:"create_at"`
 	GambarId     int    `json:"gambar_id"`
 	NameGambar   string `json:"name_gambar"`
 	Gambar       string `json:"gambar"`
@@ -107,24 +108,24 @@ type SuratTugasJOINUserFoto struct {
 }
 
 type SuratTugasJOINApprovedUser struct {
-	Id                int    `json:"id"`
-	Tipe              int    `json:"tipe"`
-	UserId            int    `json:"user_id"`
-	LokasiTujuan      string `json:"lokasi_tujuan"`
-	JenisProgram      string `json:"jenis_program"`
-	DokumenName       string `json:"dokumen_name"`
-	DokumenPDF        string `json:"dokumen_pdf"`
-	DokPendukungName  string `json:"dok_pendukung_name"`
-	DokPendukungPdf   string `json:"dok_pendukung_pdf"`
-	TglAwal           string `json:"tgl_awal"`
-	TglAkhir          string `json:"tgl_akhir"`
-	CreateAt          string `json:"create_at"`
-	Status            string `json:"status"`
-	StatusTTDCreateAt string `json:"status_ttd_create_at"`
-	UserNIP           string `json:"user_nip"`
-	UserName          string `json:"user_name"`
-	UserNoTelp        string `json:"user_no_telp"`
-	UserEmail         string `json:"user_email"`
+	Id               int    `json:"id"`
+	Tipe             int    `json:"tipe"`
+	UserId           int    `json:"user_id"`
+	LokasiTujuan     string `json:"lokasi_tujuan"`
+	JenisProgram     string `json:"jenis_program"`
+	DokumenName      string `json:"dokumen_name"`
+	DokumenPDF       string `json:"dokumen_pdf"`
+	DokPendukungName string `json:"dok_pendukung_name"`
+	DokPendukungPdf  string `json:"dok_pendukung_pdf"`
+	TglAwal          string `json:"tgl_awal"`
+	TglAkhir         string `json:"tgl_akhir"`
+	CreateAt         string `json:"create_at"`
+	Status           string `json:"status"`
+	StatusTTD        string `json:"status_ttd"`
+	UserNIP          string `json:"user_nip"`
+	UserName         string `json:"user_name"`
+	UserNoTelp       string `json:"user_no_telp"`
+	UserEmail        string `json:"user_email"`
 }
 
 type SuratTugasJOINApprovedUserOtherId struct {

@@ -35,18 +35,30 @@ class PenugasanRequest {
 }
 
 var today = new Date();
+today.setDate(today.getDate() + 1);
+
 var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+var mm = String(today.getMonth() + 1).padStart(2, '0');
 var yyyy = today.getFullYear();
 
 today = yyyy + '-' + mm + '-' + dd;
 var awal = document.getElementById('awal');
+var akhir = document.getElementById('akhir');
 
 awal.min = today;
 
+const awalValue = awal.value
+
 awal.addEventListener('change',(e)=>{
-  document.getElementById('akhir').min = document.getElementById('awal').value;
-  })
+  if (awal.value) {
+    akhir.disabled = false;
+    akhir.value ='';
+    akhir.min = document.getElementById('awal').value;
+  } else{
+    akhir.disabled = true;
+    akhir.value ='';
+  }
+})
 
 const submitButton = document.getElementById("submit");
 const soloRadio = document.getElementById("solo");

@@ -43,6 +43,7 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   path: ^1.8.3
+  flutter_exit_app: ^1.1.2
 
 dev_dependencies:
   flutter_test:

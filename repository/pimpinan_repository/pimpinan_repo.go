@@ -10,7 +10,7 @@ import (
 
 type PimpinanRepo interface {
 	Index(ctx context.Context, tx *sql.Tx) (pimpinanreqres.IndexPimpinan, error)
-	IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugas, error)
+	IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINSPPDApprovedAnggaran, error)
 
 	// Penugasan
 	GetAllUserId(ctx context.Context, tx *sql.Tx) []entity.User
@@ -19,7 +19,7 @@ type PimpinanRepo interface {
 	GetAllParticipanJOINUserBySuratId(ctx context.Context, tx *sql.Tx, suratId int) []entity.ParticipanJoinUser
 
 	// Permohonan
-	PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
+	IndexPermohonan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error)
 	PermohonanGetSuratTugasById(ctx context.Context, tx *sql.Tx, suratId int) (entity.SuratTugasJOINApprovedUserParticipan, error)
 	PermohonanSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved
 
@@ -31,11 +31,12 @@ type PimpinanRepo interface {
 	RincianSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) error
 
 	UploadSPPDApproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error
+	SetNullFullAnggaran(ctx context.Context, tx *sql.Tx, rincianId int) error
 	GetRincianBiayaBySuratId(ctx context.Context, tx *sql.Tx, suratId int) entity.RincianAnggaran
 	AddApprovedRincianBiayaById(ctx context.Context, tx *sql.Tx, approved entity.Approved) error
 
 	// Laporan
-	LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINUserLaporanApproved
+	IndexLaporan(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINUserLaporanApproved
 	LaporanIsApproved(ctx context.Context, tx *sql.Tx, laporanId int) entity.ApprovedLaporan
 
 	LaporanBySPPDId(ctx context.Context, tx *sql.Tx, suratId int) entity.LaporanJoinApproved

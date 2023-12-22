@@ -3,7 +3,6 @@ package pegawaicontroller
 import (
 	"html/template"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/fzialam/workAway/helper"
@@ -86,6 +85,8 @@ func (pc *PegawaiControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.
 		temp, err := template.ParseFiles("./view/pegawai.html")
 		helper.PanicIfError(err)
 
+		temp.Funcs(template.FuncMap{"index": helper.AddIndex})
+
 		err = temp.Execute(w, data)
 		helper.PanicIfError(err)
 	} else {
@@ -115,6 +116,8 @@ func (pc *PegawaiControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.
 		}
 		temp, err := template.ParseFiles("./view/pegawai.html")
 		helper.PanicIfError(err)
+
+		temp.Funcs(template.FuncMap{"index": helper.AddIndex})
 
 		err = temp.Execute(w, data)
 		helper.PanicIfError(err)
@@ -150,26 +153,36 @@ func (pc *PegawaiControllerImpl) Presensi(w http.ResponseWriter, r *http.Request
 	userId, err := strconv.Atoi(userIdS)
 	helper.PanicIfError(err)
 
+	set := r.URL.Query().Get("set")
+
 	presensiRequest := presensireqres.PresensiFotoRequest{
 		UserId: userId,
 	}
+
 	helper.ReadFromRequestBody(r, &presensiRequest)
-
-	f, err := os.Create("base64.log")
 	helper.PanicIfError(err)
 
-	_, err = f.WriteString(presensiRequest.Gambar)
+	if set == "" {
+		presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
+		response := model.Response{
+			Code:   200,
+			Status: "OK",
+			Data:   presensiResponse,
+		}
 
-	helper.PanicIfError(err)
+		helper.WriteToResponseBody(w, response)
+	} else {
+		presensiRequest.Set = "set"
+		presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
+		response := model.Response{
+			Code:   200,
+			Status: "OK",
+			Data:   presensiResponse,
+		}
 
-	presensiResponse := pc.PegawaiService.PresensiFoto(r.Context(), presensiRequest)
-	response := model.Response{
-		Code:   200,
-		Status: "OK",
-		Data:   presensiResponse,
+		helper.WriteToResponseBody(w, response)
+
 	}
-
-	helper.WriteToResponseBody(w, response)
 }
 
 // GetSuratPresensi implements PegawaiController.
@@ -204,6 +217,8 @@ func (pc *PegawaiControllerImpl) IndexSPPD(w http.ResponseWriter, r *http.Reques
 	}
 	temp, err := template.ParseFiles("./view/pegawai.html")
 	helper.PanicIfError(err)
+
+	temp.Funcs(template.FuncMap{"index": helper.AddIndex})
 
 	err = temp.Execute(w, data)
 	helper.PanicIfError(err)

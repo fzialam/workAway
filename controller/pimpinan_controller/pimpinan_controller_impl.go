@@ -62,7 +62,7 @@ func (pc *PimpinanControllerImpl) IndexPenugasan(w http.ResponseWriter, r *http.
 
 // IndexPermohonan implements PimpinanController.
 func (pc *PimpinanControllerImpl) IndexPermohonan(w http.ResponseWriter, r *http.Request) {
-	permohonan := pc.PimpinanService.PermohonanGetAllSuratTugasJOINApprovedUser(r.Context())
+	permohonan := pc.PimpinanService.IndexPermohonan(r.Context())
 	data := map[string]interface{}{
 		"permohonan": permohonan,
 		"menu":       "permohonan",
@@ -220,7 +220,7 @@ func (pc *PimpinanControllerImpl) SPPDSetApproved(w http.ResponseWriter, r *http
 
 // IndexLaporan implements PimpinanController.
 func (pc *PimpinanControllerImpl) IndexLaporan(w http.ResponseWriter, r *http.Request) {
-	sppds := pc.PimpinanService.LaporanGetAllSPPD(r.Context())
+	sppds := pc.PimpinanService.IndexLaporan(r.Context())
 
 	data := map[string]interface{}{
 		"sppds": sppds,

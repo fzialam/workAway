@@ -24,8 +24,11 @@ func NewAdminController(adminService adminservice.AdminService) AdminController 
 
 // Index implements AdminController.
 func (ac *AdminControllerImpl) Index(w http.ResponseWriter, r *http.Request) {
+	index := ac.AdminService.Index(r.Context())
+
 	data := map[string]interface{}{
-		"menu": "home",
+		"menu":  "home",
+		"index": index,
 	}
 	temp, err := template.ParseFiles("view/admin.html")
 	helper.PanicIfError(err)

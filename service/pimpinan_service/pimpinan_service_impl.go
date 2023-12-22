@@ -45,7 +45,7 @@ func (ps *PimpinanServiceImpl) Index(ctx context.Context) (pimpinanreqres.IndexP
 }
 
 // IndexPenugasan implements PimpinanService.
-func (ps *PimpinanServiceImpl) IndexPenugasan(ctx context.Context) ([]surattugasreqres.SuratTugasResponse, error) {
+func (ps *PimpinanServiceImpl) IndexPenugasan(ctx context.Context) ([]surattugasreqres.SuratTugasJOINSPPDApprovedAnggaranResponse, error) {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -53,7 +53,7 @@ func (ps *PimpinanServiceImpl) IndexPenugasan(ctx context.Context) ([]surattugas
 	index, err := ps.PimpinanRepo.IndexPenugasan(ctx, tx)
 	helper.PanicIfError(err)
 
-	return helper.ToSuratTugasResponses(index), nil
+	return helper.ToSuratTugasJOINSPPDApprovedAnggaranResponses(index), nil
 }
 
 // CreatePenugasan implements PimpinanService.
@@ -91,13 +91,11 @@ func (ps *PimpinanServiceImpl) CreatePenugasan(ctx context.Context, request penu
 	}
 
 	ps.PimpinanRepo.SPPDSetApproved(ctx, tx, entity.Approved{
-		SuratTugasId:      surat.Id,
-		Status:            "1",
-		Message:           "OK",
-		StatusTTD:         "0",
-		MessageTTD:        "0",
-		CreateAt:          helper.TimeNowToString(),
-		StatusTTDCreateAt: helper.TimeNowToString(),
+		SuratTugasId: surat.Id,
+		Status:       "1",
+		Message:      "OK",
+		StatusTTD:    "0",
+		MessageTTD:   "0",
 	})
 
 	return helper.ToPenugasanResponse(surat, participan)
@@ -113,13 +111,13 @@ func (ps *PimpinanServiceImpl) GetAllUserId(ctx context.Context) []userreqres.Us
 	return helper.ToUserResponses(user)
 }
 
-// PermohonanGetAllSuratTugasJOINApprovedUser implements PimpinanService.
-func (ps *PimpinanServiceImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse {
+// IndexPermohonan implements PimpinanService.
+func (ps *PimpinanServiceImpl) IndexPermohonan(ctx context.Context) []surattugasreqres.SuratTugasJOINApprovedUserResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	result, err := ps.PimpinanRepo.PermohonanGetAllSuratTugasJOINApprovedUser(ctx, tx)
+	result, err := ps.PimpinanRepo.IndexPermohonan(ctx, tx)
 	helper.PanicIfError(err)
 	return helper.ToSuratTugasJOINApprovedUserResponses(result)
 }
@@ -199,6 +197,8 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 	izin := entity.Approved{
 		Id:           request.RincianId,
 		SuratTugasId: request.SuratTugasId,
+		Status:       "1",
+		Message:      "OK",
 		StatusTTD:    request.Status,
 		MessageTTD:   request.Message,
 	}
@@ -212,18 +212,21 @@ func (ps *PimpinanServiceImpl) SPPDSetApproved(ctx context.Context, request pimp
 		err = ps.PimpinanRepo.UploadSPPDApproved(ctx, tx, request)
 		helper.PanicIfError(err)
 
+		err = ps.PimpinanRepo.SetNullFullAnggaran(ctx, tx, request.RincianId)
+		helper.PanicIfError(err)
+
 	}
 
 	return helper.ToIzinResponses(izin)
 }
 
 // LaporanGetAllSPPD implements PimpinanService.
-func (ps *PimpinanServiceImpl) LaporanGetAllSPPD(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse {
+func (ps *PimpinanServiceImpl) IndexLaporan(ctx context.Context) []surattugasreqres.SuratTugasJOINUserLaporanApprovedResponse {
 	tx, err := ps.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	surat := ps.PimpinanRepo.LaporanGetAllSPPD(ctx, tx)
+	surat := ps.PimpinanRepo.IndexLaporan(ctx, tx)
 
 	for i := range surat {
 		laporan := ps.PimpinanRepo.LaporanBySPPDId(ctx, tx, surat[i].Id)

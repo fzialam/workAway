@@ -5,14 +5,14 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       {{if eq .menu "home"}}
       <title>WorkAway</title>
-      {{else if eq .menu "Penugasan"}}
+      {{else if eq .menu "penugasan"}}
       <title>Penugasan | WorkAway</title>
       {{else if eq .menu "newPenugasan"}}
       <title>Buat Penugasan | WorkAway</title>
       {{else if eq .menu "permohonan"}}
       <title>Permohonan | WorkAway</title>
       {{else if or (eq .menu "sppd") (eq .menu "sppdView") }}
-      <title>SPPD | WorkAway</title>
+      <title>Surat Tugas | WorkAway</title>
       {{else if eq .menu "permohonanView"}}
       <title>Detail Permohonan | WorkAway</title>
       {{else if eq .menu "laporan"}}
@@ -52,13 +52,13 @@
                       </a>
                   </li>
                   <li class="nav-items mt-4 align-items-center">
-                      <a href="/wpp/penugasan" class="w-100 h-100 text-decoration-none align-items-center">
-                          <span class="text">Penugasan</span>
-                      </a>
+                    <a href="/wpp/sppd" class="w-100 h-100 text-decoration-none align-items-center">
+                      <span class="text">Surat Tugas</span>
+                    </a>
                   </li>
                   <li class="nav-items mt-4 align-items-center">
-                      <a href="/wpp/sppd" class="w-100 h-100 text-decoration-none align-items-center">
-                          <span class="text">SPPD</span>
+                      <a href="/wpp/penugasan" class="w-100 h-100 text-decoration-none align-items-center">
+                          <span class="text">Penugasan</span>
                       </a>
                   </li>
                   <li class="nav-items mt-4 align-items-center">
@@ -107,7 +107,7 @@
                       </a>
                   </div>
                   <div class="col-md-6 mb-4">
-                      <a class="home card text-black-50 text-decoration-none" href="/wpp/sppd">
+                      <a class="home card text-black-50 text-decoration-none" href="/wpp/penugasan">
                           <div class="card-body ">
                               <h5 class="card-title fw-bold">Penugasan</h5>
                               <ul class="list-group">
@@ -172,7 +172,7 @@
             <tr>
               <th scope="col">No</th>
               <th scope="col">Id</th>
-              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Ketua Pelaksana</th>
               <th scope="col">Jenis Program</th>
               <th scope="col">Tujuan Lokasi</th>
               <th scope="col">Waktu Pengajuan</th>
@@ -182,7 +182,11 @@
           </thead>
           <tbody>
             {{range $index, $data := .permohonan}}
+            {{if eq $data.Status "0"}}
+            <tr style="background-color: rgba(212, 255, 0, 0.219);">
+            {{else}}
             <tr>
+            {{end}}
               <th scope="row">{{index $index}}</th>
               <td>{{$data.Id}}</td>
               <td>{{$data.UserName}}</td>
@@ -274,7 +278,7 @@
         <div class="">
           <h4>Detail Permohonan</h4>
         </div>
-        <div id="detail" class="border border-1 w-75">
+        <div id="detail" class=" w-75">
           <div>
             <label class="form-label">Lokasi Tujuan: </label>
             <input class="form-control form-text input" value="{{.permohonan.LokasiTujuan}}" readonly/>
@@ -304,7 +308,7 @@
         <div id="action" class="flex justify-content-end">
           <button id="s" value="1" class="btn btn-group btn-warning px-3 m-3" type="button">Setuju</button>
           <button id="t" value="2" class="btn btn-group btn-danger px-3 m-3" type="button">Tolak</button>
-        </div>6,7
+        </div>
         {{end}}
       </div>
       </section>
@@ -319,30 +323,30 @@
             <tr>
               <th scope="col">No</th>
               <th scope="col">Id</th>
-              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Ketua Pelaksana</th>
               <th scope="col">Jenis Program</th>
               <th scope="col">Tujuan Lokasi</th>
               <th scope="col">Tanggal Mulai</th>
               <th scope="col">Tanggal Akhir</th>
-              <th scope="col">SPPD</th>
+              <th scope="col">Surat Tugas</th>
+              <th scope="col">Anggaran</th>
             </tr>
           </thead>
           <tbody>
-            {{range $index, $data := .index}}
+            {{range $index, $data := .surats}}
             <tr>
               <th scope="row">{{index $index}}</th>
               <td>{{$data.Id}}</td>
-              <td>{{$data.UserName}}</td>
+              <td>{{$data.Status}}</td>
               <td>{{$data.JenisProgram}}</td>
               <td>{{$data.LokasiTujuan}}</td>
               <td>{{$data.TglAwal}}</td>
               <td>{{$data.TglAkhir}}</td>
               <td>
-                {{if eq $data.DokumenName "-"}}
-                <a href="#" class="btn btn-danger disabled">Belum dibuat</a>
-                {{else}}
-                <a href="data:application/pdf;base64,{{$data.DokumenPDF}}" class="btn btn-warning">Lihat</a>
-                {{end}}
+                <a href="data:application/pdf;base64,{{$data.DokumenPDF}}" class="btn btn-warning"  download="{{$data.DokumenName}}" target="_blank" rel="noopener noreferrer">Lihat</a>
+              </td>
+              <td>
+                <a href="data:application/pdf;base64,{{$data.Rincian.DokPDF}}" class="btn btn-warning"  download="{{$data.Rincian.DokName}}" target="_blank" rel="noopener noreferrer">Lihat</a>
               </td>
             </tr>        
             {{end}}
@@ -351,24 +355,28 @@
       </section> 
       {{else if eq .menu "sppd"}}
       <section id="sppd" class="m-5">
-        <h1 style="font-weight: 600;">SPPD</h1>
+        <h1 style="font-weight: 600;">Data Surat Tugas</h1>
         <table class="table table-hover text-center">
           <thead>
             <tr>
               <th scope="col">No</th>
               <th scope="col">Id</th>
-              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Ketua Pelaksana</th>
               <th scope="col">Jenis Program</th>
               <th scope="col">Tujuan Lokasi</th>
               <th scope="col">Tanggal Mulai</th>
               <th scope="col">Tanggal Akhir</th>
-              <th scope="col">SPPD</th>
+              <th scope="col">Surat Tugas</th>
               <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
             {{range $index, $data := .sppds}}
+            {{if eq $data.Status "0"}}
+            <tr style="background-color: rgba(212, 255, 0, 0.219);">
+            {{else}}
             <tr>
+            {{end}} 
               <th scope="row">{{index $index}}</th>
               <td>{{$data.Id}}</td>
               <td>{{$data.UserName}}</td>
@@ -404,7 +412,7 @@
         <a href="/wpp/sppd" class="btn btn-dark">Back</a>
         <div class="popup-overlay"></div>
         <div class="text-center" id="overlay">
-          <h1 class="fw-bold">SPPD</h1>
+          <h1 class="fw-bold">Surat Tugas</h1>
           <div class="custom-file">
             <embed id="pdfViewer-sppd" src="data:application/pdf;base64,{{.surat.DokumenPDF}}" type="application/pdf" width="80%" height="600px" /> 
             <input type="hidden" id="file-sppd" value="{{.surat.DokumenName}}">
@@ -430,7 +438,7 @@
         <div id="popup" style="left: 55%;" class="card border border-success">
           <div class="m-4">
             <div class=" card-header">
-              <h1 class="card-title fw-bold">Upload SPPD</h1>
+              <h1 class="card-title fw-bold">Upload Surat Tugas</h1>
               <h3 class="card-subtitle fw-normal text-info">(ber-Tanda Tangan)</h3>
             </div>
           </div>
@@ -475,7 +483,7 @@
               <div class="form-group mb-3 row">
                 <label class="col-sm-4 col-form-label" for="akhir">Tanggal Akhir</label>
                 <div class="col-sm-5 w-50">
-                  <input type="date" class="form-control" name="akhir" id="akhir" required>
+                  <input type="date" class="form-control" name="akhir" id="akhir" disabled required>
                 </div>
               </div>
             </div>
@@ -513,12 +521,12 @@
             <tr>
               <th scope="col">No</th>
               <th scope="col">Id</th>
-              <th scope="col">Ketua Kelompok</th>
+              <th scope="col">Ketua Pelaksana</th>
               <th scope="col">Jenis Program</th>
               <th scope="col">Tujuan Lokasi</th>
               <th scope="col">Tanggal Mulai</th>
               <th scope="col">Tanggal Akhir</th>
-              <th scope="col">SPPD</th>
+              <th scope="col">Surat Tugas</th>
               <th scope="col">Status</th>
             </tr>
           </thead>
@@ -597,7 +605,7 @@
                   <img src="" alt="foto-ketua.png" width="100px" height="100px"sizes="">
                   {{else}}
                   <input class="form-control form-text h-25" value="{{.sppd.Lokasi}}" readonly/>
-                  <img class="img-thumbnail" style="cursor: pointer;" src="{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
+                  <img class="img-thumbnail" style="cursor: pointer;" src="data:jpg;base64,{{.sppd.Gambar}}" alt=".png" width="100px" height="100px" title="{{.sppd.Koordinat}}" onclick="searchGoogleKetua()">
                   <a class="d-none" target="_blank" href="https://www.google.com/search?q={{.sppd.Koordinat}}"></a>
                   {{end}}
                 </div>
@@ -647,7 +655,7 @@
           <div class="">
             <h4>Detail SPPD</h4>
           </div>
-          <div id="detail" class="border border-1 w-75">
+          <div id="detail" class=" w-75">
             <div>
               <label class="form-label">Lokasi Tujuan: </label>
               <input class="form-control form-text input" value="{{.sppd.LokasiTujuan}}" readonly/>

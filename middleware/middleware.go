@@ -1,21 +1,15 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
-	"github.com/fzialam/workAway/exception"
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 )
-
-// type contextKey string
-
-// const (
-// 	userIDKey contextKey = "userId"
-// )
 
 var JWT_KEY = []byte("e938d81d-cc6c-43aa-a5e8-1ed9b0a88566")
 
@@ -30,7 +24,9 @@ func VerifyRoleUser(role int) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			c, err := r.Cookie("jwt-workaway")
 			if err != nil {
-				panic(exception.NewUnauthorized(err.Error()))
+				err = errors.New("Token tidak valid")
+				helper.UnauthorizedTemplate(w, r, err.Error())
+				return
 			}
 
 			tokenCookie := c.Value
@@ -41,7 +37,12 @@ func VerifyRoleUser(role int) mux.MiddlewareFunc {
 			})
 
 			if err != nil || !token.Valid || claims.Role != role {
-				helper.UnauthorizedTemplate(w, r)
+				if !token.Valid {
+					err = errors.New("Token tidak valid")
+				} else if claims.Role != role {
+					err = errors.New("URL terlindungi")
+				}
+				helper.UnauthorizedTemplate(w, r, err.Error())
 				return
 			}
 			next.ServeHTTP(w, r)

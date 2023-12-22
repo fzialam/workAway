@@ -32,7 +32,7 @@ func (kc *KeuanganControllerImpl) Index(w http.ResponseWriter, r *http.Request) 
 
 	data := map[string]interface{}{
 		"index": index,
-		"menu":  "permohonan",
+		"menu":  "home",
 	}
 
 	temp, err := template.ParseFiles("./view/keuangan.html")

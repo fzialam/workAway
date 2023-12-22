@@ -56,7 +56,8 @@ func (kr *KeuanganRepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) []entity.
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
-	SQL += "WHERE `surat_tugas`.tgl_awal >= NOW() AND `approved`.status = '1';"
+	SQL += "WHERE `surat_tugas`.tgl_akhir >= NOW() AND `approved`.status = '1'"
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -97,14 +98,15 @@ func (kr *KeuanganRepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) []entity.
 		idS = append(idS, id)
 	}
 
-	SQL = "SELECT `approved_rincian_anggaran`.status FROM `approved_rincian_anggaran`  "
-	SQL += "INNER JOIN `rincian_anggaran` ON `rincian_anggaran`.id = `approved_rincian_anggaran`.rincian_id "
-	SQL += "WHERE `rincian_anggaran`.id=?;"
+	SQL = "SELECT status, message FROM `approved_rincian_anggaran`  "
+	SQL += "WHERE rincian_id=?;"
 	for i := 0; i < len(surats); i++ {
 		var status string
-		tx.QueryRowContext(ctx, SQL, idS[i]).Scan(&status)
+		var message string
+		tx.QueryRowContext(ctx, SQL, idS[i]).Scan(&status, &message)
 
 		surats[i].Status = status
+		surats[i].UserEmail = message
 	}
 
 	return surats
@@ -244,7 +246,7 @@ func (*KeuanganRepoImpl) GetIDRincianAnggaran(ctx context.Context, tx *sql.Tx, r
 
 // SetNullRincianAnggaran implements KeuanganRepo.
 func (kr *KeuanganRepoImpl) SetNullApprovedRincianAnggaran(ctx context.Context, tx *sql.Tx, rinci entity.RincianAnggaran) error {
-	SQL := "UPDATE `approved_rincian_anggaran` SET `status`='0', `message`='0', `create_at`=NOW() WHERE `id`=?;"
+	SQL := "UPDATE `approved_rincian_anggaran` SET `status`='0', `message`='0', `create_at`=NOW() WHERE `rincian_id`=?;"
 	_, err := tx.ExecContext(ctx, SQL, rinci.Id)
 	helper.PanicIfError(err)
 
@@ -260,7 +262,8 @@ func (kr *KeuanganRepoImpl) ListSPPDIsApproved(ctx context.Context, tx *sql.Tx) 
 	SQL += "INNER JOIN `laporan_aktivitas` ON `laporan_aktivitas`.surat_tugas_id = `surat_tugas`.id "
 	SQL += "INNER JOIN `approved_lap_ak` ON `approved_lap_ak`.laporan_id = `laporan_aktivitas`.id "
 	SQL += "INNER JOIN `rincian_anggaran` ON `rincian_anggaran`.surat_tugas_id = `surat_tugas`.id "
-	SQL += "WHERE `surat_tugas`.tgl_akhir >= NOW() AND `approved`.status_ttd = '1';"
+	SQL += "WHERE `surat_tugas`.tgl_akhir >= NOW() AND `approved`.status_ttd = '1' "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINApprovedUserOtherId{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -318,7 +321,8 @@ func (kr *KeuanganRepoImpl) ListLaporanSPPD(ctx context.Context, tx *sql.Tx) []e
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
 	SQL += "WHERE `surat_tugas`.tgl_akhir >= NOW() AND "
-	SQL += "`approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-';"
+	SQL += "`approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-' "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINUserLaporanApproved{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)

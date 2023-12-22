@@ -36,8 +36,8 @@ func (pr *PimpinanRepoImpl) Index(ctx context.Context, tx *sql.Tx) (pimpinanreqr
 	helper.PanicIfError(err)
 
 	SQL = "SELECT "
-	SQL += "SUM(CASE WHEN `approved`.status_ttd = '1' AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-' AND `surat_tugas`.tgl_awal < NOW() THEN 1 ELSE 0 END) , "
-	SQL += "SUM(CASE WHEN `approved`.status_ttd = '1' AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-' AND `surat_tugas`.tgl_awal > NOW() THEN 1 ELSE 0 END) "
+	SQL += "SUM(CASE WHEN `approved`.status_ttd = '1' AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-' AND `surat_tugas`.tgl_awal > NOW() THEN 1 ELSE 0 END), "
+	SQL += "SUM(CASE WHEN `approved`.status_ttd = '1' AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-' AND `surat_tugas`.tgl_awal < NOW() THEN 1 ELSE 0 END) "
 	SQL += "FROM `surat_tugas` "
 	SQL += "LEFT JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "WHERE YEAR(tgl_awal) = YEAR(CURDATE());"
@@ -63,18 +63,22 @@ func (pr *PimpinanRepoImpl) Index(ctx context.Context, tx *sql.Tx) (pimpinanreqr
 }
 
 // IndexPenugasan implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugas, error) {
-	SQL := "SELECT * "
+func (pr *PimpinanRepoImpl) IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINSPPDApprovedAnggaran, error) {
+	SQL := "SELECT `surat_tugas`.*, `user`.name "
 	SQL += "FROM `surat_tugas` "
-	SQL += "WHERE tgl_akhir < NOW() AND tipe =1;"
-	surats := []entity.SuratTugas{}
+	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "WHERE `surat_tugas`.tgl_akhir > NOW() AND "
+	SQL += "`approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-' "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
+	surats := []entity.SuratTugasJOINSPPDApprovedAnggaran{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
 
 	defer rows.Close()
 	for rows.Next() {
-		surat := entity.SuratTugas{}
-		rows.Scan(
+		surat := entity.SuratTugasJOINSPPDApprovedAnggaran{}
+		err = rows.Scan(
 			&surat.Id,
 			&surat.Tipe,
 			&surat.UserId,
@@ -87,12 +91,27 @@ func (pr *PimpinanRepoImpl) IndexPenugasan(ctx context.Context, tx *sql.Tx) ([]e
 			&surat.TglAwal,
 			&surat.TglAkhir,
 			&surat.CreateAt,
+			&surat.Status,
 		)
+		helper.PanicIfError(err)
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
 		surat.TglAkhir = helper.ConvertSQLTimeToHTML(surat.TglAkhir)
 		surat.CreateAt = helper.ConvertSQLTimeStamp(surat.CreateAt)
 		surats = append(surats, surat)
+	}
+
+	for i, surat := range surats {
+		rincian := entity.RincianAnggaran{}
+		SQL = "SELECT * FROM `rincian_anggaran` WHERE `surat_tugas_id` = ?"
+		tx.QueryRowContext(ctx, SQL, surat.Id).Scan(
+			&rincian.Id,
+			&rincian.SuratTugasId,
+			&rincian.DokName,
+			&rincian.DokPDF,
+			&rincian.CreateAt,
+		)
+		surats[i].Rincian = rincian
 	}
 	if err != nil {
 		return surats, errors.New("tidak ada surat tugas")
@@ -161,7 +180,9 @@ func (pr *PimpinanRepoImpl) SPPDGetAllSuratTugasJOINApprovedUser(ctx context.Con
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
-	SQL += "WHERE `surat_tugas`.tgl_awal > NOW() AND `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-';"
+	SQL += "WHERE `approved`.status = '1' AND `surat_tugas`.dokumen_name != '-' AND "
+	SQL += "`surat_tugas`.tgl_akhir > NOW() "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -235,10 +256,18 @@ func (pr *PimpinanRepoImpl) SPPDGetSuratTugasById(ctx context.Context, tx *sql.T
 
 // SPPDSetApproved implements PimpinanRepo.
 func (pr *PimpinanRepoImpl) SPPDSetApproved(ctx context.Context, tx *sql.Tx, izin entity.Approved) entity.Approved {
-	SQL := "UPDATE `approved` SET `status_ttd` = ?, `message_ttd`= ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
-	_, err := tx.ExecContext(ctx, SQL, izin.StatusTTD, izin.MessageTTD, izin.SuratTugasId)
-	helper.PanicIfError(err)
-	return izin
+	if izin.StatusTTD == "0" {
+		SQL := "INSERT INTO `approved`(`user_id`, `surat_tugas_id`, `status`, `message`, `status_ttd`, `message_ttd`) VALUES (3,?,?,?,?,?);"
+		_, err := tx.ExecContext(ctx, SQL, izin.SuratTugasId, izin.Status, izin.Message, izin.StatusTTD, izin.MessageTTD)
+		helper.PanicIfError(err)
+		return izin
+	} else {
+		SQL := "UPDATE `approved` SET `status`=?, `message`=?,`create_at`=NOW(),`status_ttd` = ?, `message_ttd`= ?, `status_ttd_created_at` = NOW() WHERE `surat_tugas_id` = ?;"
+		_, err := tx.ExecContext(ctx, SQL, izin.Status, izin.Message, izin.StatusTTD, izin.MessageTTD, izin.SuratTugasId)
+		helper.PanicIfError(err)
+		return izin
+
+	}
 }
 
 // SPPDSetApproved implements PimpinanRepo.
@@ -253,6 +282,14 @@ func (pr *PimpinanRepoImpl) RincianSetApproved(ctx context.Context, tx *sql.Tx, 
 func (pr *PimpinanRepoImpl) UploadSPPDApproved(ctx context.Context, tx *sql.Tx, request pimpinanreqres.UploadSPPDRequest) error {
 	SQL := "UPDATE `surat_tugas` SET `dokumen_name` = ?, `dokumen_pdf` = ? WHERE id = ?;"
 	_, err := tx.ExecContext(ctx, SQL, request.DokName, request.DokPDF, request.SuratTugasId)
+	helper.PanicIfError(err)
+	return nil
+}
+
+// SetNullFullAnggaran implements PimpinanRepo.
+func (pr *PimpinanRepoImpl) SetNullFullAnggaran(ctx context.Context, tx *sql.Tx, rincianId int) error {
+	SQL := "INSERT INTO `full_anggaran`(`rincian_id`, `status`) VALUES(?,0)"
+	_, err := tx.ExecContext(ctx, SQL, rincianId)
 	helper.PanicIfError(err)
 	return nil
 }
@@ -302,8 +339,13 @@ func (pr *PimpinanRepoImpl) GetAllUserId(ctx context.Context, tx *sql.Tx) []enti
 }
 
 // GetAllSuratTugasJOINApprovedUserPermohonan implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) PermohonanGetAllSuratTugasJOINApprovedUser(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email FROM `surat_tugas` INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id WHERE `surat_tugas`.tipe=0 AND `surat_tugas`.tgl_awal > NOW();"
+func (pr *PimpinanRepoImpl) IndexPermohonan(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
+	SQL := "SELECT `surat_tugas`.*, `approved`.status, `user`.nip, `user`.name, `user`.no_telp, `user`.email "
+	SQL += "FROM `surat_tugas` "
+	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
+	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
+	SQL += "WHERE `surat_tugas`.tipe=0 AND `surat_tugas`.tgl_akhir > NOW() "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -418,12 +460,13 @@ func (pr *PimpinanRepoImpl) AddApprovedRincianBiayaById(ctx context.Context, tx 
 }
 
 // LaproanGetAllSPPD implements PimpinanRepo.
-func (pr *PimpinanRepoImpl) LaporanGetAllSPPD(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINUserLaporanApproved {
+func (pr *PimpinanRepoImpl) IndexLaporan(ctx context.Context, tx *sql.Tx) []entity.SuratTugasJOINUserLaporanApproved {
 	SQL := "SELECT `surat_tugas`.*, `user`.name "
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
-	SQL += "WHERE `surat_tugas`.tgl_akhir > NOW() AND `approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-';"
+	SQL += "WHERE`approved`.status_ttd = '1' AND `surat_tugas`.dokumen_name != '-' AND `surat_tugas`.tgl_akhir > NOW() "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINUserLaporanApproved{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)

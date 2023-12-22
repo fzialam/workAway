@@ -9,11 +9,16 @@
 <body>
     <div class="container">
         <div class="row justify-content-center mt-5">
-          <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="card-title text-center mb-4 h1">Unauthorized User</h1>
-                </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title text-center mb-4 h1 fw-bold">Unauthorized User</h1>
+                        <h3 class="card-subtitle text-center mb-4 text-danger">{{.message}}</h3>
+                    </div>
+                    <div class="card-footer text-center">
+                        <span class="text-dark">Silahkan login kembali</span>
+                        <a href="/login" class="link-dark">Login</a>
+                    </div>
                 </div>
             </div>
         </div>

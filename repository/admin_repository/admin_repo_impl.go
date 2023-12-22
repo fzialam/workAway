@@ -6,6 +6,7 @@ import (
 
 	"github.com/fzialam/workAway/helper"
 	"github.com/fzialam/workAway/model/entity"
+	adminreqres "github.com/fzialam/workAway/model/req_res/admin_req_res"
 )
 
 type AdminRepoImpl struct {
@@ -13,6 +14,37 @@ type AdminRepoImpl struct {
 
 func NewAdminRepo() AdminRepo {
 	return &AdminRepoImpl{}
+}
+
+// Index implements AdminRepo.
+func (ar *AdminRepoImpl) Index(ctx context.Context, tx *sql.Tx) (adminreqres.IndexResponse, error) {
+	var index adminreqres.IndexResponse
+
+	SQL := "SELECT COUNT(*) from `surat_tugas` WHERE tipe=0;"
+	err := tx.QueryRowContext(ctx, SQL).Scan(&index.Permohonan)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT COUNT(*) from `surat_tugas` WHERE tipe=1;"
+	err = tx.QueryRowContext(ctx, SQL).Scan(&index.Penugasan)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT COUNT(*) from `laporan_aktivitas`;"
+	err = tx.QueryRowContext(ctx, SQL).Scan(&index.LaporanAktivitas)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT COUNT(*) from `laporan_anggaran`;"
+	err = tx.QueryRowContext(ctx, SQL).Scan(&index.LaporanAnggaran)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT COUNT(*) from `user` where status='1';"
+	err = tx.QueryRowContext(ctx, SQL).Scan(&index.UserAk)
+	helper.PanicIfError(err)
+
+	SQL = "SELECT COUNT(*) from `user` where status='0';"
+	err = tx.QueryRowContext(ctx, SQL).Scan(&index.UserOff)
+	helper.PanicIfError(err)
+
+	return index, nil
 }
 
 // Permohonan implements AdminRepo.

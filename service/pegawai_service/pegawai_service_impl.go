@@ -107,6 +107,7 @@ func (ps *PegawaiServiceImpl) PresensiFoto(ctx context.Context, request presensi
 		Gambar:       request.Gambar,
 		Lokasi:       request.Lokasi,
 		Koordinat:    request.Koordinat,
+		CreateAt:     request.Set,
 	}
 
 	presensi, err = ps.PegawaiRepo.PresensiFoto(ctx, tx, presensi)
@@ -183,9 +184,9 @@ func (ps *PegawaiServiceImpl) LaporanGetAllSPPDByUserId(ctx context.Context, use
 		surats[i].StatusKeuangan = laporan.Status
 		if (laporan.Message != "OK") && (laporan.Message != "0") {
 			if surats[i].Message == "" {
-				surats[i].Message += " " + laporan.Message
-			} else {
 				surats[i].Message += laporan.Message
+			} else {
+				surats[i].Message += " " + laporan.Message
 			}
 		}
 	}

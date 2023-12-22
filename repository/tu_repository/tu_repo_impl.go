@@ -62,11 +62,12 @@ func (tr *TURepoImpl) SetNULLStatus(ctx context.Context, tx *sql.Tx, suratId int
 
 // ListSurat implements TURepo.
 func (tr *TURepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) ([]entity.SuratTugasJOINApprovedUser, error) {
-	SQL := "SELECT `surat_tugas`.*, `approved`.status_ttd ,`user`.name "
+	SQL := "SELECT `surat_tugas`.*, `approved`.status_ttd ,`user`.name, `approved`.message_ttd "
 	SQL += "FROM `surat_tugas` "
 	SQL += "INNER JOIN `approved` ON `surat_tugas`.id = `approved`.surat_tugas_id "
 	SQL += "INNER JOIN `user` ON `surat_tugas`.user_id = `user`.id "
-	SQL += "WHERE `surat_tugas`.tgl_awal > NOW() AND `approved`.status = '1';"
+	SQL += "WHERE `surat_tugas`.tgl_akhir > NOW() AND `approved`.status = '1' "
+	SQL += "ORDER BY `surat_tugas`.create_at DESC;"
 	surats := []entity.SuratTugasJOINApprovedUser{}
 	rows, err := tx.QueryContext(ctx, SQL)
 	helper.PanicIfError(err)
@@ -89,6 +90,7 @@ func (tr *TURepoImpl) ListSurat(ctx context.Context, tx *sql.Tx) ([]entity.Surat
 			&surat.CreateAt,
 			&surat.Status,
 			&surat.UserName,
+			&surat.UserEmail,
 		)
 
 		surat.TglAwal = helper.ConvertSQLTimeToHTML(surat.TglAwal)
